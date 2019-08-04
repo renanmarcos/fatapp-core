@@ -1,0 +1,7 @@
+{
+    "watch": ["app", "database", "kernel"],
+    "execMap": {
+      "ts": "sucrase-node kernel/server.ts"
+    },
+    "ext": "ts"
+}

@@ -1,0 +1,24 @@
+{
+   "type": "mysql",
+   "host": "localhost",
+   "port": 3306,
+   "username": "root",
+   "password": "fatecdb",
+   "database": "core",
+   "synchronize": true,
+   "logging": false,
+   "entities": [
+      "app/models/**/*.ts"
+   ],
+   "migrations": [
+      "database/migrations/**/*.ts"
+   ],
+   "subscribers": [
+      "app/subscribers/**/*.ts"
+   ],
+   "cli": {
+      "entitiesDir": "app/models",
+      "migrationsDir": "database/migrations",
+      "subscribersDir": "app/subscribers"
+   }
+}

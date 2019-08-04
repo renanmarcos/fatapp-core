@@ -1,0 +1,52 @@
+{
+  "name": "fatapp-core",
+  "version": "0.1.0",
+  "description": "Core integration services between fatapp-admins and fatapp-users",
+  "main": "src/server.ts",
+  "scripts": {
+    "dev": "nodemon kernel/server.ts",
+    "test": "mocha -r ts-node/register tests/**/test.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/renanmarcos/fatapp-core.git"
+  },
+  "keywords": [
+    "nodejs",
+    "webservices",
+    "fatec-scs",
+    "fatec-api",
+    "fatec",
+    "backend"
+  ],
+  "contributors": [
+    "Renan Marcos Ferreira <renan.ferreira18@fatec.sp.gov.br>",
+    "Gustavo Barbosa <gustavohenrique462010@hotmail.com>",
+    "Henrique Sousa <henrique661@gmail.com>"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/renanmarcos/fatapp-core/issues"
+  },
+  "homepage": "https://github.com/renanmarcos/fatapp-core#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "mysql2": "^1.6.5",
+    "reflect-metadata": "^0.1.13",
+    "typeorm": "^0.2.18"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.1.7",
+    "@types/cors": "^2.8.5",
+    "@types/express": "^4.17.0",
+    "@types/mocha": "^5.2.7",
+    "@types/node": "^12.6.9",
+    "chai": "^4.2.0",
+    "mocha": "^6.2.0",
+    "nodemon": "^1.19.1",
+    "sucrase": "^3.10.1",
+    "ts-node": "^8.3.0",
+    "typescript": "^3.5.3"
+  }
+}

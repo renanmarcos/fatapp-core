@@ -1,0 +1,41 @@
+version: '3'
+
+services:
+  MariaDB:
+    image: mariadb:10.4-bionic
+    container_name: core_db
+    restart: always
+    ports:
+      - "3306:3306"
+    volumes:
+      - database:/var/lib/mysql
+    environment:
+      MYSQL_USER: root
+      MYSQL_ROOT_PASSWORD: fatecdb
+      MYSQL_DATABASE: core
+    networks:
+      - core-network
+
+  node:
+    build: .
+    command: npm run dev
+    container_name: core_node
+    restart: always
+    stdin_open: true
+    tty: true
+    depends_on: 
+      - "MariaDB"
+    ports:
+      - "3050:3050"
+    networks:
+      - core-network
+    volumes:
+      - .:/user/fatapp-core/
+      - /user/fatapp-core/node_modules
+
+networks:
+  core-network:
+    driver: bridge
+
+volumes:
+  database:
