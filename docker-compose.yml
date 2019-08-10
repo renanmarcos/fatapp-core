@@ -1,7 +1,7 @@
 version: '3'
 
 services:
-  MariaDB:
+  mariadb:
     image: mariadb:10.4-bionic
     container_name: core_db
     restart: always
@@ -24,7 +24,7 @@ services:
     stdin_open: true
     tty: true
     depends_on: 
-      - "MariaDB"
+      - "mariadb"
     ports:
       - "3050:3050"
     networks:
