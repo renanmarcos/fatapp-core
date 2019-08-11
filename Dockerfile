@@ -1,4 +1,4 @@
-FROM node:12.8-buster
+FROM node:12.8.0-buster
 
 WORKDIR /user/fatapp-core
 

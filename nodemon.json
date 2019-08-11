@@ -1,5 +1,5 @@
 {
-    "watch": ["app", "database", "kernel"],
+    "watch": ["app", "database", "kernel", ".env"],
     "execMap": {
       "ts": "sucrase-node kernel/server.ts"
     },

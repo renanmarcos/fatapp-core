@@ -2,17 +2,18 @@ version: '3'
 
 services:
   mariadb:
-    image: mariadb:10.4-bionic
+    image: mariadb:10.4.7-bionic
     container_name: core_db
     restart: always
+    env_file:
+      - .env
     ports:
-      - "3306:3306"
-    volumes:
-      - database:/var/lib/mysql
+      - "${TYPEORM_PORT}:${TYPEORM_PORT}"
     environment:
-      MYSQL_USER: root
-      MYSQL_ROOT_PASSWORD: fatecdb
-      MYSQL_DATABASE: core
+      MYSQL_USER: ${TYPEORM_USERNAME}
+      MYSQL_PASSWORD: ${TYPEORM_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${TYPEORM_PASSWORD}
+      MYSQL_DATABASE: ${TYPEORM_DATABASE}
     networks:
       - core-network
 
@@ -23,10 +24,12 @@ services:
     restart: always
     stdin_open: true
     tty: true
+    env_file:
+      - .env
     depends_on: 
       - "mariadb"
     ports:
-      - "3050:3050"
+      - "${CORE_PORT}:${CORE_PORT}"
     networks:
       - core-network
     volumes:
@@ -36,6 +39,3 @@ services:
 networks:
   core-network:
     driver: bridge
-
-volumes:
-  database:

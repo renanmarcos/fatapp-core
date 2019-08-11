@@ -13,7 +13,7 @@ export class App {
     }
 
     private settings() {
-        this.app.set('port', this.port || process.env.PORT || 3050);
+        this.app.set('port', this.port || process.env.CORE_PORT || 3000);
         this.app.use(cors());
     }
 
