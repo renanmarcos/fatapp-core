@@ -20,4 +20,5 @@ before_install:
   - cp .env.example .env
 
 script:
+  - docker-compose down --remove-orphans
   - docker-compose up
