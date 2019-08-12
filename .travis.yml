@@ -18,11 +18,9 @@ before_install:
   - chmod +x docker-compose
   - sudo mv docker-compose /usr/local/bin
 
-before_script:
-  - npm i
-
 script:
   - cp .env.example .env
   - docker-compose down --remove-orphans
   - docker-compose up -d
+  - docker-compose exec node bash -c "npm i"
   - ./wait-for-it.sh -s localhost:$(cat .env | grep TYPEORM_PORT= | cut -d '=' -f2) -- docker-compose run node bash -c "npm run test"
