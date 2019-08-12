@@ -3,7 +3,7 @@ sudo: required
 language: minimal
 
 env:
-  - COMPOSE_FILE=docker-compose.override.travis.yml
+  - COMPOSE_FILE=docker-compose.test.yml
 
 services:
   - docker
@@ -18,9 +18,11 @@ before_install:
   - chmod +x docker-compose
   - sudo mv docker-compose /usr/local/bin
 
-script:
+before_script:
   - cp .env.example .env
-  - docker-compose down --remove-orphans
   - docker-compose up -d
   - docker-compose exec node bash -c "npm i"
-  - ./wait-for-it.sh -s localhost:$(cat .env | grep TYPEORM_PORT= | cut -d '=' -f2) -- docker-compose run node bash -c "npm run test"
+
+script:
+  - port=$(cat .env | grep TYPEORM_PORT= | cut -d '=' -f2)
+  - ./wait-for-it.sh -s localhost:$port -- docker-compose run node bash -c "npm run test"
