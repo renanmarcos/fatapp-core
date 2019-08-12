@@ -1,5 +1,7 @@
 sudo: required
 
+language: minimal
+
 env:
   - COMPOSE_FILE=docker-compose.override.travis.yml
 
