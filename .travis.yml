@@ -23,5 +23,4 @@ before_script:
 script:
   - docker-compose down --remove-orphans
   - docker-compose up -d
-  - ./wait-for-it.sh -s localhost:$(cat .env | grep TYPEORM_PORT= | cut -d '=' -f2) \
-    -- docker-compose exec node bash -c "npm run test"
+  - ./wait-for-it.sh -s localhost:$(cat .env | grep TYPEORM_PORT= | cut -d '=' -f2) -- docker-compose exec node bash -c "npm run test"
