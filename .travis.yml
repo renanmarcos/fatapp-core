@@ -15,12 +15,14 @@ before_install:
   - curl -L https://github.com/docker/compose/releases/latest/download/docker-compose-`uname -s`-`uname -m` > docker-compose
   - chmod +x docker-compose
   - sudo mv docker-compose /usr/local/bin
-  - cp .env.example .env
 
 before_script:
   - sudo /etc/init.d/mysql stop
 
 script:
+  - cp .env.example .env
   - docker-compose down --remove-orphans
   - docker-compose up -d
+  - docker-compose ps
   - ./wait-for-it.sh -s localhost:$(cat .env | grep TYPEORM_PORT= | cut -d '=' -f2) -- docker-compose exec node bash -c "npm run test"
+  - docker-compose down --remove-orphans
