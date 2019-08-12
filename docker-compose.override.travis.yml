@@ -6,7 +6,6 @@ services:
   mysql:
     image: mysql/mysql-server:5.7.24
     container_name: core_db
-    restart: always
     volumes:
       - ./mysql-data:/var/lib/mysql
     env_file:
@@ -22,7 +21,6 @@ services:
   node:
     build: .
     container_name: core_node
-    restart: always
     env_file:
       - .env
     depends_on: 
