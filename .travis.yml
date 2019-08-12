@@ -21,8 +21,7 @@ before_script:
 
 script:
   - cp .env.example .env
+  - docker-compose build
   - docker-compose down --remove-orphans
   - docker-compose up -d
-  - docker-compose ps
-  - ./wait-for-it.sh -s localhost:$(cat .env | grep TYPEORM_PORT= | cut -d '=' -f2) -- docker-compose exec node bash -c "npm run test"
-  - docker-compose down --remove-orphans
+  - ./wait-for-it.sh -s localhost:$(cat .env | grep TYPEORM_PORT= | cut -d '=' -f2) -- docker-compose run node bash -c "npm run test"
