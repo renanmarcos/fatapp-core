@@ -4,14 +4,14 @@ services:
   - docker
 
 before_install:
+  - sudo apt update -y
+  - sudo apt install --only-upgrade docker-ce -y
   - sudo rm /usr/local/bin/docker-compose
   - curl -L https://github.com/docker/compose/releases/latest/download/docker-compose-`uname -s`-`uname -m` > docker-compose
   - chmod +x docker-compose
   - sudo mv docker-compose /usr/local/bin
   - cp .env.example .env
   - docker-compose up
-  - sudo apt update -y
-  - sudo apt install --only-upgrade docker-ce -y
 
 script:
   - npm run test
