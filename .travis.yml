@@ -1,4 +1,6 @@
-language: node
+sudo: required
+
+language: node_js
 
 services:
   - docker
@@ -13,7 +15,7 @@ before_install:
   - chmod +x docker-compose
   - sudo mv docker-compose /usr/local/bin
   - cp .env.example .env
-  - docker-compose up
+  - docker-compose up -d
 
 script:
-  - npm run test
+  - docker-compose exec node bash -c "npm run test"

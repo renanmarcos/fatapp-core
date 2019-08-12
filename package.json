@@ -4,8 +4,8 @@
   "description": "Core integration services between fatapp-admins and fatapp-users",
   "main": "src/server.ts",
   "scripts": {
-    "dev": "nodemon kernel/server.ts",
-    "test": "mocha -r ts-node/register tests/**/test.ts"
+    "dev": "npx nodemon kernel/server.ts",
+    "test": "npx mocha -r ts-node/register tests/**/test.ts"
   },
   "repository": {
     "type": "git",
