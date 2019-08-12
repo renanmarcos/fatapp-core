@@ -1,7 +1,8 @@
-FROM node:12.8.0-buster
+FROM node:12.8.0-buster-slim
 
 WORKDIR /user/fatapp-core
 
-COPY . .
+COPY package.json /user/fatapp-core
+COPY .env /user/fatapp-core
 
 RUN npm i --quiet

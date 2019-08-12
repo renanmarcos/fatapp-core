@@ -26,6 +26,7 @@ export class App {
     }
 
     async listen(): Promise<void> {
+        this.app.set('env', process.env.CORE_ENV);
         await this.app.listen(this.app.get('port'));
         console.log('Server on port', this.app.get('port'));
     }

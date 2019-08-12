@@ -1,41 +1,32 @@
 version: '3'
 
 services:
-  mariadb:
-    image: mariadb:10.4.7-bionic
+  mysql:
+    image: mysql/mysql-server:5.7.24
     container_name: core_db
     restart: always
+    volumes:
+      - ./mysql-data:/var/lib/mysql
     env_file:
       - .env
     ports:
-      - "${TYPEORM_PORT}:${TYPEORM_PORT}"
+      - ${TYPEORM_PORT}:${TYPEORM_PORT}
     environment:
       MYSQL_USER: ${TYPEORM_USERNAME}
       MYSQL_PASSWORD: ${TYPEORM_PASSWORD}
       MYSQL_ROOT_PASSWORD: ${TYPEORM_PASSWORD}
       MYSQL_DATABASE: ${TYPEORM_DATABASE}
-    networks:
-      - core-network
 
   node:
     build: .
-    command: npm run dev
     container_name: core_node
     restart: always
-    stdin_open: true
-    tty: true
+    command: ["./wait-for-it.sh", "-s", "mysql:${TYPEORM_PORT}", "--", "npm", "run", "dev"]
     env_file:
       - .env
     depends_on: 
-      - "mariadb"
+      - mysql
     ports:
-      - "${CORE_PORT}:${CORE_PORT}"
-    networks:
-      - core-network
+      - ${CORE_PORT}:${CORE_PORT}
     volumes:
-      - .:/user/fatapp-core/
-      - /user/fatapp-core/node_modules
-
-networks:
-  core-network:
-    driver: bridge
+      - ./:/user/fatapp-core/
