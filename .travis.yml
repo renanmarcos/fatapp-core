@@ -18,10 +18,10 @@ before_install:
 
 before_script:
   - sudo /etc/init.d/mysql stop
+  - npm i
 
 script:
   - cp .env.example .env
-  - docker-compose build
   - docker-compose down --remove-orphans
   - docker-compose up -d
   - ./wait-for-it.sh -s localhost:$(cat .env | grep TYPEORM_PORT= | cut -d '=' -f2) -- docker-compose run node bash -c "npm run test"
