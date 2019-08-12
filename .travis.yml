@@ -1,4 +1,4 @@
-language: node_js
+sudo: required
 
 env:
   - COMPOSE_FILE=docker-compose.override.travis.yml
@@ -16,6 +16,9 @@ before_install:
   - chmod +x docker-compose
   - sudo mv docker-compose /usr/local/bin
   - cp .env.example .env
+
+before_script:
+  - sudo /etc/init.d/mysql stop
 
 script:
   - docker-compose down --remove-orphans
