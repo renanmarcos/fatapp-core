@@ -29,3 +29,4 @@ services:
       - ${CORE_PORT}:${CORE_PORT}
     volumes:
       - ./:/user/fatapp-core/
+      - /user/fatapp-core/node_modules
