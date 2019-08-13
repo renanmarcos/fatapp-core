@@ -31,7 +31,6 @@ before_install:
 before_script:
   - cp .env.example .env
   - docker-compose up -d
-  - docker-compose exec node bash -c "npm i"
 
 script:
   - port=$(cat .env | grep TYPEORM_PORT= | cut -d '=' -f2)
