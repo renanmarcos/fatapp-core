@@ -23,13 +23,13 @@ before_cache:
   - >
     mkdir -p $HOME/docker && docker images -a --filter='dangling=false' --format '{{.Repository}}:{{.Tag}} {{.ID}}'
     | xargs -n 2 -t sh -c 'test -e $HOME/docker/$1.tar.gz || docker save $0 | gzip -2 > $HOME/docker/$1.tar.gz'
-  - cp -r /usr/local/bin/dockerize $HOME/docker/
+  - sudo cp -r /usr/local/bin/dockerize $HOME/docker/
     
 before_install:
   - |
     if [[ ! -d $HOME/docker/dockerize ]]; then
       wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && \
-      tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && \
+      sudo tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && \
       rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
     fi
   # Load cached docker images
