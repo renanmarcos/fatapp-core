@@ -1,13 +1,21 @@
 # fatapp-core
 Core integration services between fatapp-admins and fatapp-users
 
-Install docker + docker compose and run inside the repository folder:
+Install docker, docker-compose, npm and run inside the repository folder:
 
-`docker-compose up`
+For Linux:
+```
+npm ci
+docker-compose up
+cp .env.example .env
+```
 
-Copy the .env.example file to .env (alter settings if you want):
-
-`cp .env.example .env` (Linux command)
+For Windows:
+```
+npm ci
+docker-compose up
+copy .env.example .env
+```
 
 To enter in application container:
 
@@ -15,6 +23,6 @@ To enter in application container:
 
 To enter in database container:
 
-`docker-compose exec mariadb bash`
+`docker-compose exec mysql bash`
 
-The application will be available at localhost:3000 (or the port specified in CORE_PORT at .env file)
+The application will be available at `localhost:3000` (or the port specified in `CORE_PORT` at `.env` file)
