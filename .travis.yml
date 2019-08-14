@@ -3,8 +3,7 @@ dist: bionic
 language: minimal
 
 env:
-  - COMPOSE_FILE=docker-compose.test.yml
-  - DOCKERIZE_VERSION=v0.6.1
+  - COMPOSE_FILE=docker-compose.test.yml DOCKERIZE_VERSION=v0.6.1
 
 services:
   - docker
