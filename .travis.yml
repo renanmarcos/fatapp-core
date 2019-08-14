@@ -25,6 +25,10 @@ before_cache:
     | xargs -n 2 -t sh -c 'test -e $HOME/docker/$1.tar.gz || docker save $0 | gzip -2 > $HOME/docker/$1.tar.gz'
     
 before_install:
+  - >
+    wget https://github.com/jwilder/dockerize/releases/download/v0.6.1/dockerize-linux-amd64-v0.6.1.tar.gz \
+    && tar -C /usr/local/bin -xzvf dockerize-linux-amd64-v0.6.1.tar.gz \
+    && rm dockerize-linux-amd64-v0.6.1.tar.gz
   # Load cached docker images
   - if [[ -d $HOME/docker ]]; then ls $HOME/docker/*.tar.gz | xargs -I {file} sh -c "zcat {file} | docker load"; fi
 
@@ -34,4 +38,4 @@ before_script:
 
 script:
   - port=$(cat .env | grep TYPEORM_PORT= | cut -d '=' -f2)
-  - ./wait-for-it.sh -s localhost:$port -- docker-compose run node bash -c "npm run test"
+  - dockerize -wait tcp://localhost:$port -timeout 60s npm run test
