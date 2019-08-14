@@ -30,7 +30,7 @@ before_install:
     if [[ ! -d $HOME/docker/dockerize ]]; then
       wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && \
       tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && \
-      rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz &&
+      rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
     fi
   # Load cached docker images
   - if [[ -d $HOME/docker ]]; then ls $HOME/docker/*.tar.gz | xargs -I {file} sh -c "zcat {file} | docker load"; fi
