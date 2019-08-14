@@ -41,4 +41,4 @@ before_script:
 
 script:
   - port=$(cat .env | grep TYPEORM_PORT= | cut -d '=' -f2)
-  - dockerize -wait tcp://localhost:$port -timeout 60s npm run test
+  - dockerize -wait tcp://localhost:$port -timeout 60s docker-compose run node bash -c "npm run test"
