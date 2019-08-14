@@ -4,6 +4,7 @@ language: minimal
 
 env:
   - COMPOSE_FILE=docker-compose.test.yml
+  - DOCKERIZE_VERSION=v0.6.1
 
 services:
   - docker
@@ -23,12 +24,15 @@ before_cache:
   - >
     mkdir -p $HOME/docker && docker images -a --filter='dangling=false' --format '{{.Repository}}:{{.Tag}} {{.ID}}'
     | xargs -n 2 -t sh -c 'test -e $HOME/docker/$1.tar.gz || docker save $0 | gzip -2 > $HOME/docker/$1.tar.gz'
+  - cp -r /usr/local/bin/dockerize $HOME/docker/
     
 before_install:
-  - >
-    wget https://github.com/jwilder/dockerize/releases/download/v0.6.1/dockerize-linux-amd64-v0.6.1.tar.gz \
-    && tar -C /usr/local/bin -xzvf dockerize-linux-amd64-v0.6.1.tar.gz \
-    && rm dockerize-linux-amd64-v0.6.1.tar.gz
+  - |
+    if [[ ! -d $HOME/docker/dockerize ]]; then
+      wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && \
+      tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && \
+      rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz &&
+    fi
   # Load cached docker images
   - if [[ -d $HOME/docker ]]; then ls $HOME/docker/*.tar.gz | xargs -I {file} sh -c "zcat {file} | docker load"; fi
 
