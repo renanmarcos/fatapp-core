@@ -9,6 +9,7 @@ WORKDIR /user/fatapp-core
 
 COPY package*.json ./
 RUN npm ci
+RUN npm i -g ts-node typeorm typescript mocha chai
 
 COPY . ./
 

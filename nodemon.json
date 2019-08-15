@@ -1,7 +1,8 @@
 {
-    "watch": ["app", "database", "kernel", ".env"],
+    "watch": ["app", "database", "kernel"],
+    "ignore": ["tests", ".git", "node_modules"],
     "execMap": {
-      "ts": "sucrase-node kernel/server.ts"
+      "ts": "ts-node kernel/server.ts"
     },
     "ext": "ts"
 }
