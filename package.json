@@ -20,9 +20,11 @@
     "backend"
   ],
   "contributors": [
-    "Renan Marcos Ferreira <renan.ferreira18@fatec.sp.gov.br>",
-    "Gustavo Barbosa <gustavohenrique462010@hotmail.com>",
-    "Henrique Sousa <henrique661@gmail.com>"
+    "Caio Monteiro Paulino <caio.monteiro.paulino@gmail.com>",
+    "Guilherme Vieira <guilherme123-40@hotmail.com>",
+    "Gustavo Henrique Barbosa <gustavohenrique462010@hotmail.com>",
+    "Matheus Augusto Maia Ferreira <matheus.ferreira199@outlook.com>",
+    "Renan Marcos Ferreira <renan.ferreira18@fatec.sp.gov.br>"
   ],
   "license": "MIT",
   "bugs": {
@@ -37,11 +39,11 @@
     "typeorm": "^0.2.18"
   },
   "devDependencies": {
-    "@types/chai": "^4.1.7",
+    "@types/chai": "^4.2.0",
     "@types/cors": "^2.8.5",
     "@types/express": "^4.17.0",
     "@types/mocha": "^5.2.7",
-    "@types/node": "^12.6.9",
+    "@types/node": "^12.7.1",
     "chai": "^4.2.0",
     "mocha": "^6.2.0",
     "nodemon": "^1.19.1",
