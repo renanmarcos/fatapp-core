@@ -1,9 +1,9 @@
-import { Router } from 'express'
-import UserController from './controllers/UserController'
+import { Router } from 'express';
+import UserController from 'api/user/controllers/UserController';
 
-const routes = Router()
+const routes = Router();
 
-routes.get('/users', UserController.index)
-routes.post('/users', UserController.store)
+routes.get('/users', UserController.index);
+routes.post('/users', UserController.store);
 
-export default routes
+export default routes;
