@@ -1,8 +1,8 @@
 import { App } from './app';
-import { createConnection, getConnectionOptions, getConnection } from 'typeorm';
+import { createConnection } from 'typeorm';
 import 'reflect-metadata';
 
-createConnection().then(async (connection) => {
+createConnection().then(async () => {
     console.log('Database connection is working!');
     const app = new App();
     await app.listen();
