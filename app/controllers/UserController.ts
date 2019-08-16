@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { User } from '../models/user';
 
 class UserController {
   public async index (req: Request, res: Response): Promise<Response> {
@@ -8,8 +9,11 @@ class UserController {
   }
 
   public async store (req: Request, res: Response): Promise<Response> {
-    const user =  {"success": true};
 
+    const user = new User();
+    user.name = "Test";
+    user.email = "test@gmail.com";
+    user.rg = 3034034343;
     return res.json(user);
   }
 }
