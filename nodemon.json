@@ -1,6 +1,6 @@
 {
     "watch": ["app", "database", "kernel"],
-    "ignore": ["tests", ".git", "node_modules"],
+    "ignore": ["tests", ".env", "node_modules", ".gitignore"],
     "execMap": {
       "ts": "ts-node kernel/server.ts"
     },

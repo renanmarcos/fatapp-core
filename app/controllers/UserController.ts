@@ -1,16 +1,19 @@
 import { Request, Response } from 'express';
+import { TestEntity } from '../models/TestEntity';
 
 class UserController {
   public async index (req: Request, res: Response): Promise<Response> {
-    const users = {"success": true};
-    
-    return res.json(users);
+    return res.json(await TestEntity.find());
   }
 
   public async store (req: Request, res: Response): Promise<Response> {
-    const user =  {"success": true};
+    const test = new TestEntity();
+    test.firstName = "Timber";
+    test.lastName = "Saw";
+    test.isActive = true;
+    await test.save();
 
-    return res.json(user);
+    return res.json(test);
   }
 }
 
