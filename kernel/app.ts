@@ -1,6 +1,8 @@
 import express, { Application } from 'express';
 import cors from 'cors';
-import userRoutes from '../app/routes/UserRoutes';
+import UserRoutes from '../app/routes/UserRoutes';
+import StudentRoutes from '../app/routes/StudentRoutes';
+import LectureRoutes from '../app/routes/LectureRoutes';
 
 export class App {
     app: Application;
@@ -22,7 +24,9 @@ export class App {
     }
 
     private routes() {
-        this.app.use('/users', userRoutes);
+        this.app.use('/users', UserRoutes);
+        this.app.use('/lectures', LectureRoutes);
+        this.app.use('/students', StudentRoutes);
     }
 
     async listen(): Promise<void> {

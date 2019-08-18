@@ -22,13 +22,9 @@ export class LectureMigration1565920294035 implements MigrationInterface {
                     type: "date",
                 },
                 {
-                    name: "rg",
-                    type: "int",
-                },
-                {
                     name: "speaker",
                     type: "varchar",
-                }
+                },
                 {
                     name: "description",
                     type: "varchar",

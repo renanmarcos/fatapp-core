@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { User } from '../models/User';
+import { STATUS_CODES } from 'http';
 
 class UserController {
   public async index (req: Request, res: Response): Promise<Response> {
@@ -22,7 +23,7 @@ class UserController {
     const user = await User.findOne({ id: 1 });
     if (user != undefined) await user.remove();
 
-    return res.json(user);
+    return res.status(201);
   }
 }
 
