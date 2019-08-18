@@ -1,6 +1,6 @@
 import express, { Application } from 'express';
 import cors from 'cors';
-import routes from '../app/routes';
+import userRoutes from '../app/routes/UserRoutes';
 
 export class App {
     app: Application;
@@ -22,7 +22,7 @@ export class App {
     }
 
     private routes() {
-        this.app.use(routes);
+        this.app.use('/users', userRoutes);
     }
 
     async listen(): Promise<void> {

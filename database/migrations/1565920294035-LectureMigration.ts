@@ -1,10 +1,10 @@
-import { MigrationInterface, QueryRunner, Table } from "typeorm";
+import {MigrationInterface, QueryRunner} from "typeorm";
 
-export class CreateTestEntity1565926946398 implements MigrationInterface {
+export class LectureMigration1565920294035 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<any> {
         await queryRunner.createTable(new Table({
-            name: "test_entity",
+            name: "lectures",
             columns: [
                 {
                     name: "id",
@@ -14,23 +14,30 @@ export class CreateTestEntity1565926946398 implements MigrationInterface {
                     generationStrategy: 'increment',
                 },
                 {
-                    name: "firstName",
+                    name: "title",
                     type: "varchar",
                 },
                 {
-                    name: "lastName",
-                    type: "varchar",
+                    name: "date",
+                    type: "date",
                 },
                 {
-                    name: "isActive",
-                    type: "boolean",
+                    name: "rg",
+                    type: "int",
+                },
+                {
+                    name: "speaker",
+                    type: "varchar",
+                }
+                {
+                    name: "description",
+                    type: "varchar",
                 }
             ]
         }), true)  
     }
 
     public async down(queryRunner: QueryRunner): Promise<any> {
-        await queryRunner.dropTable('test_entity');
     }
 
 }
