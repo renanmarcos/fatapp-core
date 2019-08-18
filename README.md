@@ -6,15 +6,15 @@ Install docker, docker-compose, npm and run inside the repository folder:
 For Linux:
 ```
 npm ci
-docker-compose up
 cp .env.example .env
+docker-compose up
 ```
 
 For Windows:
 ```
 npm ci
-docker-compose up
 copy .env.example .env
+docker-compose up
 ```
 
 To enter in application container:
