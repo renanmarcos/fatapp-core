@@ -10,14 +10,13 @@ class StudentController {
   public async store (req: Request, res: Response): Promise<Response> {
     const student = new Student();
     student.ra = 123454;
-    student.curse = Course.ADS;
+    student.course = Course.ADS;
     await student.save();
     
     return res.json(student);
   }
 
   public async destroy (req: Request, res: Response): Promise<Response> {
-
     const student = await Student.findOne({ id: 1 });
     if (student != undefined) await student.remove();
 

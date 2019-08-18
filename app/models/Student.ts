@@ -10,6 +10,6 @@ export class Student extends BaseEntity {
     ra: number;
 
     @Column()
-    curse: string;
+    course: string;
 
 }
