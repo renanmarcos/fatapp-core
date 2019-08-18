@@ -11,7 +11,7 @@ class UserController {
     const user = new User();
     user.name = "Test";
     user.email = "test@gmail.com";
-    user.rg = 123454;
+    user.cpf = 123454;
     await user.save();
     
     return res.json(user);
