@@ -1,24 +1,41 @@
+import { ValidationContract } from './../bin/validation';
 import { Request, Response } from 'express';
 import { User } from '../models/User';
 import { STATUS_CODES } from 'http';
 
 class UserController {
-  public async index (req: Request, res: Response): Promise<Response> {
+  public async get (req: Request, res: Response): Promise<Response> {
     return res.json(await User.find());
   }
 
-  public async store (req: Request, res: Response): Promise<Response> {
+  public async post (req: Request, res: Response): Promise<Response> {
+    let _validationContract = new ValidationContract();
+
+    _validationContract.isRequired(req.body.name, 'Name is required');
+    _validationContract.isRequired(req.body.email, 'E-mail is required');
+    _validationContract.isRequired(req.body.cpf, 'CPF is required');
+    _validationContract.isRequired(req.body.password, 'Password is required');
+
+    if(!_validationContract.isValid()){
+      res.status(400).send({
+          message: "400 Bad Request", 
+          validation: _validationContract.errors()
+      }).end();
+      return res;
+  }
 
     const user = new User();
-    user.name = "Test";
-    user.email = "test@gmail.com";
-    user.cpf = 123454;
+    user.name = req.body.name;
+    user.email = req.body.email;
+    user.cpf = req.body.cpf;
+    user.password = req.body.password
+
     await user.save();
     
     return res.json(user);
   }
 
-  public async destroy (req: Request, res: Response): Promise<Response> {
+  public async delete (req: Request, res: Response): Promise<Response> {
 
     const user = await User.findOne({ id: 1 });
     if (user != undefined) await user.remove();

@@ -5,8 +5,8 @@ import UserController from '../controllers/UserController';
 
 const routes = Router();
 
-routes.get('/', UserController.index);
-routes.post('/', UserController.store);
-routes.delete('/', UserController.destroy);
+routes.get('/', UserController.get);
+routes.post('/', UserController.post);
+routes.delete('/:id', UserController.delete);
 
 export default routes;
