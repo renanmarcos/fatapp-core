@@ -13,6 +13,6 @@ export class User extends BaseEntity {
     email: string;
 
     @Column()
-    rg: number;
+    cpf: number;
 
 }

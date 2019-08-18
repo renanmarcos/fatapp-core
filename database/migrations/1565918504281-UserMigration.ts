@@ -22,7 +22,7 @@ export class UserMigration1565918504281 implements MigrationInterface {
                     type: "varchar",
                 },
                 {
-                    name: "rg",
+                    name: "cpf",
                     type: "int",
                 }
             ]

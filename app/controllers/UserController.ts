@@ -3,9 +3,7 @@ import { User } from '../models/User';
 
 class UserController {
   public async index (req: Request, res: Response): Promise<Response> {
-    const users = {"success": true};
-    
-    return res.json(users);
+    return res.json(await User.find());
   }
 
   public async store (req: Request, res: Response): Promise<Response> {
@@ -15,18 +13,16 @@ class UserController {
     user.email = "test@gmail.com";
     user.rg = 123454;
     await user.save();
+    
     return res.json(user);
   }
 
   public async destroy (req: Request, res: Response): Promise<Response> {
 
-    await connection.createQueryBuilder()
-    .delete()
-    .from(User)
-    .where("id = :id", { id: 1 })
-    .execute();
+    const user = await User.find({ id: 1 });
+    await user.remove();
 
-    return res.json(User);
+    return res.json(user);
   }
 }
 
