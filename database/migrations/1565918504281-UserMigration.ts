@@ -23,7 +23,11 @@ export class UserMigration1565918504281 implements MigrationInterface {
                 },
                 {
                     name: "cpf",
-                    type: "int",
+                    type: "varchar",
+                },
+                {
+                    name: "password",
+                    type: "varchar"
                 }
             ]
         }), true)  
