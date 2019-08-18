@@ -1,10 +1,12 @@
+'use strict'
+
 import { Router } from 'express';
 import UserController from '../controllers/UserController';
 
 const routes = Router();
 
-routes.get('/users', UserController.index);
-routes.post('/users', UserController.store);
-routes.delete('/users', UserController.destroy);
+routes.get('/', UserController.index);
+routes.post('/', UserController.store);
+routes.delete('/', UserController.destroy);
 
 export default routes;
