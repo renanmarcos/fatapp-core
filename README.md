@@ -17,6 +17,12 @@ copy .env.example .env
 docker-compose up
 ```
 
+Open a new terminal/cmd window and run migrations to create tables:
+```
+docker-compose exec node bash
+npm run typeorm migration:run
+```
+
 To enter in application container:
 
 `docker-compose exec node bash`
@@ -31,3 +37,9 @@ The application will be available at `localhost:3000` (or the port specified in 
 - Always use node docker container to create migrations, models or other things via `typeorm` cli. (See above to enter in application container)
 - Manipulate `typeorm` cli via our script in `package.json`. So if you want to create a new model for example, use inside container:
 > `npm run typeorm entity:create -- -n entityName` (See https://github.com/typeorm/typeorm/blob/master/docs/using-cli.md to more details for using TypeORM cli with TypeScript)
+- If you want to manipute MySQL inside database container:
+```
+mysql -u user -p
+```
+
+Default password for MySQL is `fatecdb`, but both username and password are inside `.env` file
