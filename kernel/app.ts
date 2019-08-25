@@ -3,6 +3,10 @@ import cors from 'cors';
 import UserRoutes from '../app/routes/UserRoutes';
 import StudentRoutes from '../app/routes/StudentRoutes';
 import LectureRoutes from '../app/routes/LectureRoutes';
+import Resource from '../app/routes/ResourceRoutes';
+import Room from '../app/routes/RoomRoutes';
+import Event from '../app/routes/EventRoutes';
+import RoomResource from '../app/routes/RoomResourceRoutes';
 
 export class App {
     app: Application;
@@ -27,6 +31,10 @@ export class App {
         this.app.use('/users', UserRoutes);
         this.app.use('/lectures', LectureRoutes);
         this.app.use('/students', StudentRoutes);
+        this.app.use('/resources', Resource);
+        this.app.use('/rooms', Room);
+        this.app.use('/events', Event);
+        this.app.use('/rooms_resources', RoomResource);
     }
 
     async listen(): Promise<void> {
