@@ -6,11 +6,13 @@ import * as HttpStatus from 'http-status-codes';
 
 class UserController {
 
-  public async list(req: Request, res: Response): Promise<Response> {
+  public async list(req: Request, res: Response): Promise<Response> 
+  {
     return res.json(await User.find());
   }
 
-  public async get(req: Request, res: Response) {
+  public async get(req: Request, res: Response): Promise<Response> 
+  {
     let validatedRequest = req as ValidatedRequest<UserQuerySchema>;
     let user = await User.findOne({ id: validatedRequest.params.id });
 
@@ -21,7 +23,8 @@ class UserController {
     return res.json(user);
   }
 
-  public async store(req: Request, res: Response) {
+  public async store(req: Request, res: Response): Promise<Response> 
+  {
     let validatedRequest = req as ValidatedRequest<UserStoreSchema>;
 
     const user = new User();
@@ -31,22 +34,24 @@ class UserController {
     user.password = validatedRequest.body.password;
     await user.save();
     
-    return res.json(user);
+    return res.status(HttpStatus.CREATED).json(user);
   }
 
-  public async delete(req: Request, res: Response) {
+  public async delete(req: Request, res: Response): Promise<Response> 
+  {
     let validatedRequest = req as ValidatedRequest<UserQuerySchema>;
-
     let user = await User.findOne({ id: validatedRequest.params.id });
+
     if (user) {
       await user.remove();
       return res.sendStatus(HttpStatus.NO_CONTENT);
-    } else {
-      res.sendStatus(HttpStatus.NOT_FOUND);
     }
-  };
 
-  public async update(req: Request, res: Response) {
+    return res.sendStatus(HttpStatus.NOT_FOUND);
+  }
+
+  public async update(req: Request, res: Response): Promise<Response> 
+  {
     let validatedRequest = req as ValidatedRequest<UserUpdateSchema>;
 
     let user = await User.findOne({ id: validatedRequest.params.id });
@@ -60,9 +65,9 @@ class UserController {
       await user.reload();
 
       return res.status(HttpStatus.OK).send(user);
-    } else {
-      res.sendStatus(HttpStatus.NOT_FOUND);
     }
+    
+    return res.sendStatus(HttpStatus.NOT_FOUND);
   }
 }
 

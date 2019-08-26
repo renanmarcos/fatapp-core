@@ -3,7 +3,7 @@ import cors from 'cors';
 import UserRoutes from '../app/routes/UserRoutes';
 import StudentRoutes from '../app/routes/StudentRoutes';
 import LectureRoutes from '../app/routes/LectureRoutes';
-import errorMiddleware from './middlewares/ErrorMiddlware';
+import jwt from 'express-jwt';
 
 export class App {
     app: Application;
@@ -22,7 +22,11 @@ export class App {
 
     private middlewares() {
         this.app.use(express.json());
-        this.app.use(errorMiddleware);
+        this.app.use(jwt({secret: 'hello'}).unless({
+            path: [
+                '/token'
+            ]
+        }));
     }
 
     private routes() {

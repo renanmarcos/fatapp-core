@@ -16,10 +16,8 @@ export interface StudentQuerySchema extends ValidatedRequestSchema {
 }
 
 const bodyStoreSchema = Joi.object({
-  name: Joi.string().required(),
-  email: Joi.string().required(),
-  cpf: Joi.string().required(),
-  password: Joi.string().required()
+  ra: Joi.string().required(),
+  course: Joi.string().required()
 });
 
 export interface StudentStoreSchema extends ValidatedRequestSchema {
@@ -27,10 +25,8 @@ export interface StudentStoreSchema extends ValidatedRequestSchema {
 }
 
 const bodyUpdateSchema = Joi.object({
-  name: Joi.string(),
-  email: Joi.string(),
-  cpf: Joi.string(),
-  password: Joi.string()
+  ra: Joi.string(),
+  course: Joi.string()
 });
 
 export interface StudentUpdateSchema extends ValidatedRequestSchema {
