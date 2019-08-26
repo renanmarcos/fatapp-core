@@ -1,5 +1,3 @@
-'use strict'
-
 import { Router } from 'express';
 import LectureController from '../controllers/LectureController';
 

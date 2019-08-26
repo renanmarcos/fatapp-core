@@ -1,4 +1,4 @@
-FROM node:12.8.0-buster-slim
+FROM node:12.9.0-buster-slim
 
 RUN npm i -g ts-node typeorm typescript mocha chai tsconfig-paths
 

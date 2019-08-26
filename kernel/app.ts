@@ -3,6 +3,7 @@ import cors from 'cors';
 import UserRoutes from '../app/routes/UserRoutes';
 import StudentRoutes from '../app/routes/StudentRoutes';
 import LectureRoutes from '../app/routes/LectureRoutes';
+import errorMiddleware from './middlewares/ErrorMiddlware';
 
 export class App {
     app: Application;
@@ -21,6 +22,7 @@ export class App {
 
     private middlewares() {
         this.app.use(express.json());
+        this.app.use(errorMiddleware);
     }
 
     private routes() {
