@@ -1,9 +1,9 @@
 import { Router } from 'express';
-import UserController from '../controllers/UserController';
+import AuthController from '../controllers/AuthController';
 import * as Joi from '@hapi/joi';
 import { ValidatedRequestSchema, createValidator, ContainerTypes } from 'express-joi-validation';
 import 'joi-extract-type';
-import { checkJwt } from "../middlewares/checkJwt";
+import { checkJwt } from "../middlewares/CheckJwt";
 
 const routes = Router();
 const validator = createValidator();
@@ -38,10 +38,8 @@ export interface UserUpdateSchema extends ValidatedRequestSchema {
   [ContainerTypes.Query]: Joi.extractType<typeof bodyUpdateSchema>;
 }
 
-routes.get('/', UserController.list);
-routes.get('/:id', validator.params(paramsSchema), UserController.get);
-routes.delete('/:id', validator.params(paramsSchema), UserController.delete);
-routes.post('/', validator.body(bodyStoreSchema), UserController.store);
-routes.put('/:id', validator.body(bodyUpdateSchema), UserController.update);
+routes.post("/login", validator.body(bodyStoreSchema), AuthController.login);
+routes.post("/register", validator.body(bodyStoreSchema), AuthController.register);
+routes.post("/change-password", validator.body(bodyStoreSchema), [checkJwt], AuthController.changePassword);
 
 export default routes;

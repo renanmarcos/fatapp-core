@@ -1,9 +1,10 @@
 import express, { Application } from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
 import UserRoutes from '../app/routes/UserRoutes';
 import StudentRoutes from '../app/routes/StudentRoutes';
 import LectureRoutes from '../app/routes/LectureRoutes';
-import jwt from 'express-jwt';
+import AuthRoutes from '../app/routes/AuthRoutes';
 
 export class App {
     app: Application;
@@ -22,17 +23,14 @@ export class App {
 
     private middlewares() {
         this.app.use(express.json());
-        this.app.use(jwt({secret: 'hello'}).unless({
-            path: [
-                '/token'
-            ]
-        }));
+        this.app.use(helmet());
     }
 
     private routes() {
+        this.app.use('/auth', AuthRoutes);
         this.app.use('/users', UserRoutes);
-        this.app.use('/lectures', LectureRoutes);
         this.app.use('/students', StudentRoutes);
+        this.app.use('/lectures', LectureRoutes);
     }
 
     async listen(): Promise<void> {
