@@ -7,6 +7,7 @@ import Resource from '../app/routes/ResourceRoutes';
 import Room from '../app/routes/RoomRoutes';
 import Event from '../app/routes/EventRoutes';
 import RoomResource from '../app/routes/RoomResourceRoutes';
+import RoomType from '../app/routes/RoomTypeRoutes';
 
 export class App {
     app: Application;
@@ -35,6 +36,7 @@ export class App {
         this.app.use('/rooms', Room);
         this.app.use('/events', Event);
         this.app.use('/rooms_resources', RoomResource);
+        this.app.use('/room_type', RoomType)
     }
 
     async listen(): Promise<void> {

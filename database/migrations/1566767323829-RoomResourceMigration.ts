@@ -22,6 +22,10 @@ export class RoomResourceMigration1566767323829 implements MigrationInterface {
                     name: "resourceId",
                     type: "int",
                 },
+                {
+                    name: "resourceAmmount",
+                    type: "int"
+                }
             ]
         }), true)
 

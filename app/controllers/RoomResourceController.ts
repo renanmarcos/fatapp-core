@@ -34,6 +34,8 @@ class RoomResourceController {
       const roomResource = new RoomResource();
       roomResource.roomId = req.body.roomId;
       roomResource.resourceId = req.body.resourceId;
+      roomResource.resourceAmmount = req.body.resourceAmmount;
+
       await roomResource.save();
       //Return created user.
       return res.json(roomResource);
@@ -55,6 +57,26 @@ class RoomResourceController {
     } catch (error) {
       res.status(500).send({ message: '500 Internal Server Error', error: error });
     }
+  }
+
+  public async put(req: Request, res: Response) {
+    try {
+      let result = await RoomResource.findOne({ id: req.params.id });
+      if (result) {
+
+        if (req.body.resourceAmmount == undefined || req.body.resourceAmmount == null) req.body.name = result.resourceAmmount;
+        
+        await RoomResource.update(req.params.id, { resourceAmmount: req.body.resourceAmmount });
+        let updatedResult = await RoomResource.findOne({ id: req.params.id });
+        return res.status(200).send(updatedResult);
+
+      } else {
+        res.status(404).send('404 Not Found');
+      }
+    } catch (error) {
+      res.status(500).send({ message: '500 Internal Server Error', error: error });
+    }
+
   }
 
 }

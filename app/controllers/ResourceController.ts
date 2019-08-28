@@ -1,7 +1,6 @@
 import { ValidationContract } from '../bin/validation';
 import { Request, Response } from 'express';
 import { Resource } from '../models/Resource';
-import { STATUS_CODES } from 'http';
 
 class ResourceController {
   //Return all users

@@ -12,4 +12,7 @@ export class RoomResource extends BaseEntity{
     @Column()
     resourceId: number;
 
+    @Column()
+    resourceAmmount: number;
+
 }
