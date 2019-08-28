@@ -8,38 +8,30 @@ import { checkJwt } from "../middlewares/CheckJwt";
 const routes = Router();
 const validator = createValidator();
 
-const paramsSchema = Joi.object().keys({
-  id: Joi.string().required()
-});
-
-export interface UserQuerySchema extends ValidatedRequestSchema {
-  [ContainerTypes.Query]: Joi.extractType<typeof paramsSchema>;
-}
-
-const bodyStoreSchema = Joi.object({
-  name: Joi.string().required(),
+const bodyTokenSchema = Joi.object({
   email: Joi.string().required(),
-  cpf: Joi.string().required(),
   password: Joi.string().required()
 });
 
-export interface UserStoreSchema extends ValidatedRequestSchema {
-  [ContainerTypes.Query]: Joi.extractType<typeof bodyStoreSchema>;
+export interface UserTokenSchema extends ValidatedRequestSchema {
+  [ContainerTypes.Query]: Joi.extractType<typeof bodyTokenSchema>;
 }
 
-const bodyUpdateSchema = Joi.object({
-  name: Joi.string(),
-  email: Joi.string(),
-  cpf: Joi.string(),
-  password: Joi.string()
+const bodyChangePasswordSchema = Joi.object({
+  oldPassword: Joi.string().required(),
+  newPassword: Joi.string().required()
 });
 
-export interface UserUpdateSchema extends ValidatedRequestSchema {
-  [ContainerTypes.Query]: Joi.extractType<typeof bodyUpdateSchema>;
+export interface UserChangePasswordSchema extends ValidatedRequestSchema {
+  [ContainerTypes.Query]: Joi.extractType<typeof bodyChangePasswordSchema>;
 }
 
-routes.post("/login", validator.body(bodyStoreSchema), AuthController.login);
-routes.post("/register", validator.body(bodyStoreSchema), AuthController.register);
-routes.post("/change-password", validator.body(bodyStoreSchema), [checkJwt], AuthController.changePassword);
+routes.post("/token", validator.body(bodyTokenSchema), AuthController.token);
+routes.post(
+  "/change-password", 
+  validator.body(bodyChangePasswordSchema), 
+  [checkJwt], 
+  AuthController.changePassword
+);
 
 export default routes;

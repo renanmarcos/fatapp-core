@@ -32,6 +32,7 @@ class UserController {
     user.email = validatedRequest.body.email;
     user.cpf = validatedRequest.body.cpf;
     user.password = validatedRequest.body.password;
+    user.hashPassword();
     await user.save();
     
     return res.status(HttpStatus.CREATED).json(user);
@@ -60,7 +61,8 @@ class UserController {
       user.name = validatedRequest.body.name;
       user.email = validatedRequest.body.email;
       user.cpf = validatedRequest.body.cpf;
-      user.password = validatedRequest.body.cpf;
+      user.password = validatedRequest.body.password;
+      user.hashPassword();
       await user.save();
       await user.reload();
 
