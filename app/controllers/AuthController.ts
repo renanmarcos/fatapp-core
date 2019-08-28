@@ -26,7 +26,9 @@ class AuthController {
       { expiresIn: "1h" }
     );
 
-    return res.send(token);
+    return res.send({
+      'token': token
+    });
   }
 
   public async changePassword(req: Request, res: Response): Promise<Response> 

@@ -1,10 +1,12 @@
-
 import { Request, Response, NextFunction } from "express";
 import * as jwt from "jsonwebtoken";
 import * as HttpStatus from 'http-status-codes';
 
 export const checkJwt = (req: Request, res: Response, next: NextFunction) => {
-  const token = <string> req.headers["auth"];
+
+  console.log(req.path);
+
+  const token = <string> req.headers["Authentication"];
   let jwtPayload;
   
   try {
@@ -20,7 +22,7 @@ export const checkJwt = (req: Request, res: Response, next: NextFunction) => {
     process.env.CORE_SECRET ? process.env.CORE_SECRET : '', 
     { expiresIn: "1h"}
   );
-  res.setHeader("token", newToken);
+  res.setHeader("Authentication", newToken);
 
   next();
 };

@@ -5,6 +5,8 @@ import UserRoutes from '../app/routes/UserRoutes';
 import StudentRoutes from '../app/routes/StudentRoutes';
 import LectureRoutes from '../app/routes/LectureRoutes';
 import AuthRoutes from '../app/routes/AuthRoutes';
+import { checkJwt } from '../app/middlewares/CheckJwt';
+import unless from 'express-unless';
 
 export class App {
     app: Application;
@@ -18,12 +20,13 @@ export class App {
 
     private settings() {
         this.app.set('port', this.port || process.env.CORE_PORT || 3000);
-        this.app.use(cors());
     }
 
     private middlewares() {
         this.app.use(express.json());
         this.app.use(helmet());
+        this.app.use(cors());
+        this.app.use(checkJwt);
     }
 
     private routes() {

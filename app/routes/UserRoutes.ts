@@ -17,7 +17,7 @@ export interface UserQuerySchema extends ValidatedRequestSchema {
 
 const bodyStoreSchema = Joi.object({
   name: Joi.string().required(),
-  email: Joi.string().required(),
+  email: Joi.string().email().required(),
   cpf: Joi.string().required(),
   password: Joi.string().required()
 });
