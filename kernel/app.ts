@@ -5,8 +5,7 @@ import UserRoutes from '../app/routes/UserRoutes';
 import StudentRoutes from '../app/routes/StudentRoutes';
 import LectureRoutes from '../app/routes/LectureRoutes';
 import AuthRoutes from '../app/routes/AuthRoutes';
-import { checkJwt } from '../app/middlewares/CheckJwt';
-import unless from 'express-unless';
+import { requiresAuth } from '../app/middlewares/CheckJwt';
 
 export class App {
     app: Application;
@@ -26,7 +25,12 @@ export class App {
         this.app.use(express.json());
         this.app.use(helmet());
         this.app.use(cors());
-        this.app.use(checkJwt);
+        this.app.use(requiresAuth().unless({
+            path: [
+                { url: '/auth/token', methods: ['POST'] },
+                { url: '/users', methods: ['POST'] }
+            ]
+        }));
     }
 
     private routes() {

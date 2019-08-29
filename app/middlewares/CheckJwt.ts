@@ -1,16 +1,25 @@
 import { Request, Response, NextFunction } from "express";
 import * as jwt from "jsonwebtoken";
 import * as HttpStatus from 'http-status-codes';
+import unless from 'express-unless';
 
-export const checkJwt = (req: Request, res: Response, next: NextFunction) => {
+export function requiresAuth() {
 
-  console.log(req.path);
+  const checkJwtMiddleware = <unless.RequestHandler>((req: Request, res: Response, next: NextFunction) => {
+      authMiddleware(req, res, next);
+  });
 
-  const token = <string> req.headers["Authentication"];
+  checkJwtMiddleware.unless = unless;
+
+  return checkJwtMiddleware;
+};
+
+function authMiddleware(req: Request, res: Response, next: NextFunction) {
+  const token = <string> req.headers["token"];
   let jwtPayload;
   
   try {
-    jwtPayload = <any> jwt.verify(token, process.env.CORE_SECRET ? process.env.CORE_SECRET : '');
+    jwtPayload = <any> jwt.verify(token, process.env.CORE_SECRET);
     res.locals.jwtPayload = jwtPayload;
   } catch (error) {
     return res.sendStatus(HttpStatus.UNAUTHORIZED).send();
@@ -19,10 +28,10 @@ export const checkJwt = (req: Request, res: Response, next: NextFunction) => {
   const { userId, email } = jwtPayload;
   const newToken = jwt.sign(
     { userId, email }, 
-    process.env.CORE_SECRET ? process.env.CORE_SECRET : '', 
+    process.env.CORE_SECRET, 
     { expiresIn: "1h"}
   );
-  res.setHeader("Authentication", newToken);
+  res.setHeader("token", newToken);
 
   next();
 };
