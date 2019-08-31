@@ -5,7 +5,7 @@ import { Room } from '../models/Room';
 class RoomController {
   //Return all users
   public async get(req: Request, res: Response): Promise<Response> {
-    return res.json(await Room.find({ relations: ["resources", "roomType"] }));
+    return res.json(await Room.find( { relations: ['resources'] } ));
   }
 
   //Create user
@@ -14,6 +14,8 @@ class RoomController {
       let _validationContract = new ValidationContract();
       //Validate required fields
       _validationContract.isRequired(req.body.name, 'Name is required');
+      _validationContract.isRequired(req.body.type, 'Type is required');
+      _validationContract.isRequired(req.body.capacity, 'Capacity is required');
      
       //Return bad request if validation fails.
       if (!_validationContract.isValid()) {
@@ -64,16 +66,19 @@ class RoomController {
   //Update user
   public async put(req: Request, res: Response) {
     try {
-      let user = await Room.findOne({ id: req.params.id });
-      if (user) {
+      let result = await Room.findOne({ id: req.params.id });
+      if (result) {
 
         //Avoid null or undefined params.
-        if (req.body.name == undefined || req.body.name == null) req.body.name = user.name;
-        
+        if (req.body.name == undefined || req.body.name == null) req.body.name = result.name;
+        if (req.body.type == undefined || req.body.type == null) req.body.type = result.type;
+        if (req.body.capacity == undefined || req.body.capacity == null) req.body.capacity = result.capacity;
         //Update user and return the result
-        await Room.update(req.params.id, { name: req.body.name });
-        let updatedUser = await Room.findOne({ id: req.params.id });
-        return res.status(200).send(updatedUser);
+
+        await Room.update(req.params.id, { name: req.body.name, type: req.body.type, capacity: req.body.capacity});
+
+        let updatedResult = await Room.findOne({ id: req.params.id });
+        return res.status(200).send(updatedResult);
 
       } else {
         res.status(404).send('404 Not Found');

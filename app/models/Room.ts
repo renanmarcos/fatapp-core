@@ -1,6 +1,6 @@
-import {Entity, BaseEntity, PrimaryGeneratedColumn, Column, ManyToMany, ManyToOne} from "typeorm";
+import {Entity, BaseEntity, PrimaryGeneratedColumn, Column, ManyToMany, ManyToOne, OneToMany} from "typeorm";
 import { Resource } from "./Resource";
-import { RoomType } from "./RoomType";
+import { RoomResource } from "./RoomResource";
 
 @Entity()
 export class Room extends BaseEntity{
@@ -15,12 +15,12 @@ export class Room extends BaseEntity{
     capacity: number;
 
     @Column()
-    type: number;
+    type: string;
 
     @ManyToMany(type => Resource, resource => resource.rooms)
     resources: Resource[];
 
-    @ManyToOne(type => RoomType, roomType => roomType.rooms)
-    roomType: RoomType;
+    @OneToMany(type => RoomResource, roomResource => roomResource.room)
+    roomResources: RoomResource[];
 
 }

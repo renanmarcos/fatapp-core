@@ -20,19 +20,14 @@ export class RoomMigration1566752447857 implements MigrationInterface {
                 },
                 {
                     name: "type",
+                    type: "varchar"
+                },
+                {
+                    name: "capacity",
                     type: "int"
                 }
             ]
         }), true)
-
-        const fk_roomType = new TableForeignKey({
-            columnNames: ["type"],
-            referencedColumnNames: ["id"],
-            referencedTableName: "room_type",
-            onDelete: "CASCADE"
-        });
-
-        await queryRunner.createForeignKey("room", fk_roomType);
     }
 
     public async down(queryRunner: QueryRunner): Promise<any> {
