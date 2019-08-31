@@ -6,11 +6,11 @@ class RoomResourceController {
   //Return all users
   public async get(req: Request, res: Response){
     if(req.query.roomId == null || req.query.roomId == undefined){
-      return res.json(await RoomResource.find( {select: ["roomId"], where: { resourceId: req.query.resourceId}, relations: ['room', 'resource']}));
+      return res.json(await RoomResource.find( {select: ["id", "resourceAmmount"], where: { resourceId: req.query.resourceId}, relations: ['resource', 'room']}));
     }else if(req.query.resourceId == null || req.query.resourceId == undefined){
-      return res.json(await RoomResource.find({ where: { roomId: req.query.roomId}, relations: ['room', 'resource']}));
+      return res.json(await RoomResource.find({ select: ["id", "resourceAmmount"], where: { roomId: req.query.roomId}, relations: ['resource', 'room']}));
     }else{
-      return res.json(await RoomResource.find({ where: { roomId: req.query.roomId, resourceId: req.query.resourceId}, relations: ['room', 'resource']}));
+      return res.json(await RoomResource.find({ select: ["id", "resourceAmmount"], where: { roomId: req.query.roomId, resourceId: req.query.resourceId}, relations: ['resource', 'room']}));
     }
   }
 
