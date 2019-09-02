@@ -17,8 +17,8 @@ export class Room extends BaseEntity{
     @Column()
     type: string;
 
-    @ManyToMany(type => Resource, resource => resource.rooms)
-    resources: Resource[];
+    // @ManyToMany(type => Resource, resource => resource.rooms)
+    // resources: Resource[];
     
     // TODO: REVIEW THIS RELATIONSHIP
     // @OneToMany(type => RoomResource, roomResource => roomResource.room)
