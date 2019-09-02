@@ -1,3 +1,6 @@
+
+// TODO: REVIEW THIS RELATIONSHIP
+
 import {MigrationInterface, QueryRunner, Table, TableForeignKey} from "typeorm";
 
 export class RoomResourceMigration1566767323829 implements MigrationInterface {

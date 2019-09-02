@@ -1,12 +1,14 @@
-'use strict'
+// TODO: REVIEW THIS RELATIONSHIP
 
-import { Router } from 'express';
-import RoomResourceController from '../controllers/RoomResourceController';
+// 'use strict'
 
-const routes = Router();
+// import { Router } from 'express';
+// import RoomResourceController from '../controllers/RoomResourceController';
 
-routes.get('/', RoomResourceController.get);
-routes.post('/', RoomResourceController.post);
-routes.delete('/:id', RoomResourceController.delete);
+// const routes = Router();
 
-export default routes;
+// routes.get('/', RoomResourceController.get);
+// routes.post('/', RoomResourceController.post);
+// routes.delete('/:id', RoomResourceController.delete);
+
+// export default routes;

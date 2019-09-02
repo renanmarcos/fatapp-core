@@ -1,92 +1,70 @@
-import { ValidationContract } from '../bin/validation';
 import { Request, Response } from 'express';
 import { Room } from '../models/Room';
+import { RoomStoreSchema, RoomUpdateSchema, RoomQuerySchema }  from '../routes/RoomRoutes';
+import { ValidatedRequest } from 'express-joi-validation';
+import * as HttpStatus from 'http-status-codes';
 
 class RoomController {
-  //Return all users
-  public async get(req: Request, res: Response): Promise<Response> {
+
+  public async list(req: Request, res: Response): Promise<Response> 
+  {
     return res.json(await Room.find( { relations: ['resources'] } ));
   }
 
-  //Create user
-  public async post(req: Request, res: Response) {
-    try {
-      let _validationContract = new ValidationContract();
-      //Validate required fields
-      _validationContract.isRequired(req.body.name, 'Name is required');
-      _validationContract.isRequired(req.body.type, 'Type is required');
-      _validationContract.isRequired(req.body.capacity, 'Capacity is required');
-     
-      //Return bad request if validation fails.
-      if (!_validationContract.isValid()) {
-        res.status(400).send({
-          message: "400 Bad Request",
-          validation: _validationContract.errors()
-        }).end();
-        return res;
-      }
-      //If validation OK then create user.
-      const room = new Room();
-      room.name = req.body.name;
-      room.capacity = req.body.capacity;
-      room.type = req.body.type;
+  public async store(req: Request, res: Response): Promise<Response>
+  {
+    let validatedRequest = req as ValidatedRequest<RoomStoreSchema>;
 
+    let room = new Room();
+    room.name = validatedRequest.body.name;
+    room.capacity = validatedRequest.body.capacity;
+    room.type = validatedRequest.body.type;
+    await room.save();
+    
+    return res.status(HttpStatus.CREATED).json(room);
+  }
+
+  public async get(req: Request, res: Response): Promise<Response> 
+  {
+    let validatedRequest = req as ValidatedRequest<RoomQuerySchema>;
+    let room = await Room.findOne({ id: validatedRequest.params.id });
+
+    if (!room) {
+      res.sendStatus(HttpStatus.NOT_FOUND);
+    }
+    
+    return res.json(room);
+  }
+
+  public async delete(req: Request, res: Response): Promise<Response> 
+  {
+    let validatedRequest = req as ValidatedRequest<RoomQuerySchema>;
+    let room = await Room.findOne({ id: validatedRequest.params.id });
+
+    if (room) {
+      await room.remove();
+      return res.sendStatus(HttpStatus.NO_CONTENT);
+    }
+
+    return res.sendStatus(HttpStatus.NOT_FOUND);
+  }
+
+  public async update(req: Request, res: Response): Promise<Response> 
+  {
+    let validatedRequest = req as ValidatedRequest<RoomUpdateSchema>;
+    let room = await Room.findOne({ id: validatedRequest.params.id });
+
+    if (room) {
+      room.name = validatedRequest.body.name;
+      room.capacity = validatedRequest.body.capacity;
+      room.type = validatedRequest.body.type;
       await room.save();
-      //Return created user.
-      return res.json(room);
-    } catch (error) {
-      res.status(500).send({ message: '500 Internal Server Error', error: error })
+      await room.reload();
+
+      return res.status(HttpStatus.OK).send(room);
     }
-  }
-
-  //Return one and only one user by his id 
-  public async getById(req: Request, res: Response) {
-    try {
-      return res.json(await Room.findOne({ id: req.params.id }));
-    } catch (error) {
-      res.status(500).send({ message: '500 Internal Server Error', error: error })
-    }
-  }
-
-  //Remove user by id
-  public async delete(req: Request, res: Response) {
-    try {
-      let user = await Room.findOne({ id: req.params.id });
-      if (user) {
-        await user.remove();
-        return res.status(200).send('success');
-      } else {
-        res.status(404).send('404 Not Found');
-      }
-    } catch (error) {
-      res.status(500).send({ message: '500 Internal Server Error', error: error });
-    }
-  };
-
-  //Update user
-  public async put(req: Request, res: Response) {
-    try {
-      let result = await Room.findOne({ id: req.params.id });
-      if (result) {
-
-        //Avoid null or undefined params.
-        if (req.body.name == undefined || req.body.name == null) req.body.name = result.name;
-        if (req.body.type == undefined || req.body.type == null) req.body.type = result.type;
-        if (req.body.capacity == undefined || req.body.capacity == null) req.body.capacity = result.capacity;
-        //Update user and return the result
-
-        await Room.update(req.params.id, { name: req.body.name, type: req.body.type, capacity: req.body.capacity});
-
-        let updatedResult = await Room.findOne({ id: req.params.id });
-        return res.status(200).send(updatedResult);
-
-      } else {
-        res.status(404).send('404 Not Found');
-      }
-    } catch (error) {
-      res.status(500).send({ message: '500 Internal Server Error', error: error });
-    }
-
+    
+    return res.sendStatus(HttpStatus.NOT_FOUND);
   }
 }
 

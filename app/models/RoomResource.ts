@@ -1,26 +1,28 @@
-import {Entity, BaseEntity, PrimaryGeneratedColumn, Column, JoinColumn, ManyToOne} from "typeorm";
-import { Room } from "./Room";
-import { Resource } from "./Resource";
+// TODO: REVIEW THIS RELATIONSHIP
 
-@Entity()
-export class RoomResource extends BaseEntity{
+// import {Entity, BaseEntity, PrimaryGeneratedColumn, Column, JoinColumn, ManyToOne} from "typeorm";
+// import { Room } from "./Room";
+// import { Resource } from "./Resource";
 
-    @PrimaryGeneratedColumn()
-    id: number;
+// @Entity()
+// export class RoomResource extends BaseEntity{
 
-    @Column()
-    roomId: number;
+//     @PrimaryGeneratedColumn()
+//     id: number;
 
-    @ManyToOne(type => Room, room => room.roomResources, { primary: true })
-    room: Room[];
+//     @Column()
+//     roomId: number;
 
-    @Column()
-    resourceId: number;
+//     @ManyToOne(type => Room, room => room.roomResources, { primary: true })
+//     room: Room[];
 
-    @ManyToOne(type => Resource, resource => resource.roomResources, { primary: true })
-    resource: Resource[];
+//     @Column()
+//     resourceId: number;
 
-    @Column()
-    resourceAmmount: number;
+//     @ManyToOne(type => Resource, resource => resource.roomResources, { primary: true })
+//     resource: Resource[];
 
-}
+//     @Column()
+//     resourceAmmount: number;
+
+// }

@@ -4,7 +4,7 @@ export class LectureMigration1565920294035 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<any> {
         await queryRunner.createTable(new Table({
-            name: "lecture",
+            name: "activity",
             columns: [
                 {
                     name: "id",
