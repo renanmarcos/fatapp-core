@@ -11,7 +11,7 @@ const paramsSchema = Joi.object().keys({
   id: Joi.string().required()
 });
 
-export interface RoomQuerySchema extends ValidatedRequestSchema {
+export interface RoomParamsSchema extends ValidatedRequestSchema {
   [ContainerTypes.Query]: Joi.extractType<typeof paramsSchema>;
 }
 
@@ -40,5 +40,17 @@ routes.get('/:id', validator.params(paramsSchema), RoomController.get);
 routes.post('/', validator.body(bodyStoreSchema), RoomController.store);
 routes.delete('/:id', validator.params(paramsSchema), RoomController.delete);
 routes.put('/:id', validator.params(paramsSchema), validator.body(bodyUpdateSchema), RoomController.update);
+
+const bodyAddResourceSchema = Joi.object({
+  resource_id: Joi.string().required(),
+  resource_amount: Joi.string().required()
+});
+
+export interface AddResourceSchema extends ValidatedRequestSchema {
+  [ContainerTypes.Query]: Joi.extractType<typeof bodyAddResourceSchema>;
+}
+
+routes.post('/:id/resources', validator.params(paramsSchema), validator.body(bodyAddResourceSchema), RoomController.addResource);
+routes.get('/:id/resources', validator.params(paramsSchema), RoomController.getResources);
 
 export default routes;

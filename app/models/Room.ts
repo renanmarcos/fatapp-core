@@ -1,6 +1,5 @@
-import {Entity, BaseEntity, PrimaryGeneratedColumn, Column, ManyToMany, ManyToOne, OneToMany} from "typeorm";
-import { Resource } from "./Resource";
-// import { RoomResource } from "./RoomResource";
+import {Entity, BaseEntity, PrimaryGeneratedColumn, Column, ManyToMany, ManyToOne, OneToMany, JoinTable} from "typeorm";
+import { RoomResource } from "./RoomResource";
 
 @Entity()
 export class Room extends BaseEntity{
@@ -16,12 +15,9 @@ export class Room extends BaseEntity{
 
     @Column()
     type: string;
-
-    // @ManyToMany(type => Resource, resource => resource.rooms)
-    // resources: Resource[];
     
-    // TODO: REVIEW THIS RELATIONSHIP
-    // @OneToMany(type => RoomResource, roomResource => roomResource.room)
-    // roomResources: RoomResource[];
+    @OneToMany(type => RoomResource, roomResource => roomResource.room)
+    @JoinTable()
+    roomResources!: RoomResource[];
 
 }

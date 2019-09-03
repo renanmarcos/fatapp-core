@@ -1,6 +1,3 @@
-
-// TODO: REVIEW THIS RELATIONSHIP
-
 import {MigrationInterface, QueryRunner, Table, TableForeignKey} from "typeorm";
 
 export class RoomResourceMigration1566767323829 implements MigrationInterface {
@@ -32,21 +29,21 @@ export class RoomResourceMigration1566767323829 implements MigrationInterface {
             ]
         }), true)
 
-        const fk_room = new TableForeignKey({
+        const fkRoom = new TableForeignKey({
             columnNames: ["roomId"],
             referencedColumnNames: ["id"],
             referencedTableName: "room",
             onDelete: "CASCADE"
         });
-        const fk_resource = new TableForeignKey({
+        const fkResource = new TableForeignKey({
             columnNames: ["resourceId"],
             referencedColumnNames: ["id"],
             referencedTableName: "resource",
             onDelete: "CASCADE"
         });
-        await queryRunner.createForeignKey("room_resource", fk_room);
-        await queryRunner.createForeignKey("room_resource", fk_resource);
 
+        await queryRunner.createForeignKey("room_resource", fkRoom);
+        await queryRunner.createForeignKey("room_resource", fkResource);
     }
 
     public async down(queryRunner: QueryRunner): Promise<any> {
