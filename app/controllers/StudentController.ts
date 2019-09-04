@@ -3,6 +3,7 @@ import { Student } from '../models/Student';
 import { StudentQuerySchema, StudentStoreSchema, StudentUpdateSchema } from '../routes/StudentRoutes';
 import { ValidatedRequest } from 'express-joi-validation';
 import * as HttpStatus from 'http-status-codes';
+import { Like } from 'typeorm';
 
 class StudentController {
 
@@ -19,19 +20,31 @@ class StudentController {
     if (!student) {
       res.sendStatus(HttpStatus.NOT_FOUND);
     }
-    
     return res.json(student);
   }
+
+  /*public async filter(req: Request, res: Response): Promise<Response>
+  {
+    let student = await Student.find({
+      where : [{
+        ra : Like('%1234%'),
+      }]
+    });
+    if(student) {
+      res.sendStatus(HttpStatus.NOT_FOUND);
+    }
+    return res.json(student);
+  }*/
 
   public async store(req: Request, res: Response): Promise<Response> 
   {
     let validatedRequest = req as ValidatedRequest<StudentStoreSchema>;
-      
+  
     const student = new Student();
     student.ra = validatedRequest.body.ra;
     student.course = validatedRequest.body.course;
     await student.save();
-      
+
     return res.status(HttpStatus.CREATED).json(student);
   }
 
