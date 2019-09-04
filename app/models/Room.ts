@@ -17,7 +17,6 @@ export class Room extends BaseEntity{
     type: string;
     
     @OneToMany(type => RoomResource, roomResource => roomResource.room)
-    @JoinTable()
     roomResources!: RoomResource[];
 
 }

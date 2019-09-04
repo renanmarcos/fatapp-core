@@ -81,11 +81,6 @@ class RoomController {
       roomResource.room = room;
       roomResource.resourceAmmount = validatedRequest.body.resource_amount;
       await roomResource.save();
-      room.roomResources = [roomResource];
-      await room.save();
-      await room.reload();
-
-      console.log(room);
 
       return res.status(HttpStatus.OK).send({});
     }
@@ -96,10 +91,7 @@ class RoomController {
   public async getResources(req: Request, res: Response): Promise<Response> 
   {
     let validatedRequest = req as ValidatedRequest<RoomParamsSchema>;
-    let room = await Room.findOne({ id: validatedRequest.params.id });
-
-    console.log(room);
-    console.log(room.roomResources);
+    let room = await Room.findOne({where: {id: validatedRequest.params.id}, relations: ['roomResources']});
 
     if (room) {
       return res.status(HttpStatus.OK).send(room.roomResources);

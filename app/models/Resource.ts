@@ -12,20 +12,4 @@ export class Resource extends BaseEntity{
     
     @OneToMany(type => RoomResource, roomResource => roomResource.resource)
     roomResources!: RoomResource[];
-
-    // @ManyToMany(type => Room, room => room.resources)
-    // @JoinTable({
-    //     name: "room_resource", // table name for the junction table of this relation
-    //     joinColumn: {
-    //         name: "resourceId",
-    //         referencedColumnName: "id"
-    //     },
-    //     inverseJoinColumn: {
-    //         name: "roomId",
-    //         referencedColumnName: "id"
-    //     }
-    // })
-    
-    // rooms: Room[];
-
 }
