@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { Room } from '../models/Room';
-import { RoomStoreSchema, RoomUpdateSchema, RoomParamsSchema, AddResourceSchema }  from '../routes/RoomRoutes';
+import { RoomStoreSchema, RoomUpdateSchema, RoomParamsSchema, AddResourceSchema, RemoveResourceSchema, UpdateResourceSchema }  from '../routes/RoomRoutes';
 import { ValidatedRequest } from 'express-joi-validation';
 import * as HttpStatus from 'http-status-codes';
 import { Resource } from '../models/Resource';
@@ -97,6 +97,33 @@ class RoomController {
       return res.status(HttpStatus.OK).send(resources);
     }
     
+    return res.sendStatus(HttpStatus.NOT_FOUND);
+  }
+
+  public async removeResource(req: Request, res: Response): Promise<Response>
+  {
+    let validatedRequest = req as ValidatedRequest<RemoveResourceSchema>;
+    let resourceToRemove = await RoomResource.findOne({ id: validatedRequest.body.room_resource_id });
+
+    if(resourceToRemove){
+      await resourceToRemove.remove();
+      return res.sendStatus(HttpStatus.OK);
+    }
+    return res.sendStatus(HttpStatus.NOT_FOUND);
+  }
+
+  public async updateResource(req: Request, res: Response): Promise<Response>
+  {
+    let validatedRequest = req as ValidatedRequest<UpdateResourceSchema>;
+    let resourceToUpdate = await RoomResource.findOne({ id: validatedRequest.body.room_resource_id });
+
+    if (resourceToUpdate){
+      resourceToUpdate.resourceAmmount = validatedRequest.body.resource_amount;
+      await resourceToUpdate.save();
+      await resourceToUpdate.reload();
+
+      return res.status(HttpStatus.OK).send(resourceToUpdate);
+    }
     return res.sendStatus(HttpStatus.NOT_FOUND);
   }
 }
