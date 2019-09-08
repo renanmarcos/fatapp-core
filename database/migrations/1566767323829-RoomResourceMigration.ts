@@ -18,7 +18,6 @@ export class RoomResourceMigration1566767323829 implements MigrationInterface {
                 {
                     name: "roomId",
                     type: "int",
-                    isUnique: true
                 },
                 {
                     name: "resourceId",
