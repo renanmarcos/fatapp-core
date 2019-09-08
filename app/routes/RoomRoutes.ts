@@ -50,7 +50,7 @@ export interface AddResourceSchema extends ValidatedRequestSchema {
   [ContainerTypes.Query]: Joi.extractType<typeof bodyAddResourceSchema>;
 }
 
+
 routes.post('/:id/resources', validator.params(paramsSchema), validator.body(bodyAddResourceSchema), RoomController.addResource);
 routes.get('/:id/resources', validator.params(paramsSchema), RoomController.getResources);
-
 export default routes;

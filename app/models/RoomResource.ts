@@ -9,7 +9,7 @@ export class RoomResource extends BaseEntity{
     id: number;
 
     @Column()
-    resourceAmmount: number;
+    resourceAmmount!: number;
 
     @ManyToOne(type => Room, room => room.roomResources)
     @JoinColumn({name: 'roomId', referencedColumnName: 'id'})
