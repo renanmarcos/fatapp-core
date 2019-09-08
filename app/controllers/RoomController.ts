@@ -71,21 +71,27 @@ class RoomController {
 
   public async addResource(req: Request, res: Response): Promise<Response> 
   {
-    let validatedRequest = req as ValidatedRequest<AddResourceSchema>;
-    let room = await Room.findOne({ id: validatedRequest.params.id });
-    let resource = await Resource.findOne({ id: validatedRequest.body.resource_id });
+    try {
+      let validatedRequest = req as ValidatedRequest<AddResourceSchema>;
+      let room = await Room.findOne({ id: validatedRequest.params.id });
+      let resource = await Resource.findOne({ id: validatedRequest.body.resource_id });
 
-    if (room) {
-      let roomResource = new RoomResource();
-      roomResource.resource = resource;
-      roomResource.room = room;
-      roomResource.resourceAmmount = validatedRequest.body.resource_amount;
-      await roomResource.save();
+      if (room) {
+        let roomResource = new RoomResource();
+        roomResource.resource = resource;
+        roomResource.room = room;
+        roomResource.resourceAmmount = validatedRequest.body.resource_amount;
+        await roomResource.save();
 
-      return res.status(HttpStatus.OK).send({});
-    }
+        return res.status(HttpStatus.OK).send({});
+      }
+      return res.sendStatus(HttpStatus.NOT_FOUND);
+      } catch (error) {
+          if(error.errno == 1062){
+            return res.status(HttpStatus.CONFLICT).send({"error code":error.code, "error message":error.message});
+          }
+      }
     
-    return res.sendStatus(HttpStatus.NOT_FOUND);
   }
 
   public async getResources(req: Request, res: Response): Promise<Response> 

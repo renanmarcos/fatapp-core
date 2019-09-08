@@ -9,7 +9,7 @@ class ResourceController {
 
   public async list(req: Request, res: Response): Promise<Response> 
   {
-    return res.json(await RoomResource.find({ relations: ['resource', 'room'] }));
+    return res.json(await Resource.find({ }));
   }
 
   public async store(req: Request, res: Response) {
@@ -25,7 +25,7 @@ class ResourceController {
   public async get(req: Request, res: Response): Promise<Response>  
   {
     let validatedRequest = req as ValidatedRequest<ResourceQuerySchema>;
-    let resource = RoomResource.findOne({ relations: ['resource', 'room'], where: { resource: validatedRequest.params.id }});
+    let resource = RoomResource.findOne({ id: validatedRequest.params.id });
 
     if (!resource) {
       res.sendStatus(HttpStatus.NOT_FOUND);

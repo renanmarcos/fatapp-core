@@ -1,8 +1,9 @@
-import {Entity, BaseEntity, PrimaryGeneratedColumn, Column, JoinColumn, ManyToOne, JoinTable} from "typeorm";
+import {Entity, BaseEntity, PrimaryGeneratedColumn, Column, JoinColumn, ManyToOne, JoinTable, Unique, Index} from "typeorm";
 import { Room } from "./Room";
 import { Resource } from "./Resource";
 
 @Entity()
+@Index(["room", "resource"], {unique: true})
 export class RoomResource extends BaseEntity{
 
     @PrimaryGeneratedColumn()

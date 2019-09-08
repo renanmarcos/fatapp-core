@@ -1,4 +1,5 @@
-import {MigrationInterface, QueryRunner, Table, TableForeignKey} from "typeorm";
+import {MigrationInterface, QueryRunner, Table, TableForeignKey, TableIndex} from "typeorm";
+import { TableUnique } from "typeorm/schema-builder/table/TableUnique";
 
 export class RoomResourceMigration1566767323829 implements MigrationInterface {
 
@@ -17,6 +18,7 @@ export class RoomResourceMigration1566767323829 implements MigrationInterface {
                 {
                     name: "roomId",
                     type: "int",
+                    isUnique: true
                 },
                 {
                     name: "resourceId",
@@ -42,8 +44,15 @@ export class RoomResourceMigration1566767323829 implements MigrationInterface {
             onDelete: "CASCADE"
         });
 
+        const roomAndResourceIndex = new TableIndex({
+            columnNames: ["roomId", "resourceId"],
+            name: "RoomAndResourceIndex",
+            isUnique: true
+        });
+
         await queryRunner.createForeignKey("room_resource", fkRoom);
         await queryRunner.createForeignKey("room_resource", fkResource);
+        await queryRunner.createIndex("room_resource", roomAndResourceIndex);
     }
 
     public async down(queryRunner: QueryRunner): Promise<any> {
