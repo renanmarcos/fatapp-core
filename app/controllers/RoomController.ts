@@ -10,14 +10,7 @@ class RoomController {
 
   public async list(req: Request, res: Response): Promise<Response> 
   {
-    return res.json(await Room.find({ }));
-    //let room = await Room.find({});
-    //var jsonStr = '{"rooms":[]}';
-    //var obj = JSON.parse(jsonStr);
-    //obj['rooms'].push({room});
-    //jsonStr = JSON.stringify(obj);
-    //return res.send(obj);
-     
+    return res.json(await Room.find({ }));   
   }
 
   public async store(req: Request, res: Response): Promise<Response>
@@ -99,14 +92,9 @@ class RoomController {
   {
     let validatedRequest = req as ValidatedRequest<RoomParamsSchema>;
     let resources = await RoomResource.find({ where: {room: validatedRequest.params.id}, relations: ['resource']});
-    let room = await Room.findOne({id: validatedRequest.params.id});
-    
+
     if (resources) {
-      var jsonStr = '{"room":[{ "id": "' + room.id + '", "name": "' + room.name + '", "capacity": "' + room.capacity + '", "type": "' + room.type + '"}]}';
-      var obj = JSON.parse(jsonStr);
-      obj['room'].push({resources});
-      jsonStr = JSON.stringify(obj);
-      return res.status(HttpStatus.OK).send(obj);
+      return res.status(HttpStatus.OK).send(resources);
     }
     
     return res.sendStatus(HttpStatus.NOT_FOUND);
