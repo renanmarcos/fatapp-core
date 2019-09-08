@@ -3,12 +3,24 @@ import { Student } from '../models/Student';
 import { StudentQuerySchema, StudentStoreSchema, StudentUpdateSchema } from '../routes/StudentRoutes';
 import { ValidatedRequest } from 'express-joi-validation';
 import * as HttpStatus from 'http-status-codes';
-import { Like } from 'typeorm';
 
 class StudentController {
 
   public async list(req: Request, res: Response): Promise<Response> 
   {
+    if (req.url.toString().includes('?')) {
+      var arr = req.url.toString().replace('/?', '');
+      if (req.url.toString().includes('lk')) {
+        var result = arr.split('lk');
+        var formatQuery = " LIKE '%" + result[1] + "%'";
+      }
+      if (req.url.toString().includes('=')) {
+        var result = arr.split('=');
+        var formatQuery = ' = ' + result[1];
+      }
+      let students = await Student.query('SELECT * from student WHERE ' + result[0] + formatQuery);
+      return res.json(students);
+    }
     return res.json(await Student.find());
   }
 
@@ -22,19 +34,6 @@ class StudentController {
     }
     return res.json(student);
   }
-
-  /*public async filter(req: Request, res: Response): Promise<Response>
-  {
-    let student = await Student.find({
-      where : [{
-        ra : Like('%1234%'),
-      }]
-    });
-    if(student) {
-      res.sendStatus(HttpStatus.NOT_FOUND);
-    }
-    return res.json(student);
-  }*/
 
   public async store(req: Request, res: Response): Promise<Response> 
   {
