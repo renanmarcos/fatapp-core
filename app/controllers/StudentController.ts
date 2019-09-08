@@ -11,10 +11,10 @@ class StudentController {
     if (req.url.toString().includes('?')) {
       var arr = req.url.toString().replace('/?', '');
       if (req.url.toString().includes('lk')) {
-        var result = arr.split('lk');
+        var result = arr.replace('&approach=lk', '').split('=');
         var formatQuery = " LIKE '%" + result[1] + "%'";
       }
-      if (req.url.toString().includes('=')) {
+      else {
         var result = arr.split('=');
         var formatQuery = ' = ' + result[1];
       }
