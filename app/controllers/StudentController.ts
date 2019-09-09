@@ -8,17 +8,18 @@ class StudentController {
 
   public async list(req: Request, res: Response): Promise<Response> 
   {
-    if (req.url.toString().includes('?')) {
-      var arr = req.url.toString().replace('/?', '');
-      if (req.url.toString().includes('lk')) {
-        var result = arr.replace('&approach=lk', '').split('=');
-        var formatQuery = " LIKE '%" + result[1] + "%'";
+    if (!req.query.empty) {
+
+      var label = Object.keys(req.query)[0];
+      var value = Object.values(req.query)[0];
+
+      if (req.query.approach == 'lk') {
+        var formatQuery = " LIKE '%" + value + "%'";
       }
       else {
-        var result = arr.split('=');
-        var formatQuery = ' = ' + result[1];
+        var formatQuery = ' = ' + value;
       }
-      let students = await Student.query('SELECT * from student WHERE ' + result[0] + formatQuery);
+      let students = await Student.query('SELECT * from student WHERE ' + label + formatQuery);
       return res.json(students);
     }
     return res.json(await Student.find());
