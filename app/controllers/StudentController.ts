@@ -9,17 +9,19 @@ class StudentController {
   public async list(req: Request, res: Response): Promise<Response> 
   {
     if (!req.query.empty) {
-
       var label = Object.keys(req.query)[0];
       var value = Object.values(req.query)[0];
-
+      var order = '';
+      if (req.query.order) {
+        order = ' ORDER BY ' + req.query.order;
+      }
       if (req.query.approach == 'lk') {
         var formatQuery = " LIKE '%" + value + "%'";
       }
       else {
         var formatQuery = ' = ' + value;
       }
-      let students = await Student.query('SELECT * from student WHERE ' + label + formatQuery);
+      let students = await Student.query('SELECT * from student WHERE ' + label + formatQuery + order);
       return res.json(students);
     }
     return res.json(await Student.find());
