@@ -5,9 +5,9 @@ import UserRoutes from '../app/routes/UserRoutes';
 import StudentRoutes from '../app/routes/StudentRoutes';
 import Resource from '../app/routes/ResourceRoutes';
 import Room from '../app/routes/RoomRoutes';
-import Event from '../app/routes/EventRoutes';
 import AuthRoutes from '../app/routes/AuthRoutes';
 import { requiresAuth } from '../app/middlewares/CheckJwt';
+import Activity from '../app/routes/ActivityRoutes';
 
 export class App {
     app: Application;
@@ -41,7 +41,7 @@ export class App {
         this.app.use('/students', StudentRoutes);
         this.app.use('/resources', Resource);
         this.app.use('/rooms', Room);
-        this.app.use('/events', Event);
+        this.app.use('/activities', Activity);
     }
 
     async listen(): Promise<void> {

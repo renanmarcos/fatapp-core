@@ -1,4 +1,5 @@
-import {Entity, PrimaryGeneratedColumn, Column, BaseEntity} from "typeorm";
+import {Entity, PrimaryGeneratedColumn, Column, BaseEntity, ManyToMany, JoinColumn, ManyToOne, OneToMany, JoinTable} from "typeorm";
+import { Room } from "./Room";
 
 @Entity()
 export class Activity extends BaseEntity {
@@ -7,15 +8,49 @@ export class Activity extends BaseEntity {
     id: number;
 
     @Column()
-    title: string;
+    title: string
 
     @Column()
-    date: Date;
+    type: string
 
     @Column()
-    speaker: string;
+    targetAudience: string
 
     @Column()
-    description: string;
+    description: string
+
+    @Column()
+    initialDate: Date
+
+    @Column()
+    finalDate: Date
+    
+    @Column()
+    obsActivity: string
+
+    @Column()
+    obsResource: string
+
+    @Column()
+    isActive: boolean
+
+    @Column()
+    qrCode: string
+
+    @Column()
+    speakerName: string
+
+    @Column()
+    speakerEmail: string
+
+    @Column()
+    speakerPhone: string
+
+    @Column()
+    speakerCurriculum: string
+
+    @ManyToOne(type => Room, room => room.activity)
+    @JoinColumn({name: 'roomId', referencedColumnName: 'id'})
+    room!: Room;
 
 }
