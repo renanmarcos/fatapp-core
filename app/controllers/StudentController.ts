@@ -8,6 +8,22 @@ class StudentController {
 
   public async list(req: Request, res: Response): Promise<Response> 
   {
+    if (!req.query.empty) {
+      var label = Object.keys(req.query)[0];
+      var value = Object.values(req.query)[0];
+      var order = '';
+      if (req.query.order) {
+        order = ' ORDER BY ' + req.query.order;
+      }
+      if (req.query.approach == 'lk') {
+        var formatQuery = " LIKE '%" + value + "%'";
+      }
+      else {
+        var formatQuery = ' = ' + value;
+      }
+      let students = await Student.query('SELECT * from student WHERE ' + label + formatQuery + order);
+      return res.json(students);
+    }
     return res.json(await Student.find());
   }
 
@@ -19,19 +35,18 @@ class StudentController {
     if (!student) {
       res.sendStatus(HttpStatus.NOT_FOUND);
     }
-    
     return res.json(student);
   }
 
   public async store(req: Request, res: Response): Promise<Response> 
   {
     let validatedRequest = req as ValidatedRequest<StudentStoreSchema>;
-      
+  
     const student = new Student();
     student.ra = validatedRequest.body.ra;
     student.course = validatedRequest.body.course;
     await student.save();
-      
+
     return res.status(HttpStatus.CREATED).json(student);
   }
 

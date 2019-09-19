@@ -18,10 +18,6 @@ export class StudentMigration1565920541679 implements MigrationInterface {
                     type: "int",
                 },
                 {
-                    name: "date",
-                    type: "date",
-                },
-                {
                     name: "course",
                     type: "varchar",
                 }
