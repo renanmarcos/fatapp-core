@@ -8,7 +8,7 @@ import * as HttpStatus from 'http-status-codes';
 class ActivityController {
 
   public async list(req: Request, res: Response): Promise<Response> {
-    return res.json(await Activity.find({}));
+    return res.json(await Activity.find({relations: ['room']}));
   }
 
   public async store(req: Request, res: Response): Promise<Response> {
@@ -80,7 +80,7 @@ class ActivityController {
       activity.qrCode = validatedRequest.body.qrCode;
       activity.speakerName = validatedRequest.body.speakerName;
       activity.speakerEmail = validatedRequest.body.speakerEmail;
-      activity.speakerPhone = validatedRequest.body.speakerCelphone1;
+      activity.speakerPhone = validatedRequest.body.speakerPhone;
       activity.speakerCurriculum = validatedRequest.body.speakerCurriculum;
       activity.room = validatedRequest.body.roomId;
       await activity.save();
