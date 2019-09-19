@@ -1,7 +1,7 @@
 import {Entity, PrimaryGeneratedColumn, Column, BaseEntity} from "typeorm";
 
 @Entity()
-export class Lecture extends BaseEntity {
+export class Activity extends BaseEntity {
 
     @PrimaryGeneratedColumn()
     id: number;

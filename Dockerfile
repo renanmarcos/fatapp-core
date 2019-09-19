@@ -1,4 +1,4 @@
-FROM node:10.16.3-buster-slim
+FROM node:lts-buster-slim
 
 RUN npm i -g ts-node typeorm typescript mocha chai tsconfig-paths
 

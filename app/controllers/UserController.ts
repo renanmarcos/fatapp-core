@@ -27,7 +27,7 @@ class UserController {
   {
     let validatedRequest = req as ValidatedRequest<UserStoreSchema>;
 
-    const user = new User();
+    let user = new User();
     user.name = validatedRequest.body.name;
     user.email = validatedRequest.body.email;
     user.cpf = validatedRequest.body.cpf;
@@ -54,7 +54,6 @@ class UserController {
   public async update(req: Request, res: Response): Promise<Response> 
   {
     let validatedRequest = req as ValidatedRequest<UserUpdateSchema>;
-
     let user = await User.findOne({ id: validatedRequest.params.id });
 
     if (user) {
