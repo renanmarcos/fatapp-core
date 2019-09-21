@@ -38,7 +38,29 @@ export interface ActivityUpdateSchema extends ValidatedRequestSchema {
 }
 
 routes.get('/', ActivityController.index);
-routes.post('/', ActivityController.store);
-routes.delete('/', ActivityController.destroy);
+routes.get('/:id', validator.params(paramsSchema), ActivityController.get);
+routes.post('/', validator.body(bodyStoreSchema), ActivityController.store);
+routes.delete('/:id', validator.params(paramsSchema), ActivityController.destroy);
+routes.put('/:id', validator.params(paramsSchema), validator.body(bodyUpdateSchema), ActivityController.update);
+
+const bodyManageStudentSchema = Joi.object({
+    student_id: Joi.number().required()
+  });
+  
+  export interface ManageStudentSchema extends ValidatedRequestSchema {
+    [ContainerTypes.Query]: Joi.extractType<typeof bodyManageStudentSchema>;
+}
+
+const bodyRemoveStudentSchema = Joi.object({
+    activity_student_id: Joi.number().required()
+  });
+  
+  export interface RemoveStudentSchema extends ValidatedRequestSchema {
+    [ContainerTypes.Query]: Joi.extractType<typeof bodyRemoveStudentSchema>;
+  }
+
+routes.post('/:id/subscribe', validator.params(paramsSchema), validator.body(bodyManageStudentSchema), ActivityController.storeSubscription);
+routes.get('/:id/subscribe', validator.params(paramsSchema), ActivityController.getSubscription);
+routes.delete('/:id/subscribe', validator.params(paramsSchema), validator.body(bodyRemoveStudentSchema), ActivityController.deleteSubscription);
 
 export default routes;
