@@ -18,8 +18,8 @@ export class LectureMigration1565920294035 implements MigrationInterface {
                     type: "varchar",
                 },
                 {
-                    name: "date",
-                    type: "date",
+                    name: "start_at",
+                    type: "timestamp",
                 },
                 {
                     name: "speaker",

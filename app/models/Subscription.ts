@@ -19,4 +19,5 @@ export class Subscription extends BaseEntity{
     @ManyToOne(type => Student, student => student.subscriptions)
     @JoinColumn({name: 'student_id', referencedColumnName: 'id'})
     student!: Student;
+    
 }

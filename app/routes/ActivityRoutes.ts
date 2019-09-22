@@ -17,7 +17,7 @@ export interface ActivityQuerySchema extends ValidatedRequestSchema {
 
 const bodyStoreSchema = Joi.object({
     title: Joi.string().required(),
-    date: Joi.date().required(),
+    start_at: Joi.string().required(),
     speaker: Joi.string().required(),
     description: Joi.string().required()
 });
@@ -28,7 +28,7 @@ export interface ActivityStoreSchema extends ValidatedRequestSchema {
 
 const bodyUpdateSchema = Joi.object({
     title: Joi.string(),
-    date: Joi.date(),
+    start_at: Joi.string(),
     speaker: Joi.string(),
     description: Joi.string()
 });
@@ -60,7 +60,16 @@ const bodyRemoveStudentSchema = Joi.object({
     [ContainerTypes.Query]: Joi.extractType<typeof bodyRemoveStudentSchema>;
   }
 
+  const bodyUpdateSubscriptionSchema = Joi.object({
+    attended: Joi.boolean().required()
+});
+
+  export interface SubscriptionUpdateSchema extends ValidatedRequestSchema {
+    [ContainerTypes.Query]: Joi.extractType<typeof bodyUpdateSubscriptionSchema>;
+}
+
 routes.post('/:id/subscribe', validator.params(paramsSchema), validator.body(bodyManageStudentSchema), ActivityController.subscribe);
+routes.put('/:id/subscriptions/:id/', validator.params(paramsSchema), validator.body(bodyUpdateSubscriptionSchema), ActivityController.updateAttended, validator.params(paramsSchema));
 routes.get('/:id/subscriptions', validator.params(paramsSchema), ActivityController.getSubscriptions);
 routes.post('/:id/subscribe', validator.params(paramsSchema), validator.body(bodyRemoveStudentSchema), ActivityController.unsubscribe);
 

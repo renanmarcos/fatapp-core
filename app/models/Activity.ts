@@ -10,8 +10,8 @@ export class Activity extends BaseEntity {
     @Column()
     title: string;
 
-    @Column()
-    date: Date;
+    @Column({ type: "timestamp" })
+    start_at: Date;
 
     @Column()
     speaker: string;
