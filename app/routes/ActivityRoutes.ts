@@ -44,7 +44,8 @@ routes.delete('/:id', validator.params(paramsSchema), ActivityController.destroy
 routes.put('/:id', validator.params(paramsSchema), validator.body(bodyUpdateSchema), ActivityController.update);
 
 const bodyManageStudentSchema = Joi.object({
-    student_id: Joi.number().required()
+    student_id: Joi.number().required(),
+    attended: Joi.boolean().required()
   });
   
   export interface ManageStudentSchema extends ValidatedRequestSchema {
@@ -59,8 +60,8 @@ const bodyRemoveStudentSchema = Joi.object({
     [ContainerTypes.Query]: Joi.extractType<typeof bodyRemoveStudentSchema>;
   }
 
-routes.post('/:id/subscribe', validator.params(paramsSchema), validator.body(bodyManageStudentSchema), ActivityController.storeSubscription);
-routes.get('/:id/subscribe', validator.params(paramsSchema), ActivityController.getSubscription);
-routes.delete('/:id/subscribe', validator.params(paramsSchema), validator.body(bodyRemoveStudentSchema), ActivityController.deleteSubscription);
+routes.post('/:id/subscribe', validator.params(paramsSchema), validator.body(bodyManageStudentSchema), ActivityController.subscribe);
+routes.get('/:id/subscriptions', validator.params(paramsSchema), ActivityController.getSubscriptions);
+routes.post('/:id/subscribe', validator.params(paramsSchema), validator.body(bodyRemoveStudentSchema), ActivityController.unsubscribe);
 
 export default routes;

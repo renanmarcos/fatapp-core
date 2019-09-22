@@ -1,12 +1,12 @@
 import {MigrationInterface, QueryRunner, Table, TableForeignKey, TableIndex} from "typeorm";
 import { TableUnique } from "typeorm/schema-builder/table/TableUnique";
 
-export class ActivityStudentMigration1568943141052 implements MigrationInterface {
+export class SubscriptionsMigration1568943141052 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<any> {
 
         await queryRunner.createTable(new Table({
-            name: "activity_student",
+            name: "subscription",
             columns: [
                 {
                     name: "id",
@@ -24,7 +24,7 @@ export class ActivityStudentMigration1568943141052 implements MigrationInterface
                     type: "int",
                 },
                 {
-                    name: "registered",
+                    name: "attended",
                     type: "bool"
                 }
             ]
@@ -43,15 +43,15 @@ export class ActivityStudentMigration1568943141052 implements MigrationInterface
             onDelete: "CASCADE"
         });
 
-        const ActivityAndStudentIndex = new TableIndex({
+        const SubscriptionsIndex = new TableIndex({
             columnNames: ["activity_id", "student_id"],
-            name: "ActivityAndStudentIndex",
+            name: "SubscriptionsIndex",
             isUnique: true
         });
 
-        await queryRunner.createForeignKey("activity_student", fkActivity);
-        await queryRunner.createForeignKey("activity_student", fkStudent);
-        await queryRunner.createIndex("activity_student", ActivityAndStudentIndex);
+        await queryRunner.createForeignKey("subscriptions", fkActivity);
+        await queryRunner.createForeignKey("subscriptions", fkStudent);
+        await queryRunner.createIndex("subscriptions", SubscriptionsIndex);
     }
 
     public async down(queryRunner: QueryRunner): Promise<any> {

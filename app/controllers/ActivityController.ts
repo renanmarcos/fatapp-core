@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { Activity } from '../models/Activity';
 import { ActivityStoreSchema, ActivityUpdateSchema, ActivityQuerySchema, ManageStudentSchema, RemoveStudentSchema } from '../routes/ActivityRoutes';
-import { ActivityStudent } from '../models/ActivityStudent';
+import { Subscription } from '../models/Subscription';
 import { ValidatedRequest } from 'express-joi-validation';
 import * as HttpStatus from 'http-status-codes';
 import { Student } from '../models/Student';
@@ -71,24 +71,24 @@ class ActivityController {
     return res.sendStatus(HttpStatus.NOT_FOUND);
   }
 
-  public async storeSubscription(req: Request, res: Response): Promise<Response> {
+  public async subscribe(req: Request, res: Response): Promise<Response> {
     let validatedRequest = req as ValidatedRequest<ManageStudentSchema>;
     let activity = await Activity.findOne({ id: validatedRequest.params.id });
     let student = await Student.findOne({ id: validatedRequest.body.student_id });
     if (activity && student) {
-        let studentToCreate = new ActivityStudent();
-        studentToCreate.activity = activity;
-        studentToCreate.student = student;
-        studentToCreate.registered = validatedRequest.body.registered;
-        await studentToCreate.save();
-        return res.status(HttpStatus.OK);
+        let subscription = new Subscription();
+        subscription.activity = activity;
+        subscription.student = student;
+        subscription.attended = validatedRequest.body.attended;
+        await subscription.save();
+        return res.status(HttpStatus.OK).send(subscription);
     }
     return res.sendStatus(HttpStatus.NOT_FOUND);
   }
   
-  public async getSubscription(req: Request, res: Response): Promise<Response> {
+  public async getSubscriptions(req: Request, res: Response): Promise<Response> {
     let validatedRequest = req as ValidatedRequest<ActivityQuerySchema>;
-    let subscriptions = await ActivityStudent.find({ where: { activity: validatedRequest.params.id }, relations: ['student'] });
+    let subscriptions = await Subscription.find({ where: { activity: validatedRequest.params.id }, relations: ['student'] });
 
     if (subscriptions) {
       return res.status(HttpStatus.OK).send(subscriptions);
@@ -97,9 +97,9 @@ class ActivityController {
     return res.sendStatus(HttpStatus.NOT_FOUND);
   }
 
-  public async deleteSubscription(req: Request, res: Response): Promise<Response> {
+  public async unsubscribe(req: Request, res: Response): Promise<Response> {
     let validatedRequest = req as ValidatedRequest<RemoveStudentSchema>;
-    let studentToRemove = await ActivityStudent.findOne({ id: validatedRequest.body.activity_student_id });
+    let studentToRemove = await Subscription.findOne({ id: validatedRequest.body.activity_student_id });
 
     if (studentToRemove) {
       await studentToRemove.remove();

@@ -38,5 +38,5 @@ routes.get('/:id', validator.params(paramsSchema), StudentController.get);
 routes.post('/', validator.body(bodyStoreSchema), StudentController.store);
 routes.delete('/:id', validator.params(paramsSchema), StudentController.delete);
 routes.put('/:id', validator.body(bodyUpdateSchema), StudentController.update);
-
+routes.get('/:id/subscriptions', validator.params(paramsSchema), StudentController.getSubscriptions);
 export default routes;

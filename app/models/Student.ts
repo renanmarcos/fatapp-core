@@ -1,5 +1,5 @@
 import {Entity, PrimaryGeneratedColumn, Column, BaseEntity, OneToMany} from "typeorm";
-import { ActivityStudent } from "./ActivityStudent";
+import { Subscription } from "./Subscription";
 
 @Entity()
 export class Student extends BaseEntity {
@@ -13,6 +13,6 @@ export class Student extends BaseEntity {
     @Column()
     course: string;
 
-    @OneToMany(type => ActivityStudent, activityStudent => activityStudent.student)
-    activityStudents!: ActivityStudent[];
+    @OneToMany(type => Subscription, subscription => subscription.student)
+    subscriptions!: Subscription[];
 }

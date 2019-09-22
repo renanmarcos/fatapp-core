@@ -4,19 +4,19 @@ import { Student } from "./Student";
 
 @Entity()
 @Index(["activity", "student"], {unique: true})
-export class ActivityStudent extends BaseEntity{
+export class Subscription extends BaseEntity{
 
     @PrimaryGeneratedColumn()
     id: number;
 
     @Column()
-    registered!: boolean;
+    attended!: boolean;
 
-    @ManyToOne(type => Activity, activity => activity.activityStudents)
+    @ManyToOne(type => Activity, activity => activity.subscriptions)
     @JoinColumn({name: 'activity_id', referencedColumnName: 'id'})
     activity!: Activity;
 
-    @ManyToOne(type => Student, student => student.activityStudents)
+    @ManyToOne(type => Student, student => student.subscriptions)
     @JoinColumn({name: 'student_id', referencedColumnName: 'id'})
     student!: Student;
 }
