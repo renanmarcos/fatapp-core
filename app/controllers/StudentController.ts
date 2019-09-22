@@ -3,12 +3,13 @@ import { Student } from '../models/Student';
 import { StudentQuerySchema, StudentStoreSchema, StudentUpdateSchema } from '../routes/StudentRoutes';
 import { ValidatedRequest } from 'express-joi-validation';
 import * as HttpStatus from 'http-status-codes';
+import { Subscription } from '../models/Subscription';
 
 class StudentController {
 
   public async list(req: Request, res: Response): Promise<Response> 
   {
-    if (!req.query.empty) {
+    if (req.query.toString() == null) {
       var label = Object.keys(req.query)[0];
       var value = Object.values(req.query)[0];
       var order = '';
@@ -77,6 +78,17 @@ class StudentController {
       return res.status(HttpStatus.OK).send(student);
     }
     
+    return res.sendStatus(HttpStatus.NOT_FOUND);
+  }
+
+  public async getSubscriptions(req: Request, res: Response): Promise<Response> {
+    let validatedRequest = req as ValidatedRequest<StudentQuerySchema>;
+    let subscriptions = await Subscription.find({ where: { student: validatedRequest.params.id }, relations: ['activity'] });
+
+    if (subscriptions) {
+      return res.status(HttpStatus.OK).send(subscriptions);
+    }
+
     return res.sendStatus(HttpStatus.NOT_FOUND);
   }
 }

@@ -1,4 +1,5 @@
-import {Entity, PrimaryGeneratedColumn, Column, BaseEntity} from "typeorm";
+import {Entity, PrimaryGeneratedColumn, Column, BaseEntity, OneToMany} from "typeorm";
+import { Subscription } from "./Subscription";
 
 @Entity()
 export class Activity extends BaseEntity {
@@ -9,8 +10,8 @@ export class Activity extends BaseEntity {
     @Column()
     title: string;
 
-    @Column()
-    date: Date;
+    @Column({ type: "timestamp" })
+    start_at: Date;
 
     @Column()
     speaker: string;
@@ -18,4 +19,6 @@ export class Activity extends BaseEntity {
     @Column()
     description: string;
 
+    @OneToMany(type => Subscription, subscription => subscription.activity)
+    subscriptions!: Subscription[];
 }
