@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { Activity } from '../models/Activity';
-import { ActivityStoreSchema, ActivityUpdateSchema, ActivityQuerySchema, ManageStudentSchema, RemoveStudentSchema, SubscriptionUpdateSchema } from '../routes/ActivityRoutes';
+import { ActivityStoreSchema, ActivityUpdateSchema, ActivityQuerySchema, ManageStudentSchema, RemoveStudentSchema} from '../routes/ActivityRoutes';
 import { Subscription } from '../models/Subscription';
 import { ValidatedRequest } from 'express-joi-validation';
 import * as HttpStatus from 'http-status-codes';
@@ -77,10 +77,9 @@ class ActivityController {
     let student = await Student.findOne({ id: validatedRequest.body.student_id });
     
     var diffDate = activity.start_at.getDate() - new Date().getDate();
-    var diffMinutes = activity.start_at.getMinutes() - new Date().getMinutes();
     var diffHours = activity.start_at.getHours() - new Date().getHours();
 
-    if(diffDate > 0 || diffHours > 0 || diffMinutes > 10) {
+    if(diffDate > 0 || diffHours >= 1) {
       if (activity && student) {
         let subscription = new Subscription();
         subscription.activity = activity;
@@ -91,16 +90,16 @@ class ActivityController {
       }
       return res.sendStatus(HttpStatus.NOT_FOUND);
     }
-  return res.status(HttpStatus.BAD_REQUEST).send("O evento vai começar em menos de 10 minutos");
+    return res.status(HttpStatus.BAD_REQUEST).send("O evento vai começar em menos de 10 minutos");
   }
   
-  public async updateAttended(req: Request, res: Response): Promise<Response> 
+  public async updateAttendee(req: Request, res: Response): Promise<Response> 
   {
-    let validatedRequest = req as ValidatedRequest<SubscriptionUpdateSchema>;
+    let validatedRequest = req as ValidatedRequest<ActivityQuerySchema>;
     let subscription = await Subscription.findOne({ id: validatedRequest.params.id });
 
     if (subscription) {
-      subscription.attended = validatedRequest.body.attended;
+      subscription.attended = true;
       await subscription.save();
       await subscription.reload();
 
@@ -122,10 +121,10 @@ class ActivityController {
 
   public async unsubscribe(req: Request, res: Response): Promise<Response> {
     let validatedRequest = req as ValidatedRequest<RemoveStudentSchema>;
-    let studentToRemove = await Subscription.findOne({ id: validatedRequest.body.activity_student_id });
+    let subscriptionToRemove = await Subscription.findOne({ id: validatedRequest.body.activity_student_id });
 
-    if (studentToRemove) {
-      await studentToRemove.remove();
+    if (subscriptionToRemove) {
+      await subscriptionToRemove.remove();
       return res.sendStatus(HttpStatus.NO_CONTENT);
     }
     return res.sendStatus(HttpStatus.NOT_FOUND);
