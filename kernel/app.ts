@@ -3,7 +3,9 @@ import cors from 'cors';
 import helmet from 'helmet';
 import UserRoutes from '../app/routes/UserRoutes';
 import StudentRoutes from '../app/routes/StudentRoutes';
+import Speaker from '../app/routes/SpeakerRoutes';
 import Resource from '../app/routes/ResourceRoutes';
+import Event from '../app/routes/EventRoutes';
 import Room from '../app/routes/RoomRoutes';
 import AuthRoutes from '../app/routes/AuthRoutes';
 import { requiresAuth } from '../app/middlewares/CheckJwt';
@@ -42,6 +44,9 @@ export class App {
         this.app.use('/resources', Resource);
         this.app.use('/rooms', Room);
         this.app.use('/activities', Activity);
+        this.app.use('/events', Event);
+        this.app.use('/speakers', Speaker);
+
     }
 
     async listen(): Promise<void> {
