@@ -1,10 +1,11 @@
 import {MigrationInterface, QueryRunner, Table} from "typeorm";
 
-export class LectureMigration1565920294035 implements MigrationInterface {
+export class EventMigration1566760085488 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<any> {
+
         await queryRunner.createTable(new Table({
-            name: "activity",
+            name: "event",
             columns: [
                 {
                     name: "id",
@@ -18,19 +19,24 @@ export class LectureMigration1565920294035 implements MigrationInterface {
                     type: "varchar",
                 },
                 {
-                    name: "date",
-                    type: "date",
+                    name: "edition",
+                    type: "int"
                 },
                 {
-                    name: "speaker",
-                    type: "varchar",
+                    name: "initialDate",
+                    type: "datetime"
                 },
                 {
-                    name: "description",
-                    type: "varchar",
+                    name: "finalDate",
+                    type: "datetime"
+                },
+                {
+                    name: "banner",
+                    type: "varchar"
                 }
             ]
-        }), true)  
+        }), true)
+        
     }
 
     public async down(queryRunner: QueryRunner): Promise<any> {

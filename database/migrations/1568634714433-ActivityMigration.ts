@@ -1,5 +1,4 @@
 import {MigrationInterface, QueryRunner, Table, TableForeignKey} from "typeorm";
-import { date } from "@hapi/joi";
 
 export class ActivityMigration1568634714433 implements MigrationInterface {
 
@@ -13,22 +12,6 @@ export class ActivityMigration1568634714433 implements MigrationInterface {
                     isPrimary: true,
                     isGenerated: true,
                     generationStrategy: "increment"
-                },
-                {
-                    name: "speakerEmail",
-                    type: "varchar"
-                },
-                {
-                    name: "speakerName",
-                    type: "varchar"
-                },
-                {
-                    name: "speakerPhone",
-                    type: "varchar"
-                },
-                {
-                    name: "speakerCurriculum",
-                    type: "varchar"
                 },
                 {
                     name: "title",
@@ -73,6 +56,14 @@ export class ActivityMigration1568634714433 implements MigrationInterface {
                 {
                     name: "roomId",
                     type: "int"
+                },
+                {
+                    name: "eventId",
+                    type: "int"
+                },
+                {
+                    name: "speakerId",
+                    type: "int"
                 }
             ]
         }), true)
@@ -83,8 +74,22 @@ export class ActivityMigration1568634714433 implements MigrationInterface {
             referencedTableName: "room",
             onDelete: "CASCADE"
         });
+        const fkEvent = new TableForeignKey({
+            columnNames: ["eventId"],
+            referencedColumnNames: ["id"],
+            referencedTableName: "event",
+            onDelete: "CASCADE"
+        });
+        const fkSpeaker = new TableForeignKey({
+            columnNames: ["speakerId"],
+            referencedColumnNames: ["id"],
+            referencedTableName: "speaker",
+            onDelete: "CASCADE"
+        });
 
         await queryRunner.createForeignKey("activity", fkRoom);
+        await queryRunner.createForeignKey("activity", fkEvent);
+        await queryRunner.createForeignKey("activity", fkSpeaker);
 
     }
 

@@ -1,5 +1,7 @@
-import {Entity, PrimaryGeneratedColumn, Column, BaseEntity, ManyToMany, JoinColumn, ManyToOne, OneToMany, JoinTable} from "typeorm";
+import {Entity, PrimaryGeneratedColumn, Column, BaseEntity, JoinColumn, ManyToOne} from "typeorm";
 import { Room } from "./Room";
+import { Event } from "./Event";
+import { Speaker } from "./Speaker";
 
 @Entity()
 export class Activity extends BaseEntity {
@@ -37,20 +39,16 @@ export class Activity extends BaseEntity {
     @Column()
     qrCode: string
 
-    @Column()
-    speakerName: string
-
-    @Column()
-    speakerEmail: string
-
-    @Column()
-    speakerPhone: string
-
-    @Column()
-    speakerCurriculum: string
-
     @ManyToOne(type => Room, room => room.activity)
     @JoinColumn({name: 'roomId', referencedColumnName: 'id'})
     room!: Room;
+
+    @ManyToOne(type => Event, event => event.activity)
+    @JoinColumn({name: 'eventId', referencedColumnName: 'id'})
+    event!: Event;
+
+    @ManyToOne(type => Speaker, speaker => speaker.activity)
+    @JoinColumn({name: 'speakerId', referencedColumnName: 'id'})
+    speaker!: Speaker;
 
 }
