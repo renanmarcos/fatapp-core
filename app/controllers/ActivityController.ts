@@ -4,8 +4,8 @@ import { ValidatedRequest } from 'express-joi-validation';
 import { ActivityStoreSchema, ActivityParamsSchema, ActivityUpdateSchema } from '../routes/ActivityRoutes';
 import { Room } from '../models/Room';
 import * as HttpStatus from 'http-status-codes';
-import { Event } from 'app/models/Event';
-import { Speaker } from 'app/models/Speaker';
+import { Event } from '../models/Event';
+import { Speaker } from '../models/Speaker';
 
 class ActivityController {
 

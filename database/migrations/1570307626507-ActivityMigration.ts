@@ -1,6 +1,6 @@
-import {MigrationInterface, QueryRunner, Table, TableForeignKey} from "typeorm";
+import {MigrationInterface, QueryRunner, TableForeignKey, Table} from "typeorm";
 
-export class ActivityMigration1568634714433 implements MigrationInterface {
+export class ActivityMigration1570307626507 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<any> {
         await queryRunner.createTable(new Table({
@@ -90,7 +90,6 @@ export class ActivityMigration1568634714433 implements MigrationInterface {
         await queryRunner.createForeignKey("activity", fkRoom);
         await queryRunner.createForeignKey("activity", fkEvent);
         await queryRunner.createForeignKey("activity", fkSpeaker);
-
     }
 
     public async down(queryRunner: QueryRunner): Promise<any> {

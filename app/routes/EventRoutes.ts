@@ -20,7 +20,7 @@ const bodyStoreSchema = Joi.object({
     edition: Joi.string().required(),
     initialDate: Joi.string().required(),
     finalDate: Joi.string().required(),
-    banner: Joi.string()
+    banner: Joi.string().allow('')
 });
   
 export interface EventStoreSchema extends ValidatedRequestSchema {

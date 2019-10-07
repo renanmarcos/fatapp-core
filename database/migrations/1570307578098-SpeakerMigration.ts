@@ -1,6 +1,6 @@
-import {MigrationInterface, QueryRunner, Table, TableIndex} from "typeorm";
+import {MigrationInterface, QueryRunner, TableIndex, Table} from "typeorm";
 
-export class SpeakerMigration1570301435551 implements MigrationInterface {
+export class SpeakerMigration1570307578098 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<any> {
         await queryRunner.createTable(new Table({
