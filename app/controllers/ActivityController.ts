@@ -10,7 +10,7 @@ import { Speaker } from '../models/Speaker';
 class ActivityController {
 
   public async list(req: Request, res: Response): Promise<Response> {
-    return res.json(await Activity.find({ relations: ['room', 'event', 'speaker'] }));
+    return res.json(await Activity.find({ relations: ['room', 'event', 'speaker', 'room.roomResources'] }));
   }
 
   public async store(req: Request, res: Response): Promise<Response> {
@@ -39,12 +39,12 @@ class ActivityController {
             activity.event = validatedRequest.body.eventId;
             activity.speaker = validatedRequest.body.speakerId;
 
-            //await activity.save();
-            //await activity.reload();
-            console.log ('SUCESSO KRAE');
+            //console.log(activity.targetAudience);
+            await activity.save();
+            await activity.reload();
             return res.status(HttpStatus.CREATED).json(activity);
           }
-          return res.status(HttpStatus.NOT_ACCEPTABLE).send('Activity date must be between Event date. ' + event.initialDate + ' to ' + event.finalDate);
+          return res.status(HttpStatus.NOT_ACCEPTABLE).send('Activity date must be between Event date. \n' + event.initialDate + ' to ' + event.finalDate);
         }
         return res.status(HttpStatus.NOT_FOUND).send('Speaker not found');
       }

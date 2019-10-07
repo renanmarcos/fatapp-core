@@ -19,7 +19,7 @@ const bodyStoreSchema = Joi.object({
 
     title: Joi.string().required(),
     type: Joi.string().required(),
-    targetAudience: Joi.string().required(),
+    targetAudience: Joi.array().required(),
     description: Joi.string().required(),
     initialDate: Joi.date().required(),
     finalDate: Joi.date().required(),
@@ -53,7 +53,7 @@ const bodyUpdateSchema = Joi.object({
     roomId: Joi.number().required(),
     eventId: Joi.number().required(),
     speakerId: Joi.number().required()
-    
+
 });
 
 export interface ActivityUpdateSchema extends ValidatedRequestSchema {
