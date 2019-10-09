@@ -20,7 +20,7 @@ export class EventMigration1566760085488 implements MigrationInterface {
                 },
                 {
                     name: "edition",
-                    type: "int"
+                    type: "varchar"
                 },
                 {
                     name: "initialDate",
