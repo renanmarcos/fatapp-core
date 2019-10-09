@@ -36,7 +36,7 @@ export interface SpeakerManageSchema extends ValidatedRequestSchema {
     [ContainerTypes.Query]: Joi.extractType<typeof bodyManageSchema>;
 }
 
-routes.get('/', validator.body(getSchema), SpeakerController.get);
+routes.get('/', SpeakerController.get);
 routes.post('/', validator.body(bodyManageSchema), SpeakerController.manageSpeaker);
 routes.delete('/:id', validator.params(paramsSchema), SpeakerController.delete);
 

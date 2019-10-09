@@ -8,21 +8,17 @@ class SpeakerController {
 
     
     public async get(req: Request, res: Response): Promise<Response> {
-        let validatedRequest = req as ValidatedRequest<SpeakerGetSchema>;
-        
-        if (validatedRequest.body.speakerEmail == ''){
-            return res.json(await Speaker.find());
-        }else{
-            let speaker = await Speaker.findOne({ speakerEmail: validatedRequest.body.speakerEmail });
+
+        let email = req.query.email;
+        if(email){
+            let speaker = await Speaker.findOne({ speakerEmail: email });
             if (!speaker) {
                 res.sendStatus(HttpStatus.NOT_FOUND);
             }
             return res.json(speaker);
+        }else{
+            return res.json(await Speaker.find());
         }
-        
-
-        
-
     }
 
     public async manageSpeaker(req: Request, res: Response): Promise<Response> {
