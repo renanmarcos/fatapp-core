@@ -10,6 +10,7 @@ import Room from '../app/routes/RoomRoutes';
 import AuthRoutes from '../app/routes/AuthRoutes';
 import { requiresAuth } from '../app/middlewares/CheckJwt';
 import Activity from '../app/routes/ActivityRoutes';
+import Course from '../app/routes/CourseRoutes';
 
 export class App {
     app: Application;
@@ -46,6 +47,8 @@ export class App {
         this.app.use('/activities', Activity);
         this.app.use('/events', Event);
         this.app.use('/speakers', Speaker);
+        this.app.use('/courses', Course);
+
 
     }
 

@@ -1,7 +1,8 @@
-import {Entity, PrimaryGeneratedColumn, Column, BaseEntity, JoinColumn, ManyToOne} from "typeorm";
-import { Room } from "./Room";
-import { Event } from "./Event";
-import { Speaker } from "./Speaker";
+import {Entity, PrimaryGeneratedColumn, Column, BaseEntity, JoinColumn, ManyToOne, ManyToMany, JoinTable} from "typeorm";
+import { Room } from "../models/Room";
+import { Event } from "../models/Event";
+import { Speaker } from "../models/Speaker";
+import { Course } from "../models/Course";
 
 @Entity()
 export class Activity extends BaseEntity {
@@ -50,5 +51,19 @@ export class Activity extends BaseEntity {
     @ManyToOne(type => Speaker, speaker => speaker.activity)
     @JoinColumn({name: 'speakerId', referencedColumnName: 'id'})
     speaker!: Speaker;
+
+    @ManyToMany(type => Course, course => course.activity)
+    @JoinTable({
+        name: "course_activity",
+        joinColumn: {
+            name: "activity",
+            referencedColumnName: "id"
+        },
+        inverseJoinColumn: {
+            name: "course",
+            referencedColumnName: "id"
+        }
+    })
+    course!: Course[];
 
 }

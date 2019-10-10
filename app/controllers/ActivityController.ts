@@ -6,6 +6,8 @@ import { Room } from '../models/Room';
 import * as HttpStatus from 'http-status-codes';
 import { Event } from '../models/Event';
 import { Speaker } from '../models/Speaker';
+import { strict } from '@hapi/joi';
+import { stringify } from 'querystring';
 
 class ActivityController {
 
@@ -27,7 +29,6 @@ class ActivityController {
 
             activity.title = validatedRequest.body.title;
             activity.type = validatedRequest.body.type;
-            activity.targetAudience = validatedRequest.body.targetAudience;
             activity.description = validatedRequest.body.description;
             activity.initialDate = validatedRequest.body.initialDate;
             activity.finalDate = validatedRequest.body.finalDate;
@@ -39,10 +40,13 @@ class ActivityController {
             activity.event = validatedRequest.body.eventId;
             activity.speaker = validatedRequest.body.speakerId;
 
-            //console.log(activity.targetAudience);
-            await activity.save();
-            await activity.reload();
-            return res.status(HttpStatus.CREATED).json(activity);
+            //await activity.save();
+            //await activity.reload();
+            
+            let courses = Array.from(validatedRequest.body.targetAudience)        
+
+
+            return res.status(HttpStatus.CREATED).json(activity.targetAudience);
           }
           return res.status(HttpStatus.NOT_ACCEPTABLE).send('Activity date must be between Event date. \n' + event.initialDate + ' to ' + event.finalDate);
         }

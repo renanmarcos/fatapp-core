@@ -1,4 +1,5 @@
-import {Entity, BaseEntity, PrimaryGeneratedColumn, Column} from "typeorm";
+import {Entity, BaseEntity, PrimaryGeneratedColumn, Column, ManyToMany} from "typeorm";
+import { Activity } from "../models/Activity";
 
 @Entity()
 export class Course extends BaseEntity {
@@ -8,5 +9,8 @@ export class Course extends BaseEntity {
 
     @Column()
     name: string;
+
+    @ManyToMany(type => Activity, activity => activity.course)
+    activity: Activity[];
 
 }
