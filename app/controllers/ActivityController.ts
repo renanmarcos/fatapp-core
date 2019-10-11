@@ -43,7 +43,7 @@ class ActivityController {
             //await activity.save();
             //await activity.reload();
             
-            let courses = Array.from(validatedRequest.body.targetAudience)        
+            let courses = Array.from(validatedRequest.body.targetAudience);        
 
 
             return res.status(HttpStatus.CREATED).json(activity.targetAudience);
