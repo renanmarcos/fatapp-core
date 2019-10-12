@@ -11,6 +11,9 @@ import { Course } from '../models/Course';
 class ActivityController {
 
   public async list(req: Request, res: Response): Promise<Response> {
+    if(req.query.isActive){
+      return res.json(await Activity.find({ where: { isActive: true }, relations: ['room', 'event', 'speaker', 'targetAudience'] }));
+    }
     return res.json(await Activity.find({ relations: ['room', 'event', 'speaker', 'targetAudience'] }));
   }
 

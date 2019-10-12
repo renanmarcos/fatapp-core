@@ -8,7 +8,7 @@ const routes = Router();
 const validator = createValidator();
 
 const paramsSchema = Joi.object().keys({
-    id: Joi.string().required()
+    id: Joi.string().required(),
 });
 
 export interface ActivityParamsSchema extends ValidatedRequestSchema {
