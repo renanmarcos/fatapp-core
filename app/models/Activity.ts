@@ -17,9 +17,6 @@ export class Activity extends BaseEntity {
     type: string
 
     @Column()
-    targetAudience: string
-
-    @Column()
     description: string
 
     @Column()
@@ -52,18 +49,8 @@ export class Activity extends BaseEntity {
     @JoinColumn({name: 'speakerId', referencedColumnName: 'id'})
     speaker!: Speaker;
 
-    @ManyToMany(type => Course, course => course.activity)
-    @JoinTable({
-        name: "course_activity",
-        joinColumn: {
-            name: "activity",
-            referencedColumnName: "id"
-        },
-        inverseJoinColumn: {
-            name: "course",
-            referencedColumnName: "id"
-        }
-    })
-    course!: Course[];
+    @ManyToMany(type => Course)
+    @JoinTable({ name: "course_activity" })
+    targetAudience: Course[];
 
 }

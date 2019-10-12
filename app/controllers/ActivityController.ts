@@ -6,13 +6,12 @@ import { Room } from '../models/Room';
 import * as HttpStatus from 'http-status-codes';
 import { Event } from '../models/Event';
 import { Speaker } from '../models/Speaker';
-import { strict } from '@hapi/joi';
-import { stringify } from 'querystring';
+import { Course } from '../models/Course';
 
 class ActivityController {
 
   public async list(req: Request, res: Response): Promise<Response> {
-    return res.json(await Activity.find({ relations: ['room', 'event', 'speaker', 'room.roomResources'] }));
+    return res.json(await Activity.find({ relations: ['room', 'event', 'speaker', 'targetAudience'] }));
   }
 
   public async store(req: Request, res: Response): Promise<Response> {
@@ -40,13 +39,24 @@ class ActivityController {
             activity.event = validatedRequest.body.eventId;
             activity.speaker = validatedRequest.body.speakerId;
 
-            //await activity.save();
-            //await activity.reload();
-            
-            let courses = Array.from(validatedRequest.body.targetAudience);        
+            let courses = Array.from(validatedRequest.body.targetAudience);
+            let arrayOfCourses = [];
 
+            for (let i = 0; i < courses.length; i++) {
+              let courseId: any = courses[i];
+              let courseToFind = await Course.findOne({ id: courseId });
+              if (!courseToFind){
+                return res.status(HttpStatus.NOT_FOUND).send('Course not found. Please double check it and try again!\nId of course not found is ' + courseId);
+              }
+              arrayOfCourses.push(courseToFind);
+            }
 
-            return res.status(HttpStatus.CREATED).json(activity.targetAudience);
+            activity.targetAudience = arrayOfCourses;
+
+            await activity.save();
+            await activity.reload();
+
+            return res.status(HttpStatus.CREATED).json(await Activity.findOne({ where: { id: activity.id }, relations: ['room', 'event', 'speaker', 'targetAudience'] }));
           }
           return res.status(HttpStatus.NOT_ACCEPTABLE).send('Activity date must be between Event date. \n' + event.initialDate + ' to ' + event.finalDate);
         }
@@ -59,7 +69,7 @@ class ActivityController {
 
   public async get(req: Request, res: Response): Promise<Response> {
     let validatedRequest = req as ValidatedRequest<ActivityParamsSchema>;
-    let activity = await Activity.findOne({ where: { id: validatedRequest.params.id }, relations: ['room', 'event', 'speaker'] });
+    let activity = await Activity.findOne({ where: { id: validatedRequest.params.id }, relations: ['room', 'event', 'speaker', 'targetAudience'] });
 
     if (!activity) {
       res.sendStatus(HttpStatus.NOT_FOUND);
@@ -85,26 +95,52 @@ class ActivityController {
     let activity = await Activity.findOne({ id: validatedRequest.params.id });
 
     if (activity) {
+      let room = await Room.findOne({ id: validatedRequest.body.roomId });
+      let event = await Event.findOne({ id: validatedRequest.body.eventId });
+      let speaker = await Speaker.findOne({ id: validatedRequest.body.speakerId });
 
-      activity.title = validatedRequest.body.title;
-      activity.type = validatedRequest.body.type;
-      activity.targetAudience = validatedRequest.body.targetAudience;
-      activity.description = validatedRequest.body.description;
-      activity.initialDate = validatedRequest.body.initialDate;
-      activity.finalDate = validatedRequest.body.finalDate;
-      activity.obsActivity = validatedRequest.body.obsActivity;
-      activity.obsResource = validatedRequest.body.obsResource;
-      activity.isActive = validatedRequest.body.isActive;
-      activity.qrCode = validatedRequest.body.qrCode;
-      activity.room = validatedRequest.body.roomId;
-      activity.event = validatedRequest.body.eventId;
-      activity.speaker = validatedRequest.body.speakerId;
+      if (room) {
+        if (event) {
+          if (speaker) {
+            if (event.initialDate < validatedRequest.body.initialDate && event.finalDate > validatedRequest.body.finalDate) {
 
-      await activity.save();
-      await activity.reload();
+              activity.title = validatedRequest.body.title;
+              activity.type = validatedRequest.body.type;
+              activity.description = validatedRequest.body.description;
+              activity.initialDate = validatedRequest.body.initialDate;
+              activity.finalDate = validatedRequest.body.finalDate;
+              activity.obsActivity = validatedRequest.body.obsActivity;
+              activity.obsResource = validatedRequest.body.obsResource;
+              activity.isActive = validatedRequest.body.isActive;
+              activity.qrCode = validatedRequest.body.qrCode;
+              activity.room = validatedRequest.body.roomId;
+              activity.event = validatedRequest.body.eventId;
+              activity.speaker = validatedRequest.body.speakerId;
 
-      return res.status(HttpStatus.OK).send(activity);
-    }
+              let courses = Array.from(validatedRequest.body.targetAudience);
+              let arrayOfCourses = [];
+
+              for (let i = 0; i < courses.length; i++) {
+                let courseId: any = courses[i];
+                let courseToFind = await Course.findOne({ id: courseId });
+                arrayOfCourses.push(courseToFind);
+              }
+
+              activity.targetAudience = arrayOfCourses;
+
+              await activity.save();
+              await activity.reload();
+
+              return res.status(HttpStatus.OK).json(await Activity.findOne({ where: { id: activity.id }, relations: ['room', 'event', 'speaker', 'targetAudience'] }));
+            }
+            return res.status(HttpStatus.NOT_ACCEPTABLE).send('Activity date must be between Event date. \n' + event.initialDate + ' to ' + event.finalDate);
+          }
+          return res.status(HttpStatus.NOT_FOUND).send('Speaker not found');
+        }
+        return res.status(HttpStatus.NOT_FOUND).send('Event not found');
+      }
+      return res.status(HttpStatus.NOT_FOUND).send('Room not found');
+    }    
     return res.sendStatus(HttpStatus.NOT_FOUND);
   }
 }

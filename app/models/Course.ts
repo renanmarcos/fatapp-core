@@ -10,7 +10,7 @@ export class Course extends BaseEntity {
     @Column()
     name: string;
 
-    @ManyToMany(type => Activity, activity => activity.course)
+    @ManyToMany(type => Activity, activity => activity.targetAudience)
     activity: Activity[];
 
 }

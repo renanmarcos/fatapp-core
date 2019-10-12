@@ -22,10 +22,6 @@ export class ActivityMigration1570307626507 implements MigrationInterface {
                     type: "varchar"
                 },
                 {
-                    name: "targetAudience",
-                    type: "varchar"
-                },
-                {
                     name: "description",
                     type: "varchar"
                 },

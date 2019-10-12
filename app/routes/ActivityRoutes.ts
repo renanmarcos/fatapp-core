@@ -42,7 +42,7 @@ const bodyUpdateSchema = Joi.object({
 
     title: Joi.string().required(),
     type: Joi.string().required(),
-    targetAudience: Joi.string().required(),
+    targetAudience: Joi.array().required(),
     description: Joi.string().required(),
     initialDate: Joi.date().required(),
     finalDate: Joi.date().required(),
