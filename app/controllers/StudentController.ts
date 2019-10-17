@@ -4,6 +4,7 @@ import { StudentQuerySchema, StudentStoreSchema, StudentUpdateSchema } from '../
 import { ValidatedRequest } from 'express-joi-validation';
 import * as HttpStatus from 'http-status-codes';
 import { Subscription } from '../models/Subscription';
+import { User } from '../models/User';
 
 class StudentController {
 
@@ -13,18 +14,22 @@ class StudentController {
       var label = Object.keys(req.query)[0];
       var value = Object.values(req.query)[0];
       var order = '';
+      
       if (req.query.order) {
         order = ' ORDER BY ' + req.query.order;
       }
+      
       if (req.query.approach == 'lk') {
         var formatQuery = " LIKE '%" + value + "%'";
-      }
-      else {
+      } else {
         var formatQuery = ' = ' + value;
       }
+      
       let students = await Student.query('SELECT * from student WHERE ' + label + formatQuery + order);
+      
       return res.json(students);
     }
+    
     return res.json(await Student.find());
   }
 
@@ -43,10 +48,18 @@ class StudentController {
   {
     let validatedRequest = req as ValidatedRequest<StudentStoreSchema>;
   
-    const student = new Student();
+    let student = new Student();
     student.ra = validatedRequest.body.ra;
     student.course = validatedRequest.body.course;
     await student.save();
+
+    let user = new User();
+    user.name = validatedRequest.body.name;
+    user.email = validatedRequest.body.email;
+    user.cpf = validatedRequest.body.cpf;
+    user.password = validatedRequest.body.password;
+    user.hashPassword();
+    await user.save();
 
     return res.status(HttpStatus.CREATED).json(student);
   }
@@ -83,7 +96,10 @@ class StudentController {
 
   public async getSubscriptions(req: Request, res: Response): Promise<Response> {
     let validatedRequest = req as ValidatedRequest<StudentQuerySchema>;
-    let subscriptions = await Subscription.find({ where: { student: validatedRequest.params.id }, relations: ['activity'] });
+    let subscriptions = await Subscription.find({ 
+      where: { student: validatedRequest.params.id }, 
+      relations: ['activity'] 
+    });
 
     if (subscriptions) {
       return res.status(HttpStatus.OK).send(subscriptions);

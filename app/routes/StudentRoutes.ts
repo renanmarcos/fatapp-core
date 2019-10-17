@@ -17,7 +17,11 @@ export interface StudentQuerySchema extends ValidatedRequestSchema {
 
 const bodyStoreSchema = Joi.object({
   ra: Joi.string().required(),
-  course: Joi.string().required()
+  course: Joi.string().valid(["ADS", "JOG", "SEG", "COMEX"]).required(),
+  name: Joi.string().required(),
+  email: Joi.string().email().required(),
+  cpf: Joi.string().required(),
+  password: Joi.string().required()
 });
 
 export interface StudentStoreSchema extends ValidatedRequestSchema {

@@ -31,7 +31,8 @@ export class App {
         this.app.use(requiresAuth().unless({
             path: [
                 { url: '/auth/token', methods: ['POST'] },
-                { url: '/users', methods: ['POST'] }
+                { url: '/users', methods: ['POST'] },
+                { url: '/students', methods: ['POST'] }
             ]
         }));
     }

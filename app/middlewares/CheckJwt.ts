@@ -28,8 +28,7 @@ function authMiddleware(req: Request, res: Response, next: NextFunction) {
   const { userId, email } = jwtPayload;
   const newToken = jwt.sign(
     { userId, email }, 
-    process.env.CORE_SECRET, 
-    { expiresIn: "1h"}
+    process.env.CORE_SECRET
   );
   res.setHeader("token", newToken);
 
