@@ -43,15 +43,15 @@ export class SubscriptionsMigration1568943141052 implements MigrationInterface {
             onDelete: "CASCADE"
         });
 
-        const SubscriptionsIndex = new TableIndex({
+        const SubscriptionIndex = new TableIndex({
             columnNames: ["activity_id", "student_id"],
-            name: "SubscriptionsIndex",
+            name: "SubscriptionIndex",
             isUnique: true
         });
 
-        await queryRunner.createForeignKey("subscriptions", fkActivity);
-        await queryRunner.createForeignKey("subscriptions", fkStudent);
-        await queryRunner.createIndex("subscriptions", SubscriptionsIndex);
+        await queryRunner.createForeignKey("subscription", fkActivity);
+        await queryRunner.createForeignKey("subscription", fkStudent);
+        await queryRunner.createIndex("subscription", SubscriptionIndex);
     }
 
     public async down(queryRunner: QueryRunner): Promise<any> {

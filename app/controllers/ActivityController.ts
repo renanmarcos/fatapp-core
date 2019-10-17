@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { Activity } from '../models/Activity';
-import { ActivityStoreSchema, ActivityUpdateSchema, ActivityQuerySchema, ManageStudentSchema, RemoveStudentSchema} from '../routes/ActivityRoutes';
+import { ActivityStoreSchema, ActivityUpdateSchema, ActivityQuerySchema, ManageStudentSchema} from '../routes/ActivityRoutes';
 import { Subscription } from '../models/Subscription';
 import { ValidatedRequest } from 'express-joi-validation';
 import * as HttpStatus from 'http-status-codes';
@@ -74,7 +74,7 @@ class ActivityController {
   public async subscribe(req: Request, res: Response): Promise<Response> {
     let validatedRequest = req as ValidatedRequest<ManageStudentSchema>;
     let activity = await Activity.findOne({ id: validatedRequest.params.id });
-    let student = await Student.findOne({ id: validatedRequest.body.student_id });
+    let student = await Student.findOne({ id: validatedRequest.body.studentId });
     
     var diffDate = activity.start_at.getDate() - new Date().getDate();
     var diffHours = activity.start_at.getHours() - new Date().getHours();
@@ -84,19 +84,27 @@ class ActivityController {
         let subscription = new Subscription();
         subscription.activity = activity;
         subscription.student = student;
-        subscription.attended = validatedRequest.body.attended;
+        subscription.attended = false;
         await subscription.save();
+
         return res.status(HttpStatus.OK).send(subscription);
       }
+
       return res.sendStatus(HttpStatus.NOT_FOUND);
     }
+
     return res.status(HttpStatus.BAD_REQUEST).send("O evento vai começar em menos de 10 minutos");
   }
   
-  public async updateAttendee(req: Request, res: Response): Promise<Response> 
+  public async attendee(req: Request, res: Response): Promise<Response> 
   {
-    let validatedRequest = req as ValidatedRequest<ActivityQuerySchema>;
-    let subscription = await Subscription.findOne({ id: validatedRequest.params.id });
+    let validatedRequest = req as ValidatedRequest<ManageStudentSchema>;
+    let subscription = await Subscription.findOne({ 
+      where: { 
+        activity: validatedRequest.params.id, 
+        student: validatedRequest.body.studentId 
+      } 
+    });
 
     if (subscription) {
       subscription.attended = true;
@@ -108,28 +116,23 @@ class ActivityController {
     return res.sendStatus(HttpStatus.NOT_FOUND);
   }
 
-  public async getSubscriptions(req: Request, res: Response): Promise<Response> {
-    let validatedRequest = req as ValidatedRequest<ActivityQuerySchema>;
-    let subscriptions = await Subscription.find({ where: { activity: validatedRequest.params.id }, relations: ['student'] });
-
-    if (subscriptions) {
-      return res.status(HttpStatus.OK).send(subscriptions);
-    }
-
-    return res.sendStatus(HttpStatus.NOT_FOUND);
-  }
-
   public async unsubscribe(req: Request, res: Response): Promise<Response> {
-    let validatedRequest = req as ValidatedRequest<RemoveStudentSchema>;
-    let subscriptionToRemove = await Subscription.findOne({ id: validatedRequest.body.activity_student_id });
+    let validatedRequest = req as ValidatedRequest<ManageStudentSchema>;
+    let subscription = await Subscription.findOne({ 
+      where: { 
+        activity: validatedRequest.params.id, 
+        student: validatedRequest.body.studentId 
+      } 
+    });
 
-    if (subscriptionToRemove) {
-      await subscriptionToRemove.remove();
+    if (subscription) {
+      await subscription.remove();
+
       return res.sendStatus(HttpStatus.NO_CONTENT);
     }
+
     return res.sendStatus(HttpStatus.NOT_FOUND);
   }
-
 }
 
 export default new ActivityController();
