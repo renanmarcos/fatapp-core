@@ -26,6 +26,7 @@ class AuthController {
     );
 
     return res.send({
+      'id': user.id,
       'token': token
     });
   }
