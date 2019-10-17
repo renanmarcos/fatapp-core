@@ -41,6 +41,6 @@ routes.get('/', UserController.list);
 routes.get('/:id', validator.params(paramsSchema), UserController.get);
 routes.delete('/:id', validator.params(paramsSchema), UserController.delete);
 routes.post('/', validator.body(bodyStoreSchema), UserController.store);
-routes.put('/:id', validator.body(bodyUpdateSchema), UserController.update);
+routes.put('/:id', validator.params(paramsSchema), validator.body(bodyUpdateSchema), UserController.update);
 
 export default routes;

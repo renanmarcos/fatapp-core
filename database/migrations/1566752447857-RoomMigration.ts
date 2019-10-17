@@ -1,10 +1,11 @@
-import {MigrationInterface, QueryRunner, Table} from "typeorm";
+import {MigrationInterface, QueryRunner, Table, JoinColumn, TableForeignKey} from "typeorm";
 
-export class LectureMigration1565920294035 implements MigrationInterface {
+export class RoomMigration1566752447857 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<any> {
+
         await queryRunner.createTable(new Table({
-            name: "lecture",
+            name: "room",
             columns: [
                 {
                     name: "id",
@@ -14,23 +15,19 @@ export class LectureMigration1565920294035 implements MigrationInterface {
                     generationStrategy: "increment",
                 },
                 {
-                    name: "title",
+                    name: "name",
                     type: "varchar",
                 },
                 {
-                    name: "date",
-                    type: "date",
+                    name: "type",
+                    type: "varchar"
                 },
                 {
-                    name: "speaker",
-                    type: "varchar",
-                },
-                {
-                    name: "description",
-                    type: "varchar",
+                    name: "capacity",
+                    type: "int"
                 }
             ]
-        }), true)  
+        }), true)
     }
 
     public async down(queryRunner: QueryRunner): Promise<any> {

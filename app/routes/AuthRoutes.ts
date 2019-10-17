@@ -25,7 +25,7 @@ export interface UserChangePasswordSchema extends ValidatedRequestSchema {
   [ContainerTypes.Query]: Joi.extractType<typeof bodyChangePasswordSchema>;
 }
 
-routes.post("/token", validator.body(bodyTokenSchema), AuthController.token);
-routes.post("/change-password", validator.body(bodyChangePasswordSchema), AuthController.changePassword);
+routes.post('/token', validator.body(bodyTokenSchema), AuthController.token);
+routes.post('/change-password', validator.body(bodyChangePasswordSchema), AuthController.changePassword);
 
 export default routes;

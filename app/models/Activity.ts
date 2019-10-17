@@ -2,17 +2,23 @@ import {Entity, PrimaryGeneratedColumn, Column, BaseEntity, OneToMany} from "typ
 import { Subscription } from "./Subscription";
 
 @Entity()
-export class Student extends BaseEntity {
+export class Activity extends BaseEntity {
 
     @PrimaryGeneratedColumn()
     id: number;
 
     @Column()
-    ra: number;
+    title: string;
+
+    @Column({ type: "timestamp" })
+    start_at: Date;
 
     @Column()
-    course: string;
+    speaker: string;
 
-    @OneToMany(type => Subscription, subscription => subscription.student)
+    @Column()
+    description: string;
+
+    @OneToMany(type => Subscription, subscription => subscription.activity)
     subscriptions!: Subscription[];
 }
