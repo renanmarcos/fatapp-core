@@ -1,4 +1,4 @@
-import {Entity, PrimaryGeneratedColumn, Column, BaseEntity} from "typeorm";
+import {Entity, PrimaryGeneratedColumn, Column, BaseEntity, OneToMany} from "typeorm";
 
 @Entity()
 export class Student extends BaseEntity {
@@ -11,5 +11,4 @@ export class Student extends BaseEntity {
 
     @Column()
     course: string;
-
 }

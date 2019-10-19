@@ -1,19 +1,22 @@
 import { Request, Response } from 'express';
 import { Activity } from '../models/Activity';
 import { ValidatedRequest } from 'express-joi-validation';
-import { ActivityStoreSchema, ActivityParamsSchema, ActivityUpdateSchema } from '../routes/ActivityRoutes';
+import { ActivityStoreSchema, ActivityParamsSchema, ActivityUpdateSchema, ManageUserSchema } from '../routes/ActivityRoutes';
 import { Room } from '../models/Room';
 import * as HttpStatus from 'http-status-codes';
 import { Event } from '../models/Event';
 import { Speaker } from '../models/Speaker';
 import { Course } from '../models/Course';
+import { Subscription } from '../models/Subscription';
+import { User } from '../models/User';
 
 class ActivityController {
 
-  public async list(req: Request, res: Response): Promise<Response> {
-    if(req.query.isActive){
+  public async index(req: Request, res: Response): Promise<Response> {
+    if (req.query.isActive) {
       return res.json(await Activity.find({ where: { isActive: true }, relations: ['room', 'event', 'speaker', 'targetAudience'] }));
     }
+
     return res.json(await Activity.find({ relations: ['room', 'event', 'speaker', 'targetAudience'] }));
   }
 
@@ -81,19 +84,21 @@ class ActivityController {
     return res.json(activity);
   }
 
-  public async delete(req: Request, res: Response): Promise<Response> {
+  public async destroy(req: Request, res: Response): Promise<Response> 
+  {
     let validatedRequest = req as ValidatedRequest<ActivityParamsSchema>;
     let activity = await Activity.findOne({ id: validatedRequest.params.id });
 
     if (activity) {
-      await activity.remove();
+      await activity .remove();
       return res.sendStatus(HttpStatus.NO_CONTENT);
     }
 
     return res.sendStatus(HttpStatus.NOT_FOUND);
   }
 
-  public async update(req: Request, res: Response): Promise<Response> {
+  public async update(req: Request, res: Response): Promise<Response> 
+  {
     let validatedRequest = req as ValidatedRequest<ActivityUpdateSchema>;
     let activity = await Activity.findOne({ id: validatedRequest.params.id });
 
@@ -143,7 +148,70 @@ class ActivityController {
         return res.status(HttpStatus.NOT_FOUND).send('Event not found');
       }
       return res.status(HttpStatus.NOT_FOUND).send('Room not found');
-    }    
+    }
+    
+    return res.sendStatus(HttpStatus.NOT_FOUND);
+  }
+
+  public async subscribe(req: Request, res: Response): Promise<Response> {
+    let validatedRequest = req as ValidatedRequest<ManageUserSchema>;
+    let activity = await Activity.findOne({ id: validatedRequest.params.id });
+    let user = await User.findOne({ id: validatedRequest.body.userId });
+    
+    var diffDate = activity.initialDate.getDate() - new Date().getDate();
+    var diffHours = activity.initialDate.getHours() - new Date().getHours();
+
+    if(diffDate > 0 || diffHours >= 1) {
+      if (activity && user) {
+        let subscription = new Subscription();
+        subscription.activity = activity;
+        subscription.user = user;
+        subscription.attended = false;
+        await subscription.save();
+
+        return res.status(HttpStatus.OK).send(subscription);
+      }
+
+      return res.sendStatus(HttpStatus.NOT_FOUND);
+    }
+
+    return res.status(HttpStatus.BAD_REQUEST).send("O evento vai começar em menos de 10 minutos");
+  }
+  
+  public async attendee(req: Request, res: Response): Promise<Response> 
+  {
+    let validatedRequest = req as ValidatedRequest<ManageUserSchema>;
+    let subscription = await Subscription.findOne({ 
+      where: { 
+        activity: validatedRequest.params.id, 
+        user: validatedRequest.body.userId 
+      } 
+    });
+
+    if (subscription) {
+      subscription.attended = true;
+      await subscription.save();
+      await subscription.reload();
+      return res.status(HttpStatus.OK).send(subscription);
+    }
+
+    return res.sendStatus(HttpStatus.NOT_FOUND);
+  }
+
+  public async unsubscribe(req: Request, res: Response): Promise<Response> {
+    let validatedRequest = req as ValidatedRequest<ManageUserSchema>;
+    let user = await User.findOne({ 
+      where: { 
+        activity: validatedRequest.params.id, 
+        user: validatedRequest.body.userId 
+      } 
+    });
+
+    if (user) {
+      await user.remove();
+      return res.sendStatus(HttpStatus.NO_CONTENT);
+    }
+
     return res.sendStatus(HttpStatus.NOT_FOUND);
   }
 }

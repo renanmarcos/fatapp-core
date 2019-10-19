@@ -17,7 +17,11 @@ export interface StudentQuerySchema extends ValidatedRequestSchema {
 
 const bodyStoreSchema = Joi.object({
   ra: Joi.string().required(),
-  course: Joi.string().required()
+  course: Joi.string().valid(["ADS", "JOG", "SEG", "COMEX"]).required(),
+  name: Joi.string().required(),
+  email: Joi.string().email().required(),
+  cpf: Joi.string().required(),
+  password: Joi.string().required()
 });
 
 export interface StudentStoreSchema extends ValidatedRequestSchema {
@@ -38,5 +42,5 @@ routes.get('/:id', validator.params(paramsSchema), StudentController.get);
 routes.post('/', validator.body(bodyStoreSchema), StudentController.store);
 routes.delete('/:id', validator.params(paramsSchema), StudentController.delete);
 routes.put('/:id', validator.body(bodyUpdateSchema), StudentController.update);
-
+routes.get('/:id/subscriptions', validator.params(paramsSchema), StudentController.getSubscriptions);
 export default routes;

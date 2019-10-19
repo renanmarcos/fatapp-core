@@ -22,11 +22,11 @@ class AuthController {
 
     const token = jwt.sign(
       { userId: user.id, email: user.email },
-      process.env.CORE_SECRET ? process.env.CORE_SECRET: 'secret',
-      { expiresIn: "1h" }
+      process.env.CORE_SECRET ? process.env.CORE_SECRET: 'secret'
     );
 
     return res.send({
+      'id': user.id,
       'token': token
     });
   }

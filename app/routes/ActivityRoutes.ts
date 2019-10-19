@@ -16,7 +16,6 @@ export interface ActivityParamsSchema extends ValidatedRequestSchema {
 }
 
 const bodyStoreSchema = Joi.object({
-
     title: Joi.string().required(),
     type: Joi.string().required(),
     targetAudience: Joi.array().required(),
@@ -26,12 +25,9 @@ const bodyStoreSchema = Joi.object({
     obsActivity: Joi.string().required(),
     obsResource: Joi.string().required(),
     isActive: Joi.boolean().required(),
-    qrCode: Joi.string().required(),
     roomId: Joi.number().required(),
     eventId: Joi.number().required(),
     speakerId: Joi.number().required()
-
-    
 });
   
 export interface ActivityStoreSchema extends ValidatedRequestSchema {
@@ -39,7 +35,6 @@ export interface ActivityStoreSchema extends ValidatedRequestSchema {
 }
 
 const bodyUpdateSchema = Joi.object({
-
     title: Joi.string().required(),
     type: Joi.string().required(),
     targetAudience: Joi.array().required(),
@@ -49,21 +44,31 @@ const bodyUpdateSchema = Joi.object({
     obsActivity: Joi.string().required(),
     obsResource: Joi.string().required(),
     isActive: Joi.boolean().required(),
-    qrCode: Joi.string().required(),
     roomId: Joi.number().required(),
     eventId: Joi.number().required(),
     speakerId: Joi.number().required()
-
 });
 
 export interface ActivityUpdateSchema extends ValidatedRequestSchema {
     [ContainerTypes.Query]: Joi.extractType<typeof bodyUpdateSchema>;
 }
 
-routes.get('/',ActivityController.list);
+routes.get('/', ActivityController.index);
 routes.get('/:id', validator.params(paramsSchema), ActivityController.get);
 routes.post('/', validator.body(bodyStoreSchema), ActivityController.store);
-routes.delete('/:id', validator.params(paramsSchema), ActivityController.delete);
+routes.delete('/:id', validator.params(paramsSchema), ActivityController.destroy);
 routes.put('/:id', validator.params(paramsSchema), validator.body(bodyUpdateSchema), ActivityController.update);
+
+const bodyManageUserSchema = Joi.object({
+    userId: Joi.number().required()
+});
+  
+export interface ManageUserSchema extends ValidatedRequestSchema {
+    [ContainerTypes.Query]: Joi.extractType<typeof bodyManageUserSchema>;
+}
+
+routes.put('/:id/subscribe', validator.params(paramsSchema), validator.body(bodyManageUserSchema), ActivityController.subscribe);
+routes.put('/:id/unsubscribe', validator.params(paramsSchema), validator.body(bodyManageUserSchema), ActivityController.unsubscribe);
+routes.put('/:id/attendee', validator.params(paramsSchema), validator.body(bodyManageUserSchema), ActivityController.attendee);
 
 export default routes;

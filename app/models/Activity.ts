@@ -1,8 +1,9 @@
-import {Entity, PrimaryGeneratedColumn, Column, BaseEntity, JoinColumn, ManyToOne, ManyToMany, JoinTable} from "typeorm";
+import {Entity, PrimaryGeneratedColumn, Column, BaseEntity, JoinColumn, ManyToOne, ManyToMany, JoinTable, OneToMany} from "typeorm";
 import { Room } from "../models/Room";
 import { Event } from "../models/Event";
 import { Speaker } from "../models/Speaker";
 import { Course } from "../models/Course";
+import { Subscription } from "./Subscription";
 
 @Entity()
 export class Activity extends BaseEntity {
@@ -53,4 +54,6 @@ export class Activity extends BaseEntity {
     @JoinTable({ name: "course_activity" })
     targetAudience: Course[];
 
+    @OneToMany(type => Subscription, subscription => subscription.activity)
+    subscriptions!: Subscription[];
 }
