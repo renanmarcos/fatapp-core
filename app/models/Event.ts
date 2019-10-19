@@ -1,4 +1,5 @@
-import {Entity, PrimaryGeneratedColumn, Column, BaseEntity} from "typeorm";
+import {Entity, PrimaryGeneratedColumn, Column, BaseEntity, OneToMany} from "typeorm";
+import { Activity } from "./Activity";
 
 @Entity()
 export class Event extends BaseEntity {
@@ -7,6 +8,21 @@ export class Event extends BaseEntity {
     id: number;
 
     @Column()
-    name: string;
+    title: string;
+
+    @Column()
+    edition: string;
+
+    @Column()
+    initialDate: Date;
+
+    @Column()
+    finalDate: Date;
+
+    @Column()
+    banner: string;
+
+    @OneToMany(type => Activity, activity => activity.event)
+    activity!: Activity[];
 
 }

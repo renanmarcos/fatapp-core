@@ -26,9 +26,14 @@ class EventController {
   public async store(req: Request, res: Response): Promise<Response>
   {
     let validatedRequest = req as ValidatedRequest<EventStoreSchema>;
-
     let event = new Event();
-    event.name = validatedRequest.body.name;
+
+    event.title = validatedRequest.body.title;
+    event.edition = validatedRequest.body.edition;
+    event.initialDate = validatedRequest.body.initialDate;
+    event.finalDate = validatedRequest.body.finalDate;
+    event.banner = validatedRequest.body.banner;
+
     await event.save();
     
     return res.status(HttpStatus.CREATED).json(event);
@@ -53,7 +58,12 @@ class EventController {
     let event = await Event.findOne({ id: validatedRequest.params.id });
 
     if (event) {
-      event.name = validatedRequest.body.name;
+      event.title = validatedRequest.body.title;
+      event.edition = validatedRequest.body.edition;
+      event.initialDate = validatedRequest.body.initialDate;
+      event.finalDate = validatedRequest.body.finalDate;
+      event.banner = validatedRequest.body.banner;
+      
       await event.save();
       await event.reload();
 

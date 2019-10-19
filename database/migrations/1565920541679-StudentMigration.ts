@@ -1,4 +1,4 @@
-import {MigrationInterface, QueryRunner, Table} from "typeorm";
+import { MigrationInterface, QueryRunner, Table, TableForeignKey } from 'typeorm';
 
 export class StudentMigration1565920541679 implements MigrationInterface {
 
@@ -20,9 +20,22 @@ export class StudentMigration1565920541679 implements MigrationInterface {
                 {
                     name: "course",
                     type: "varchar",
+                },
+                {
+                    name: "userId",
+                    type: "int"
                 }
             ]
-        }), true)  
+        }), true);
+
+        const fkUser = new TableForeignKey({
+            columnNames: ["userId"],
+            referencedColumnNames: ["id"],
+            referencedTableName: "user",
+            onDelete: "CASCADE"
+        });
+
+        await queryRunner.createForeignKey("room_resource", fkUser);
     }
 
     public async down(queryRunner: QueryRunner): Promise<any> {

@@ -1,5 +1,6 @@
 import {Entity, BaseEntity, PrimaryGeneratedColumn, Column, ManyToMany, ManyToOne, OneToMany, JoinTable} from "typeorm";
 import { RoomResource } from "./RoomResource";
+import { Activity } from "./Activity";
 
 @Entity()
 export class Room extends BaseEntity{
@@ -18,5 +19,8 @@ export class Room extends BaseEntity{
     
     @OneToMany(type => RoomResource, roomResource => roomResource.room)
     roomResources!: RoomResource[];
+
+    @OneToMany(type => Activity, activity => activity.room)
+    activity!: Activity[];
 
 }

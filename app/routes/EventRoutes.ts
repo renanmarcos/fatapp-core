@@ -16,7 +16,11 @@ export interface EventQuerySchema extends ValidatedRequestSchema {
 }
 
 const bodyStoreSchema = Joi.object({
-    name: Joi.string().required()
+    title: Joi.string().required(),
+    edition: Joi.string().required(),
+    initialDate: Joi.string().required(),
+    finalDate: Joi.string().required(),
+    banner: Joi.string().allow('')
 });
   
 export interface EventStoreSchema extends ValidatedRequestSchema {
@@ -24,7 +28,11 @@ export interface EventStoreSchema extends ValidatedRequestSchema {
 }
   
 const bodyUpdateSchema = Joi.object({
-    name: Joi.string()
+    title: Joi.string(),
+    edition: Joi.string(),
+    initialDate: Joi.string(),
+    finalDate: Joi.string(),
+    banner: Joi.string()
 });
   
 export interface EventUpdateSchema extends ValidatedRequestSchema {

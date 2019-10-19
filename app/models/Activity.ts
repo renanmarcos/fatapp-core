@@ -1,4 +1,8 @@
-import {Entity, PrimaryGeneratedColumn, Column, BaseEntity, OneToMany} from "typeorm";
+import {Entity, PrimaryGeneratedColumn, Column, BaseEntity, JoinColumn, ManyToOne, ManyToMany, JoinTable, OneToMany} from "typeorm";
+import { Room } from "../models/Room";
+import { Event } from "../models/Event";
+import { Speaker } from "../models/Speaker";
+import { Course } from "../models/Course";
 import { Subscription } from "./Subscription";
 
 @Entity()
@@ -8,16 +12,47 @@ export class Activity extends BaseEntity {
     id: number;
 
     @Column()
-    title: string;
-
-    @Column({ type: "timestamp" })
-    start_at: Date;
+    title: string
 
     @Column()
-    speaker: string;
+    type: string
 
     @Column()
-    description: string;
+    description: string
+
+    @Column()
+    initialDate: Date
+
+    @Column()
+    finalDate: Date
+    
+    @Column()
+    obsActivity: string
+
+    @Column()
+    obsResource: string
+
+    @Column()
+    isActive: boolean
+
+    @Column()
+    qrCode: string
+
+    @ManyToOne(type => Room, room => room.activity)
+    @JoinColumn({name: 'roomId', referencedColumnName: 'id'})
+    room!: Room;
+
+    @ManyToOne(type => Event, event => event.activity)
+    @JoinColumn({name: 'eventId', referencedColumnName: 'id'})
+    event!: Event;
+
+    @ManyToOne(type => Speaker, speaker => speaker.activity)
+    @JoinColumn({name: 'speakerId', referencedColumnName: 'id'})
+    speaker!: Speaker;
+
+    @ManyToMany(type => Course)
+    @JoinTable({ name: "course_activity" })
+    targetAudience: Course[];
 
     @OneToMany(type => Subscription, subscription => subscription.activity)
     subscriptions!: Subscription[];

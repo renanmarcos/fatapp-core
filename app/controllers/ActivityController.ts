@@ -1,47 +1,92 @@
 import { Request, Response } from 'express';
 import { Activity } from '../models/Activity';
-import { ActivityStoreSchema, ActivityUpdateSchema, ActivityQuerySchema, ManageStudentSchema} from '../routes/ActivityRoutes';
-import { Subscription } from '../models/Subscription';
 import { ValidatedRequest } from 'express-joi-validation';
+import { ActivityStoreSchema, ActivityParamsSchema, ActivityUpdateSchema, ManageUserSchema } from '../routes/ActivityRoutes';
+import { Room } from '../models/Room';
 import * as HttpStatus from 'http-status-codes';
-import { Student } from '../models/Student';
+import { Event } from '../models/Event';
+import { Speaker } from '../models/Speaker';
+import { Course } from '../models/Course';
+import { Subscription } from '../models/Subscription';
+import { User } from '../models/User';
 
 class ActivityController {
-  
-  public async index(req: Request, res: Response): Promise<Response> 
-  {
-    return res.json(await Activity.find());
+
+  public async index(req: Request, res: Response): Promise<Response> {
+    if (req.query.isActive) {
+      return res.json(await Activity.find({ where: { isActive: true }, relations: ['room', 'event', 'speaker', 'targetAudience'] }));
+    }
+
+    return res.json(await Activity.find({ relations: ['room', 'event', 'speaker', 'targetAudience'] }));
   }
 
-  public async get(req: Request, res: Response): Promise<Response> 
-  {
-    let validatedRequest = req as ValidatedRequest<ActivityQuerySchema>;
-    let activity = await Activity.findOne({ id: validatedRequest.params.id });
+  public async store(req: Request, res: Response): Promise<Response> {
+    let validatedRequest = req as ValidatedRequest<ActivityStoreSchema>;
+    let room = await Room.findOne({ id: validatedRequest.body.roomId });
+    let event = await Event.findOne({ id: validatedRequest.body.eventId });
+    let speaker = await Speaker.findOne({ id: validatedRequest.body.speakerId });
+
+    if (room) {
+      if (event) {
+        if (speaker) {
+          if (event.initialDate < validatedRequest.body.initialDate && event.finalDate > validatedRequest.body.finalDate) {
+            let activity = new Activity();
+
+            activity.title = validatedRequest.body.title;
+            activity.type = validatedRequest.body.type;
+            activity.description = validatedRequest.body.description;
+            activity.initialDate = validatedRequest.body.initialDate;
+            activity.finalDate = validatedRequest.body.finalDate;
+            activity.obsActivity = validatedRequest.body.obsActivity;
+            activity.obsResource = validatedRequest.body.obsResource;
+            activity.isActive = validatedRequest.body.isActive;
+            activity.qrCode = validatedRequest.body.qrCode;
+            activity.room = validatedRequest.body.roomId;
+            activity.event = validatedRequest.body.eventId;
+            activity.speaker = validatedRequest.body.speakerId;
+
+            let courses = Array.from(validatedRequest.body.targetAudience);
+            let arrayOfCourses = [];
+
+            for (let i = 0; i < courses.length; i++) {
+              let courseId: any = courses[i];
+              let courseToFind = await Course.findOne({ id: courseId });
+              if (!courseToFind){
+                return res.status(HttpStatus.NOT_FOUND).send('Course not found. Please double check it and try again!\nId of course not found is ' + courseId);
+              }
+              arrayOfCourses.push(courseToFind);
+            }
+
+            activity.targetAudience = arrayOfCourses;
+
+            await activity.save();
+            await activity.reload();
+
+            return res.status(HttpStatus.CREATED).json(await Activity.findOne({ where: { id: activity.id }, relations: ['room', 'event', 'speaker', 'targetAudience'] }));
+          }
+          return res.status(HttpStatus.NOT_ACCEPTABLE).send('Activity date must be between Event date. \n' + event.initialDate + ' to ' + event.finalDate);
+        }
+        return res.status(HttpStatus.NOT_FOUND).send('Speaker not found');
+      }
+      return res.status(HttpStatus.NOT_FOUND).send('Event not found');
+    }
+    return res.status(HttpStatus.NOT_FOUND).send('Room not found');
+  }
+
+  public async get(req: Request, res: Response): Promise<Response> {
+    let validatedRequest = req as ValidatedRequest<ActivityParamsSchema>;
+    let activity = await Activity.findOne({ where: { id: validatedRequest.params.id }, relations: ['room', 'event', 'speaker', 'targetAudience'] });
 
     if (!activity) {
       res.sendStatus(HttpStatus.NOT_FOUND);
     }
-    
-    return res.json(activity);
-  }
 
-  public async store(req: Request, res: Response): Promise<Response> 
-  {
-    let validatedRequest = req as ValidatedRequest<ActivityStoreSchema>;
-
-    let activity = new Activity();
-    activity.title = validatedRequest.body.title;
-    activity.start_at = validatedRequest.body.start_at;
-    activity.speaker = validatedRequest.body.speaker;
-    activity.description = validatedRequest.body.description;
-    await activity.save();
-    
     return res.json(activity);
   }
 
   public async destroy(req: Request, res: Response): Promise<Response> 
   {
-    let validatedRequest = req as ValidatedRequest<ActivityQuerySchema>;
+    let validatedRequest = req as ValidatedRequest<ActivityParamsSchema>;
     let activity = await Activity.findOne({ id: validatedRequest.params.id });
 
     if (activity) {
@@ -58,32 +103,69 @@ class ActivityController {
     let activity = await Activity.findOne({ id: validatedRequest.params.id });
 
     if (activity) {
-      activity.title = validatedRequest.body.title;
-      activity.start_at = validatedRequest.body.start_at;
-      activity.speaker = validatedRequest.body.speaker;
-      activity.description = validatedRequest.body.description;
-      await activity.save();
-      await activity.reload();
+      let room = await Room.findOne({ id: validatedRequest.body.roomId });
+      let event = await Event.findOne({ id: validatedRequest.body.eventId });
+      let speaker = await Speaker.findOne({ id: validatedRequest.body.speakerId });
 
-      return res.status(HttpStatus.OK).send(activity);
+      if (room) {
+        if (event) {
+          if (speaker) {
+            if (event.initialDate < validatedRequest.body.initialDate && event.finalDate > validatedRequest.body.finalDate) {
+
+              activity.title = validatedRequest.body.title;
+              activity.type = validatedRequest.body.type;
+              activity.description = validatedRequest.body.description;
+              activity.initialDate = validatedRequest.body.initialDate;
+              activity.finalDate = validatedRequest.body.finalDate;
+              activity.obsActivity = validatedRequest.body.obsActivity;
+              activity.obsResource = validatedRequest.body.obsResource;
+              activity.isActive = validatedRequest.body.isActive;
+              activity.qrCode = validatedRequest.body.qrCode;
+              activity.room = validatedRequest.body.roomId;
+              activity.event = validatedRequest.body.eventId;
+              activity.speaker = validatedRequest.body.speakerId;
+
+              let courses = Array.from(validatedRequest.body.targetAudience);
+              let arrayOfCourses = [];
+
+              for (let i = 0; i < courses.length; i++) {
+                let courseId: any = courses[i];
+                let courseToFind = await Course.findOne({ id: courseId });
+                arrayOfCourses.push(courseToFind);
+              }
+
+              activity.targetAudience = arrayOfCourses;
+
+              await activity.save();
+              await activity.reload();
+
+              return res.status(HttpStatus.OK).json(await Activity.findOne({ where: { id: activity.id }, relations: ['room', 'event', 'speaker', 'targetAudience'] }));
+            }
+            return res.status(HttpStatus.NOT_ACCEPTABLE).send('Activity date must be between Event date. \n' + event.initialDate + ' to ' + event.finalDate);
+          }
+          return res.status(HttpStatus.NOT_FOUND).send('Speaker not found');
+        }
+        return res.status(HttpStatus.NOT_FOUND).send('Event not found');
+      }
+      return res.status(HttpStatus.NOT_FOUND).send('Room not found');
     }
     
     return res.sendStatus(HttpStatus.NOT_FOUND);
   }
 
   public async subscribe(req: Request, res: Response): Promise<Response> {
-    let validatedRequest = req as ValidatedRequest<ManageStudentSchema>;
+    let validatedRequest = req as ValidatedRequest<ManageUserSchema>;
     let activity = await Activity.findOne({ id: validatedRequest.params.id });
-    let student = await Student.findOne({ id: validatedRequest.body.studentId });
+    let user = await User.findOne({ id: validatedRequest.body.userId });
     
-    var diffDate = activity.start_at.getDate() - new Date().getDate();
-    var diffHours = activity.start_at.getHours() - new Date().getHours();
+    var diffDate = activity.initialDate.getDate() - new Date().getDate();
+    var diffHours = activity.initialDate.getHours() - new Date().getHours();
 
     if(diffDate > 0 || diffHours >= 1) {
-      if (activity && student) {
+      if (activity && user) {
         let subscription = new Subscription();
         subscription.activity = activity;
-        subscription.student = student;
+        subscription.user = user;
         subscription.attended = false;
         await subscription.save();
 
@@ -98,11 +180,11 @@ class ActivityController {
   
   public async attendee(req: Request, res: Response): Promise<Response> 
   {
-    let validatedRequest = req as ValidatedRequest<ManageStudentSchema>;
+    let validatedRequest = req as ValidatedRequest<ManageUserSchema>;
     let subscription = await Subscription.findOne({ 
       where: { 
         activity: validatedRequest.params.id, 
-        student: validatedRequest.body.studentId 
+        user: validatedRequest.body.userId 
       } 
     });
 
@@ -110,24 +192,23 @@ class ActivityController {
       subscription.attended = true;
       await subscription.save();
       await subscription.reload();
-
       return res.status(HttpStatus.OK).send(subscription);
     }
+
     return res.sendStatus(HttpStatus.NOT_FOUND);
   }
 
   public async unsubscribe(req: Request, res: Response): Promise<Response> {
-    let validatedRequest = req as ValidatedRequest<ManageStudentSchema>;
-    let subscription = await Subscription.findOne({ 
+    let validatedRequest = req as ValidatedRequest<ManageUserSchema>;
+    let user = await User.findOne({ 
       where: { 
         activity: validatedRequest.params.id, 
-        student: validatedRequest.body.studentId 
+        user: validatedRequest.body.userId 
       } 
     });
 
-    if (subscription) {
-      await subscription.remove();
-
+    if (user) {
+      await user.remove();
       return res.sendStatus(HttpStatus.NO_CONTENT);
     }
 

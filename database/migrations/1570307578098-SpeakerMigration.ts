@@ -1,11 +1,10 @@
-import {MigrationInterface, QueryRunner, Table} from "typeorm";
+import {MigrationInterface, QueryRunner, TableIndex, Table} from "typeorm";
 
-export class EventMigration1566760085488 implements MigrationInterface {
+export class SpeakerMigration1570307578098 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<any> {
-
         await queryRunner.createTable(new Table({
-            name: "event",
+            name: "speaker",
             columns: [
                 {
                     name: "id",
@@ -15,28 +14,35 @@ export class EventMigration1566760085488 implements MigrationInterface {
                     generationStrategy: "increment",
                 },
                 {
-                    name: "title",
+                    name: "speakerName",
                     type: "varchar",
                 },
                 {
-                    name: "edition",
+                    name: "speakerEmail",
+                    type: "varchar",
+                },
+                {
+                    name: "speakerPhone",
+                    type: "varchar",
+                },
+                {
+                    name: "speakerPhone2",
                     type: "varchar"
                 },
                 {
-                    name: "initialDate",
-                    type: "datetime"
-                },
-                {
-                    name: "finalDate",
-                    type: "datetime"
-                },
-                {
-                    name: "banner",
+                    name: "speakerCurriculum",
                     type: "varchar"
                 }
             ]
         }), true)
-        
+
+        const SpeakerIndex = new TableIndex({
+            columnNames: ["speakerEmail"],
+            name: "SpeakerIndex",
+            isUnique: true
+        });
+
+        await queryRunner.createIndex("speaker", SpeakerIndex);
     }
 
     public async down(queryRunner: QueryRunner): Promise<any> {

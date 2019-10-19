@@ -1,10 +1,10 @@
 import {MigrationInterface, QueryRunner, Table} from "typeorm";
 
-export class LectureMigration1565920294035 implements MigrationInterface {
+export class CourseMigration1570669084371 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<any> {
         await queryRunner.createTable(new Table({
-            name: "activity",
+            name: "course",
             columns: [
                 {
                     name: "id",
@@ -14,19 +14,7 @@ export class LectureMigration1565920294035 implements MigrationInterface {
                     generationStrategy: "increment",
                 },
                 {
-                    name: "title",
-                    type: "varchar",
-                },
-                {
-                    name: "start_at",
-                    type: "timestamp",
-                },
-                {
-                    name: "speaker",
-                    type: "varchar",
-                },
-                {
-                    name: "description",
+                    name: "name",
                     type: "varchar",
                 }
             ]
