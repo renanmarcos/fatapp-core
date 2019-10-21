@@ -18,8 +18,8 @@ export interface EventQuerySchema extends ValidatedRequestSchema {
 const bodyStoreSchema = Joi.object({
     title: Joi.string().required(),
     edition: Joi.string().required(),
-    initialDate: Joi.string().required(),
-    finalDate: Joi.string().required(),
+    initialDate: Joi.date().required(),
+    finalDate: Joi.date().required(),
     banner: Joi.string().allow('')
 });
   
@@ -30,8 +30,8 @@ export interface EventStoreSchema extends ValidatedRequestSchema {
 const bodyUpdateSchema = Joi.object({
     title: Joi.string(),
     edition: Joi.string(),
-    initialDate: Joi.string(),
-    finalDate: Joi.string(),
+    initialDate: Joi.date(),
+    finalDate: Joi.date(),
     banner: Joi.string()
 });
   

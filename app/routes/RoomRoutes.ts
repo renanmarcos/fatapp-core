@@ -59,8 +59,8 @@ export interface RemoveResourceSchema extends ValidatedRequestSchema {
   [ContainerTypes.Query]: Joi.extractType<typeof paramsResourceSchema>;
 }
 
-routes.post('/:id/resources', validator.params(paramsSchema), validator.body(bodyManageResourceSchema), RoomController.manageResource);
 routes.get('/:id/resources', validator.params(paramsSchema), RoomController.getResources);
+routes.post('/:id/resources', validator.params(paramsSchema), validator.body(bodyManageResourceSchema), RoomController.manageResource);
 routes.delete('/:id/resources/:resourceId', validator.params(paramsResourceSchema), RoomController.removeResource);
 
 export default routes;
