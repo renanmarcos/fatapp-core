@@ -14,30 +14,30 @@ export class SpeakerMigration1570307578098 implements MigrationInterface {
                     generationStrategy: "increment",
                 },
                 {
-                    name: "speakerName",
+                    name: "name",
                     type: "varchar",
                 },
                 {
-                    name: "speakerEmail",
+                    name: "email",
                     type: "varchar",
                 },
                 {
-                    name: "speakerPhone",
+                    name: "phone",
                     type: "varchar",
                 },
                 {
-                    name: "speakerPhone2",
+                    name: "secondPhone",
                     type: "varchar"
                 },
                 {
-                    name: "speakerCurriculum",
+                    name: "curriculum",
                     type: "varchar"
                 }
             ]
         }), true)
 
         const SpeakerIndex = new TableIndex({
-            columnNames: ["speakerEmail"],
+            columnNames: ["email"],
             name: "SpeakerIndex",
             isUnique: true
         });

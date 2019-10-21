@@ -8,8 +8,8 @@ const routes = Router();
 const validator = createValidator();
 
 const bodyTokenSchema = Joi.object({
-  email: Joi.string().required(),
-  password: Joi.string().required()
+  email: Joi.string().required().email(),
+  password: Joi.string().required().min(6)
 });
 
 export interface UserTokenSchema extends ValidatedRequestSchema {
@@ -17,8 +17,8 @@ export interface UserTokenSchema extends ValidatedRequestSchema {
 }
 
 const bodyChangePasswordSchema = Joi.object({
-  oldPassword: Joi.string().required(),
-  newPassword: Joi.string().required()
+  oldPassword: Joi.string().required().min(6),
+  newPassword: Joi.string().required().min(6)
 });
 
 export interface UserChangePasswordSchema extends ValidatedRequestSchema {

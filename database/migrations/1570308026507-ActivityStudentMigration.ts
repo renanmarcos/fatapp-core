@@ -1,7 +1,6 @@
 import {MigrationInterface, QueryRunner, Table, TableForeignKey, TableIndex} from "typeorm";
-import { TableUnique } from "typeorm/schema-builder/table/TableUnique";
 
-export class SubscriptionsMigration1568943141052 implements MigrationInterface {
+export class SubscriptionsMigration1570308026507 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<any> {
 
@@ -16,11 +15,11 @@ export class SubscriptionsMigration1568943141052 implements MigrationInterface {
                     generationStrategy: "increment"
                 },
                 {
-                    name: "activity_id",
+                    name: "activityId",
                     type: "int",
                 },
                 {
-                    name: "student_id",
+                    name: "userId",
                     type: "int",
                 },
                 {
@@ -31,20 +30,20 @@ export class SubscriptionsMigration1568943141052 implements MigrationInterface {
         }), true)
 
         const fkActivity = new TableForeignKey({
-            columnNames: ["activity_id"],
+            columnNames: ["activityId"],
             referencedColumnNames: ["id"],
             referencedTableName: "activity",
             onDelete: "CASCADE"
         });
         const fkStudent = new TableForeignKey({
-            columnNames: ["student_id"],
+            columnNames: ["userId"],
             referencedColumnNames: ["id"],
-            referencedTableName: "student",
+            referencedTableName: "user",
             onDelete: "CASCADE"
         });
 
         const SubscriptionIndex = new TableIndex({
-            columnNames: ["activity_id", "student_id"],
+            columnNames: ["activityId", "userId"],
             name: "SubscriptionIndex",
             isUnique: true
         });

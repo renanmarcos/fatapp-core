@@ -3,6 +3,8 @@ import { User } from '../models/User';
 import { UserStoreSchema, UserUpdateSchema, UserQuerySchema }  from '../routes/UserRoutes';
 import { ValidatedRequest } from 'express-joi-validation';
 import * as HttpStatus from 'http-status-codes';
+import { Subscription } from '../models/Subscription';
+import jwt from 'jsonwebtoken';
 
 class UserController {
 
@@ -26,16 +28,31 @@ class UserController {
   public async store(req: Request, res: Response): Promise<Response> 
   {
     let validatedRequest = req as ValidatedRequest<UserStoreSchema>;
+    let user = await User.findOne({where: {cpf: validatedRequest.body.cpf}});
+    
+    if (user) {
+      return res.status(HttpStatus.BAD_REQUEST).send({
+        error: 'CPF já existe'
+      });
+    }
 
-    let user = new User();
+    user = new User();
     user.name = validatedRequest.body.name;
     user.email = validatedRequest.body.email;
     user.cpf = validatedRequest.body.cpf;
     user.password = validatedRequest.body.password;
     user.hashPassword();
     await user.save();
+
+    let token = jwt.sign(
+      { userId: user.id, email: user.email },
+      process.env.CORE_SECRET ? process.env.CORE_SECRET: 'secret'
+    );
     
-    return res.status(HttpStatus.CREATED).json(user);
+    return res.status(HttpStatus.CREATED).json({
+      token: token,
+      user
+    });
   }
 
   public async delete(req: Request, res: Response): Promise<Response> 
@@ -59,15 +76,26 @@ class UserController {
     if (user) {
       user.name = validatedRequest.body.name;
       user.email = validatedRequest.body.email;
-      user.cpf = validatedRequest.body.cpf;
-      user.password = validatedRequest.body.password;
-      user.hashPassword();
       await user.save();
       await user.reload();
 
       return res.status(HttpStatus.OK).send(user);
     }
     
+    return res.sendStatus(HttpStatus.NOT_FOUND);
+  }
+
+  public async getSubscriptions(req: Request, res: Response): Promise<Response> {
+    let validatedRequest = req as ValidatedRequest<UserQuerySchema>;
+    let subscriptions = await Subscription.find({ 
+      where: { user: validatedRequest.params.id }, 
+      relations: ['activity'] 
+    });
+
+    if (subscriptions) {
+      return res.status(HttpStatus.OK).send(subscriptions);
+    }
+
     return res.sendStatus(HttpStatus.NOT_FOUND);
   }
 }

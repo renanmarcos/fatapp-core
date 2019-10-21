@@ -43,7 +43,7 @@ routes.put('/:id', validator.params(paramsSchema), validator.body(bodyUpdateSche
 
 const bodyManageResourceSchema = Joi.object({
   resourceId: Joi.string().required(),
-  resourceAmount: Joi.string().required()
+  amount: Joi.string().required()
 });
 
 export interface ManageResourceSchema extends ValidatedRequestSchema {

@@ -1,6 +1,4 @@
 import {MigrationInterface, QueryRunner, Table, TableForeignKey, TableIndex} from "typeorm";
-import { TableUnique } from "typeorm/schema-builder/table/TableUnique";
-
 export class RoomResourceMigration1566767323829 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<any> {
@@ -24,7 +22,7 @@ export class RoomResourceMigration1566767323829 implements MigrationInterface {
                     type: "int",
                 },
                 {
-                    name: "resourceAmmount",
+                    name: "amount",
                     type: "int"
                 }
             ]

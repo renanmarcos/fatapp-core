@@ -15,11 +15,11 @@ export class StudentMigration1565920541679 implements MigrationInterface {
                 },
                 {
                     name: "ra",
-                    type: "int",
+                    type: "varchar",
                 },
                 {
-                    name: "course",
-                    type: "varchar",
+                    name: "courseId",
+                    type: "int",
                 },
                 {
                     name: "userId",
@@ -35,7 +35,14 @@ export class StudentMigration1565920541679 implements MigrationInterface {
             onDelete: "CASCADE"
         });
 
-        await queryRunner.createForeignKey("room_resource", fkUser);
+        const fkCourse = new TableForeignKey({
+            columnNames: ["courseId"],
+            referencedColumnNames: ["id"],
+            referencedTableName: "course"
+        });
+
+        await queryRunner.createForeignKey("student", fkUser);
+        await queryRunner.createForeignKey("student", fkCourse);
     }
 
     public async down(queryRunner: QueryRunner): Promise<any> {

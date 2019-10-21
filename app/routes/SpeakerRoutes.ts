@@ -16,7 +16,7 @@ export interface SpeakerQuerySchema extends ValidatedRequestSchema {
 }
 
 const getSchema = Joi.object({
-    speakerEmail: Joi.string().allow('')
+    email: Joi.string().email()
 });
 
 export interface SpeakerGetSchema extends ValidatedRequestSchema {
@@ -24,19 +24,18 @@ export interface SpeakerGetSchema extends ValidatedRequestSchema {
 }
 
 const bodyManageSchema = Joi.object({
-
-    speakerName: Joi.string().required(),
-    speakerEmail: Joi.string().required(),
-    speakerPhone: Joi.string().required(),
-    speakerPhone2: Joi.string().allow(''),
-    speakerCurriculum: Joi.string().required(),
+    name: Joi.string().required(),
+    email: Joi.string().required().email(),
+    phone: Joi.string().required(),
+    secondPhone: Joi.string(),
+    curriculum: Joi.string().required(),
 });
 
 export interface SpeakerManageSchema extends ValidatedRequestSchema {
     [ContainerTypes.Query]: Joi.extractType<typeof bodyManageSchema>;
 }
 
-routes.get('/', SpeakerController.get);
+routes.get('/', SpeakerController.index);
 routes.post('/', validator.body(bodyManageSchema), SpeakerController.manageSpeaker);
 routes.delete('/:id', validator.params(paramsSchema), SpeakerController.delete);
 

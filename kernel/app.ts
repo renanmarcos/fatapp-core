@@ -46,7 +46,6 @@ export class App {
         this.app.use('/resources', Resource);
         this.app.use('/activities', Activity);
         this.app.use('/rooms', Room);
-        this.app.use('/activities', Activity);
         this.app.use('/events', Event);
         this.app.use('/speakers', Speaker);
         this.app.use('/courses', Course);

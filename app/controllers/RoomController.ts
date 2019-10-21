@@ -66,30 +66,35 @@ class RoomController {
 
   public async manageResource(req: Request, res: Response): Promise<Response> {
     let validatedRequest = req as ValidatedRequest<ManageResourceSchema>;
-    let resourceToUpdate = await RoomResource.findOne({ where: { room: validatedRequest.params.id, resource: validatedRequest.body.resourceId } });
+    let resource = await RoomResource.findOne({ 
+      where: { 
+        room: validatedRequest.params.id, 
+        resource: validatedRequest.body.resourceId 
+      } 
+    });
     
-    if (resourceToUpdate) {
-      resourceToUpdate.resourceAmmount = validatedRequest.body.resource_amount;
-      await resourceToUpdate.save();
-      await resourceToUpdate.reload();
+    if (resource) {
+      resource.amount = validatedRequest.body.resource_amount;
+      await resource.save();
+      await resource.reload();
     
-      return res.status(HttpStatus.OK).send(resourceToUpdate);
-    } else {
-      let room = await Room.findOne({ id: validatedRequest.params.id });
-      let resource = await Resource.findOne({ id: validatedRequest.body.resource_id });
+      return res.status(HttpStatus.OK).send(resource);
+    } 
+    
+    let room = await Room.findOne({ id: validatedRequest.params.id });
+    let newResource = await Resource.findOne({ id: validatedRequest.body.resourceId });
 
-      if (room && resource) {
-        let roomResource = new RoomResource();
-        roomResource.resource = resource;
-        roomResource.room = room;
-        roomResource.resourceAmmount = validatedRequest.body.resourceAmount;
-        await roomResource.save();
+    if (room && newResource) {
+      let roomResource = new RoomResource();
+      roomResource.resource = newResource;
+      roomResource.room = room;
+      roomResource.amount = validatedRequest.body.resourceAmount;
+      await roomResource.save();
 
-        return res.status(HttpStatus.OK).send({});
-      }
-
-      return res.sendStatus(HttpStatus.NOT_FOUND);
+      return res.status(HttpStatus.OK).send({});
     }
+
+    return res.sendStatus(HttpStatus.NOT_FOUND);
   }
 
   public async getResources(req: Request, res: Response): Promise<Response> {
@@ -105,15 +110,15 @@ class RoomController {
 
   public async removeResource(req: Request, res: Response): Promise<Response> {
     let validatedRequest = req as ValidatedRequest<RemoveResourceSchema>;
-    let resourceToRemove = await RoomResource.findOne({ 
+    let resource = await RoomResource.findOne({ 
       where: { 
         resource: validatedRequest.params.resourceId,
         room: validatedRequest.params.id
       } 
     });
 
-    if (resourceToRemove) {
-      await resourceToRemove.remove();
+    if (resource) {
+      await resource.remove();
 
       return res.sendStatus(HttpStatus.OK);
     }

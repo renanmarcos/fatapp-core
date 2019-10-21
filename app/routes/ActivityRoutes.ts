@@ -70,5 +70,6 @@ export interface ManageUserSchema extends ValidatedRequestSchema {
 routes.put('/:id/subscribe', validator.params(paramsSchema), validator.body(bodyManageUserSchema), ActivityController.subscribe);
 routes.put('/:id/unsubscribe', validator.params(paramsSchema), validator.body(bodyManageUserSchema), ActivityController.unsubscribe);
 routes.put('/:id/attendee', validator.params(paramsSchema), validator.body(bodyManageUserSchema), ActivityController.attendee);
+routes.get('/:id/subscriptions', validator.params(paramsSchema), ActivityController.getSubscriptions);
 
 export default routes;
