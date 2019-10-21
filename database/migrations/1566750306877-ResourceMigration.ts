@@ -1,4 +1,5 @@
 import {MigrationInterface, QueryRunner, Table} from "typeorm";
+import {Resource} from '../../app/models/Resource';
 
 export class ResourceMigration1566750306877 implements MigrationInterface {
 
@@ -18,7 +19,23 @@ export class ResourceMigration1566750306877 implements MigrationInterface {
                     type: "varchar",
                 }
             ]
-        }), true)  
+        }), true);
+        
+        this.createResources();
+    }
+
+    private async createResources() {
+        let resource = new Resource();
+        resource.name = "Computador";
+        await resource.save();
+    
+        resource = new Resource();
+        resource.name = "Projetor";
+        await resource.save();
+    
+        resource = new Resource();
+        resource.name = "Caixas de Som";
+        await resource.save();
     }
 
     public async down(queryRunner: QueryRunner): Promise<any> {

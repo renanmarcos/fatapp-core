@@ -13,10 +13,6 @@ import { User } from '../models/User';
 class ActivityController {
 
   public async index(req: Request, res: Response): Promise<Response> {
-    if (req.query.isActive) {
-      return res.json(await Activity.find({ where: { isActive: true }, relations: ['room', 'event', 'speaker', 'targetAudience'] }));
-    }
-
     return res.json(await Activity.find({ relations: ['room', 'event', 'speaker', 'targetAudience'] }));
   }
 
@@ -39,7 +35,6 @@ class ActivityController {
             activity.finalDate = validatedRequest.body.finalDate;
             activity.obsActivity = validatedRequest.body.obsActivity;
             activity.obsResource = validatedRequest.body.obsResource;
-            activity.isActive = validatedRequest.body.isActive;
             activity.qrCode = validatedRequest.body.qrCode;
             activity.room = validatedRequest.body.roomId;
             activity.event = validatedRequest.body.eventId;
@@ -119,7 +114,6 @@ class ActivityController {
               activity.finalDate = validatedRequest.body.finalDate;
               activity.obsActivity = validatedRequest.body.obsActivity;
               activity.obsResource = validatedRequest.body.obsResource;
-              activity.isActive = validatedRequest.body.isActive;
               activity.qrCode = validatedRequest.body.qrCode;
               activity.room = validatedRequest.body.roomId;
               activity.event = validatedRequest.body.eventId;
@@ -210,6 +204,20 @@ class ActivityController {
     if (user) {
       await user.remove();
       return res.sendStatus(HttpStatus.NO_CONTENT);
+    }
+
+    return res.sendStatus(HttpStatus.NOT_FOUND);
+  }
+
+  public async getSubscriptions(req: Request, res: Response): Promise<Response> {
+    let validatedRequest = req as ValidatedRequest<ActivityParamsSchema>;
+    let subscriptions = await Subscription.find({ 
+      where: { activity: validatedRequest.params.id }, 
+      relations: ['user'] 
+    });
+
+    if (subscriptions) {
+      return res.status(HttpStatus.OK).send(subscriptions);
     }
 
     return res.sendStatus(HttpStatus.NOT_FOUND);

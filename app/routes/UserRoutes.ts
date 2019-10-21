@@ -18,8 +18,8 @@ export interface UserQuerySchema extends ValidatedRequestSchema {
 const bodyStoreSchema = Joi.object({
   name: Joi.string().required(),
   email: Joi.string().email().required(),
-  cpf: Joi.string().required(),
-  password: Joi.string().required()
+  cpf: Joi.string().required().regex(/^\d{3}\.\d{3}\.\d{3}\-\d{2}$/),
+  password: Joi.string().required().min(6)
 });
 
 export interface UserStoreSchema extends ValidatedRequestSchema {
@@ -28,9 +28,7 @@ export interface UserStoreSchema extends ValidatedRequestSchema {
 
 const bodyUpdateSchema = Joi.object({
   name: Joi.string(),
-  email: Joi.string(),
-  cpf: Joi.string(),
-  password: Joi.string()
+  email: Joi.string().email()
 });
 
 export interface UserUpdateSchema extends ValidatedRequestSchema {
@@ -42,5 +40,6 @@ routes.get('/:id', validator.params(paramsSchema), UserController.get);
 routes.delete('/:id', validator.params(paramsSchema), UserController.delete);
 routes.post('/', validator.body(bodyStoreSchema), UserController.store);
 routes.put('/:id', validator.params(paramsSchema), validator.body(bodyUpdateSchema), UserController.update);
+routes.get('/:id/subscriptions', validator.params(paramsSchema), UserController.getSubscriptions);
 
 export default routes;

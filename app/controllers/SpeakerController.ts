@@ -5,51 +5,44 @@ import { ValidatedRequest } from 'express-joi-validation';
 import * as HttpStatus from 'http-status-codes';
 
 class SpeakerController {
-
     
-    public async get(req: Request, res: Response): Promise<Response> {
+    public async index(req: Request, res: Response): Promise<Response> {
+        let validatedRequest = req as ValidatedRequest<SpeakerGetSchema>;
+        let speaker = await Speaker.findOne({ email: validatedRequest.query.email });
 
-        let email = req.query.email;
-        if(email){
-            let speaker = await Speaker.findOne({ speakerEmail: email });
-            if (!speaker) {
-                res.sendStatus(HttpStatus.NOT_FOUND);
-            }
-            return res.json(speaker);
-        }else{
-            return res.json(await Speaker.find());
+        if (speaker) {
+            return res.status(HttpStatus.OK).json(speaker);
         }
+
+        return res.json(await Speaker.find());
     }
 
     public async manageSpeaker(req: Request, res: Response): Promise<Response> {
         let validatedRequest = req as ValidatedRequest<SpeakerManageSchema>;
-        let speakerToUpdate = await Speaker.findOne({ speakerEmail: validatedRequest.body.speakerEmail });
+        let speaker = await Speaker.findOne({ email: validatedRequest.body.email });
 
-        if (speakerToUpdate) {
-            speakerToUpdate.speakerName = validatedRequest.body.speakerName;
-            speakerToUpdate.speakerEmail = validatedRequest.body.speakerEmail;
-            speakerToUpdate.speakerPhone = validatedRequest.body.speakerPhone;
-            speakerToUpdate.speakerPhone2 = validatedRequest.body.speakerPhone2;
-            speakerToUpdate.speakerCurriculum = validatedRequest.body.speakerCurriculum;
-
-            await speakerToUpdate.save();
-            await speakerToUpdate.reload();
-
-            return res.status(HttpStatus.OK).send(speakerToUpdate);
-        } else {
-            let speaker = new Speaker();
-
-            speaker.speakerName = validatedRequest.body.speakerName;
-            speaker.speakerEmail = validatedRequest.body.speakerEmail;
-            speaker.speakerPhone = validatedRequest.body.speakerPhone;
-            speaker.speakerPhone2 = validatedRequest.body.speakerPhone2;
-            speaker.speakerCurriculum = validatedRequest.body.speakerCurriculum;
+        if (speaker) {
+            speaker.name = validatedRequest.body.name;
+            speaker.email = validatedRequest.body.email;
+            speaker.phone = validatedRequest.body.phone;
+            speaker.secondPhone = validatedRequest.body.secondPhone;
+            speaker.curriculum = validatedRequest.body.curriculum;
 
             await speaker.save();
+            await speaker.reload();
 
-            return res.status(HttpStatus.CREATED).json(speaker);
-        }
-        
+            return res.status(HttpStatus.OK).send(speaker);
+        } 
+
+        speaker = new Speaker();
+        speaker.name = validatedRequest.body.name;
+        speaker.email = validatedRequest.body.email;
+        speaker.phone = validatedRequest.body.phone;
+        speaker.secondPhone = validatedRequest.body.secondPhone;
+        speaker.curriculum = validatedRequest.body.curriculum;
+        await speaker.save();
+
+        return res.status(HttpStatus.CREATED).json(speaker);
     }
 
     public async delete(req: Request, res: Response): Promise<Response> {
@@ -62,7 +55,7 @@ class SpeakerController {
         }
 
         return res.sendStatus(HttpStatus.NOT_FOUND);
-    };
+    }
 }
 
 export default new SpeakerController();

@@ -33,9 +33,6 @@ export class Activity extends BaseEntity {
     obsResource: string
 
     @Column()
-    isActive: boolean
-
-    @Column()
     qrCode: string
 
     @ManyToOne(type => Room, room => room.activity)

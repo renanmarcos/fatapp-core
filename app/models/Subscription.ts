@@ -4,6 +4,7 @@ import { User } from "./User";
 
 @Entity()
 @Index(["activity", "user"], {unique: true})
+
 export class Subscription extends BaseEntity
 {
 
@@ -14,10 +15,10 @@ export class Subscription extends BaseEntity
     attended!: boolean;
 
     @ManyToOne(type => Activity, activity => activity.subscriptions)
-    @JoinColumn({name: 'activity_id', referencedColumnName: 'id'})
+    @JoinColumn({name: 'activityId', referencedColumnName: 'id'})
     activity!: Activity;
 
     @ManyToOne(type => User, user => user.subscriptions)
-    @JoinColumn({name: 'user_id', referencedColumnName: 'id'})
+    @JoinColumn({name: 'userId', referencedColumnName: 'id'})
     user!: User;
 }

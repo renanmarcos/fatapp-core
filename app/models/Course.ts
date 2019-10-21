@@ -10,6 +10,9 @@ export class Course extends BaseEntity {
     @Column()
     name: string;
 
+    @Column()
+    acronym: string;
+
     @ManyToMany(type => Activity)
     @JoinTable({ name: "course_activity" })
     activities!: Activity[];

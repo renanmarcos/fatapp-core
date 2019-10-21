@@ -6,4 +6,4 @@ createConnection().then(async () => {
     console.log('Database connection is working!');
     const app = new App();
     await app.listen();
-}).catch(error => console.log(error));
+}).catch((error) => console.log(error));

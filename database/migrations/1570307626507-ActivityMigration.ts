@@ -42,10 +42,6 @@ export class ActivityMigration1570307626507 implements MigrationInterface {
                     type: "varchar"
                 },
                 {
-                    name: "isActive",
-                    type: "boolean"
-                },
-                {
                     name: "qrCode",
                     type: "varchar"
                 },

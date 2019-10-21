@@ -3,24 +3,12 @@ Core integration services between fatapp-admins and fatapp-users
 
 Install docker, docker-compose, npm and run inside the repository folder:
 
-For Linux:
 ```
 npm ci
 cp .env.example .env
 docker-compose up
-```
-
-For Windows:
-```
-npm ci
-copy .env.example .env
-docker-compose up
-```
-
-Open a new terminal/cmd window and run migrations to create tables:
-```
 docker-compose exec node bash
-npm run typeorm migration:run
+npm run db:migrate
 ```
 
 To enter in application container:

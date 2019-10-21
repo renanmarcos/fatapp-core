@@ -11,19 +11,19 @@ export class UserMigration1565918504281 implements MigrationInterface {
                     type: "int",
                     isPrimary: true,
                     isGenerated: true,
-                    generationStrategy: "increment",
+                    generationStrategy: "increment"
                 },
                 {
                     name: "name",
-                    type: "varchar",
+                    type: "varchar"
                 },
                 {
                     name: "email",
-                    type: "varchar",
+                    type: "varchar"
                 },
                 {
                     name: "cpf",
-                    type: "varchar",
+                    type: "varchar"
                 },
                 {
                     name: "password",
