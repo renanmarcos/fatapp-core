@@ -212,8 +212,7 @@ class ActivityController {
   public async getSubscriptions(req: Request, res: Response): Promise<Response> {
     let validatedRequest = req as ValidatedRequest<ActivityParamsSchema>;
     let subscriptions = await Subscription.find({ 
-      where: { activity: validatedRequest.params.id }, 
-      relations: ['user'] 
+      where: { activity: validatedRequest.params.id } 
     });
 
     if (subscriptions) {

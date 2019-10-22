@@ -24,7 +24,6 @@ const bodyStoreSchema = Joi.object({
     finalDate: Joi.date().required(),
     obsActivity: Joi.string().required(),
     obsResource: Joi.string().required(),
-    isActive: Joi.boolean().required(),
     roomId: Joi.number().required(),
     eventId: Joi.number().required(),
     speakerId: Joi.number().required()
@@ -43,7 +42,6 @@ const bodyUpdateSchema = Joi.object({
     finalDate: Joi.date().required(),
     obsActivity: Joi.string().required(),
     obsResource: Joi.string().required(),
-    isActive: Joi.boolean().required(),
     roomId: Joi.number().required(),
     eventId: Joi.number().required(),
     speakerId: Joi.number().required()
