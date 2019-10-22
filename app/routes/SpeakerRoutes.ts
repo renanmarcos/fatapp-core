@@ -27,7 +27,7 @@ const bodyManageSchema = Joi.object({
     name: Joi.string().required(),
     email: Joi.string().required().email(),
     phone: Joi.string().required(),
-    secondPhone: Joi.string(),
+    secondPhone: Joi.string().allow(''),
     curriculum: Joi.string().required(),
 });
 

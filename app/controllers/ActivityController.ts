@@ -35,7 +35,7 @@ class ActivityController {
             activity.finalDate = validatedRequest.body.finalDate;
             activity.obsActivity = validatedRequest.body.obsActivity;
             activity.obsResource = validatedRequest.body.obsResource;
-            activity.qrCode = validatedRequest.body.qrCode;
+            activity.qrCode = "teste";
             activity.room = validatedRequest.body.roomId;
             activity.event = validatedRequest.body.eventId;
             activity.speaker = validatedRequest.body.speakerId;
@@ -114,7 +114,7 @@ class ActivityController {
               activity.finalDate = validatedRequest.body.finalDate;
               activity.obsActivity = validatedRequest.body.obsActivity;
               activity.obsResource = validatedRequest.body.obsResource;
-              activity.qrCode = validatedRequest.body.qrCode;
+              activity.qrCode = "teste";
               activity.room = validatedRequest.body.roomId;
               activity.event = validatedRequest.body.eventId;
               activity.speaker = validatedRequest.body.speakerId;
@@ -213,7 +213,7 @@ class ActivityController {
     let validatedRequest = req as ValidatedRequest<ActivityParamsSchema>;
     let subscriptions = await Subscription.find({ 
       where: { activity: validatedRequest.params.id }, 
-      relations: ['user'] 
+      relations: ['user', 'user.student', 'user.student.course'] 
     });
 
     if (subscriptions) {

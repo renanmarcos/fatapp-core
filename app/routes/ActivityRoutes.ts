@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import ActivityController from '../controllers/ActivityController';
+import ReportController from '../controllers/ReportController';
 import * as Joi from '@hapi/joi';
 import { ValidatedRequestSchema, createValidator, ContainerTypes } from 'express-joi-validation';
 import 'joi-extract-type';
@@ -24,7 +25,6 @@ const bodyStoreSchema = Joi.object({
     finalDate: Joi.date().required(),
     obsActivity: Joi.string().required(),
     obsResource: Joi.string().required(),
-    isActive: Joi.boolean().required(),
     roomId: Joi.number().required(),
     eventId: Joi.number().required(),
     speakerId: Joi.number().required()
@@ -43,7 +43,6 @@ const bodyUpdateSchema = Joi.object({
     finalDate: Joi.date().required(),
     obsActivity: Joi.string().required(),
     obsResource: Joi.string().required(),
-    isActive: Joi.boolean().required(),
     roomId: Joi.number().required(),
     eventId: Joi.number().required(),
     speakerId: Joi.number().required()
@@ -55,6 +54,7 @@ export interface ActivityUpdateSchema extends ValidatedRequestSchema {
 
 routes.get('/', ActivityController.index);
 routes.get('/:id', validator.params(paramsSchema), ActivityController.get);
+routes.get('/:id/report', validator.params(paramsSchema), ReportController.generateActivityReport);
 routes.post('/', validator.body(bodyStoreSchema), ActivityController.store);
 routes.delete('/:id', validator.params(paramsSchema), ActivityController.destroy);
 routes.put('/:id', validator.params(paramsSchema), validator.body(bodyUpdateSchema), ActivityController.update);
