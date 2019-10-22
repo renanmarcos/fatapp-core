@@ -3,9 +3,20 @@ import EventController from '../controllers/EventController';
 import * as Joi from '@hapi/joi';
 import { ValidatedRequestSchema, createValidator, ContainerTypes } from 'express-joi-validation';
 import 'joi-extract-type';
+import multer from 'multer';
 
 const routes = Router();
 const validator = createValidator();
+const storage = multer.diskStorage({
+    destination: function(req, file, cb) {
+      cb(null, "uploads/");
+    },
+    filename: function(req, file, cb) {
+      cb(null, file.originalname);
+    }
+  });
+  
+  const uploads = multer({ storage: storage });
 
 const paramsSchema = Joi.object().keys({
     id: Joi.string().required()
@@ -19,8 +30,7 @@ const bodyStoreSchema = Joi.object({
     title: Joi.string().required(),
     edition: Joi.string().required(),
     initialDate: Joi.date().required(),
-    finalDate: Joi.date().required(),
-    banner: Joi.string().allow('')
+    finalDate: Joi.date().required()
 });
   
 export interface EventStoreSchema extends ValidatedRequestSchema {
@@ -31,8 +41,7 @@ const bodyUpdateSchema = Joi.object({
     title: Joi.string(),
     edition: Joi.string(),
     initialDate: Joi.date(),
-    finalDate: Joi.date(),
-    banner: Joi.string()
+    finalDate: Joi.date()
 });
   
 export interface EventUpdateSchema extends ValidatedRequestSchema {
@@ -41,7 +50,7 @@ export interface EventUpdateSchema extends ValidatedRequestSchema {
 
 routes.get('/', EventController.list);
 routes.get('/:id', validator.params(paramsSchema), EventController.get);
-routes.post('/', validator.body(bodyStoreSchema), EventController.store);
+routes.post('/', uploads.single('banner'), validator.body(bodyStoreSchema), EventController.store);
 routes.delete('/:id', validator.params(paramsSchema), EventController.delete);
 routes.put('/:id', validator.params(paramsSchema), validator.body(bodyUpdateSchema), EventController.update);
 

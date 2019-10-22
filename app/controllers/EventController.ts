@@ -32,7 +32,7 @@ class EventController {
     event.edition = validatedRequest.body.edition;
     event.initialDate = validatedRequest.body.initialDate;
     event.finalDate = validatedRequest.body.finalDate;
-    event.banner = validatedRequest.body.banner;
+    event.banner = validatedRequest.file.filename;
 
     await event.save();
     
