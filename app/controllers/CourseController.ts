@@ -16,6 +16,7 @@ class CourseController {
 
     let course = new Course();
     course.name = validatedRequest.body.name;
+    course.acronym = validatedRequest.body.acronym;
     await course.save();
     
     return res.status(HttpStatus.CREATED).json(course);
@@ -53,6 +54,7 @@ class CourseController {
 
     if (course) {
       course.name = validatedRequest.body.name;
+      course.acronym = validatedRequest.body.acronym;
       await course.save();
       await course.reload();
 
