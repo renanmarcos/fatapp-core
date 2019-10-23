@@ -1,8 +1,10 @@
 import { Speaker } from './../models/Speaker';
 import { Request, Response } from 'express';
-import { SpeakerManageSchema, SpeakerQuerySchema, SpeakerGetSchema } from '../routes/SpeakerRoutes';
+import { SpeakerManageSchema, SpeakerQuerySchema, SpeakerGetSchema } from '../routes/SpeakersRoutes';
 import { ValidatedRequest } from 'express-joi-validation';
 import * as HttpStatus from 'http-status-codes';
+import fs from 'fs';
+import path from 'path';
 
 class SpeakerController {
     
@@ -28,6 +30,12 @@ class SpeakerController {
             speaker.secondPhone = validatedRequest.body.secondPhone;
             speaker.curriculum = validatedRequest.body.curriculum;
 
+            if (validatedRequest.file) {
+                let completePath = path.join(__dirname, '../../storage/') + speaker.profilePicture;
+                fs.unlink(completePath, () => console.log('Deleted file: ' + completePath));
+                speaker.profilePicture = validatedRequest.file.filename;
+            }
+
             await speaker.save();
             await speaker.reload();
 
@@ -40,6 +48,11 @@ class SpeakerController {
         speaker.phone = validatedRequest.body.phone;
         speaker.secondPhone = validatedRequest.body.secondPhone;
         speaker.curriculum = validatedRequest.body.curriculum;
+
+        if (validatedRequest.file) {
+            speaker.profilePicture = validatedRequest.file.filename;
+        }
+
         await speaker.save();
 
         return res.status(HttpStatus.CREATED).json(speaker);
@@ -50,6 +63,8 @@ class SpeakerController {
         let speaker = await Speaker.findOne({ id: validatedRequest.params.id });
 
         if (speaker) {
+            let completePath = path.join(__dirname, '../../storage/') + speaker.profilePicture;
+            fs.unlink(completePath, () => console.log('Deleted file: ' + completePath));
             await speaker.remove();
             return res.sendStatus(HttpStatus.NO_CONTENT);
         }

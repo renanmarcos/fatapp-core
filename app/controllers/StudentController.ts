@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { Student } from '../models/Student';
-import { StudentQuerySchema, StudentStoreSchema, StudentUpdateSchema } from '../routes/StudentRoutes';
+import { StudentQuerySchema, StudentStoreSchema, StudentUpdateSchema } from '../routes/StudentsRoutes';
 import { ValidatedRequest } from 'express-joi-validation';
 import * as HttpStatus from 'http-status-codes';
 import { User } from '../models/User';

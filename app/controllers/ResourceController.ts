@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { Resource } from '../models/Resource';
-import { ResourceStoreSchema, ResourceUpdateSchema, ResourceQuerySchema }  from '../routes/ResourceRoutes';
+import { ResourceStoreSchema, ResourceUpdateSchema, ResourceQuerySchema }  from '../routes/ResourcesRoutes';
 import { ValidatedRequest } from 'express-joi-validation';
 import * as HttpStatus from 'http-status-codes';
 

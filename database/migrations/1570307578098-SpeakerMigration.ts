@@ -32,9 +32,14 @@ export class SpeakerMigration1570307578098 implements MigrationInterface {
                 {
                     name: "curriculum",
                     type: "varchar"
+                },
+                {
+                    name: "profilePicture",
+                    type: "varchar",
+                    isNullable: true
                 }
             ]
-        }), true)
+        }), true);
 
         const SpeakerIndex = new TableIndex({
             columnNames: ["email"],

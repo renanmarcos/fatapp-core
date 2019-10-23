@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { Course } from '../models/Course';
-import { CourseStoreSchema, CourseUpdateSchema, CourseQuerySchema }  from '../routes/CourseRoutes';
+import { CourseStoreSchema, CourseUpdateSchema, CourseQuerySchema }  from '../routes/CoursesRoutes';
 import { ValidatedRequest } from 'express-joi-validation';
 import * as HttpStatus from 'http-status-codes';
 

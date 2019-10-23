@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { Room } from '../models/Room';
-import { RoomStoreSchema, RoomUpdateSchema, RoomParamsSchema, ManageResourceSchema, RemoveResourceSchema } from '../routes/RoomRoutes';
+import { RoomStoreSchema, RoomUpdateSchema, RoomParamsSchema, ManageResourceSchema, RemoveResourceSchema } from '../routes/RoomsRoutes';
 import { ValidatedRequest } from 'express-joi-validation';
 import * as HttpStatus from 'http-status-codes';
 import { Resource } from '../models/Resource';

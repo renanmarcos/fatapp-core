@@ -1,16 +1,17 @@
 import express, { Application } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
-import UserRoutes from '../app/routes/UserRoutes';
-import StudentRoutes from '../app/routes/StudentRoutes';
-import Speaker from '../app/routes/SpeakerRoutes';
-import Resource from '../app/routes/ResourceRoutes';
-import Event from '../app/routes/EventRoutes';
-import Room from '../app/routes/RoomRoutes';
-import AuthRoutes from '../app/routes/AuthRoutes';
 import { requiresAuth } from '../app/middlewares/CheckJwt';
-import Activity from '../app/routes/ActivityRoutes';
-import Course from '../app/routes/CourseRoutes';
+import UsersRoutes from '../app/routes/UsersRoutes';
+import StudentsRoutes from '../app/routes/StudentsRoutes';
+import SpeakersRoutes from '../app/routes/SpeakersRoutes';
+import ResourcesRoutes from '../app/routes/ResourcesRoutes';
+import EventsRoutes from '../app/routes/EventsRoutes';
+import RoomsRoutes from '../app/routes/RoomsRoutes';
+import AuthRoutes from '../app/routes/AuthRoutes';
+import ActivitiesRoutes from '../app/routes/ActivitiesRoutes';
+import CoursesRoutes from '../app/routes/CoursesRoutes';
+import ImagesRoutes from '../app/routes/ImagesRoutes';
 
 export class App {
     app: Application;
@@ -34,21 +35,23 @@ export class App {
             path: [
                 { url: '/auth/token', methods: ['POST'] },
                 { url: '/users', methods: ['POST'] },
-                { url: '/students', methods: ['POST'] }
+                { url: '/students', methods: ['POST'] },
+                { url: '/courses', methods: ['GET'] }
             ]
         }));
     }
 
     private routes() {
         this.app.use('/auth', AuthRoutes);
-        this.app.use('/users', UserRoutes);
-        this.app.use('/students', StudentRoutes);
-        this.app.use('/resources', Resource);
-        this.app.use('/activities', Activity);
-        this.app.use('/rooms', Room);
-        this.app.use('/events', Event);
-        this.app.use('/speakers', Speaker);
-        this.app.use('/courses', Course);
+        this.app.use('/users', UsersRoutes);
+        this.app.use('/students', StudentsRoutes);
+        this.app.use('/resources', ResourcesRoutes);
+        this.app.use('/activities', ActivitiesRoutes);
+        this.app.use('/rooms', RoomsRoutes);
+        this.app.use('/events', EventsRoutes);
+        this.app.use('/speakers', SpeakersRoutes);
+        this.app.use('/courses', CoursesRoutes);
+        this.app.use('/images', ImagesRoutes);
     }
 
     async listen(): Promise<void> {

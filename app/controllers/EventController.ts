@@ -1,8 +1,10 @@
 import { Request, Response } from 'express';
 import { Event } from '../models/Event';
-import { EventStoreSchema, EventUpdateSchema, EventQuerySchema }  from '../routes/EventRoutes';
+import { EventStoreSchema, EventUpdateSchema, EventQuerySchema } from '../routes/EventsRoutes';
 import { ValidatedRequest } from 'express-joi-validation';
 import * as HttpStatus from 'http-status-codes';
+import path from 'path';
+import fs from 'fs';
 
 class EventController {
 
@@ -45,6 +47,8 @@ class EventController {
     let event = await Event.findOne({ id: validatedRequest.params.id });
 
     if (event) {
+      let completePath = path.join(__dirname, '../../storage/') + event.banner;
+      fs.unlink(completePath, () => console.log('Deleted file: ' + completePath));
       await event.remove();
       return res.sendStatus(HttpStatus.NO_CONTENT);
     }
@@ -62,7 +66,12 @@ class EventController {
       event.edition = validatedRequest.body.edition;
       event.initialDate = validatedRequest.body.initialDate;
       event.finalDate = validatedRequest.body.finalDate;
-      event.banner = validatedRequest.body.banner;
+
+      if (validatedRequest.file) {
+        let completePath = path.join(__dirname, '../../storage/') + event.banner;
+        fs.unlink(completePath, () => console.log('Deleted file: ' + completePath));
+        event.banner = validatedRequest.file.filename;
+      }
       
       await event.save();
       await event.reload();
