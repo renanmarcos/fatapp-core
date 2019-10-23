@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { Activity } from '../models/Activity';
 import { ValidatedRequest } from 'express-joi-validation';
-import { ActivityStoreSchema, ActivityParamsSchema, ActivityUpdateSchema, ManageUserSchema } from '../routes/ActivityRoutes';
+import { ActivityStoreSchema, ActivityParamsSchema, ActivityUpdateSchema, ManageUserSchema } from '../routes/ActivitiesRoutes';
 import { Room } from '../models/Room';
 import * as HttpStatus from 'http-status-codes';
 import { Event } from '../models/Event';
@@ -9,6 +9,9 @@ import { Speaker } from '../models/Speaker';
 import { Course } from '../models/Course';
 import { Subscription } from '../models/Subscription';
 import { User } from '../models/User';
+import QRCode from 'qrcode';
+import path from 'path';
+import fs from 'fs';
 
 class ActivityController {
 
@@ -33,7 +36,6 @@ class ActivityController {
         activity.finalDate = validatedRequest.body.finalDate;
         activity.obsActivity = validatedRequest.body.obsActivity;
         activity.obsResource = validatedRequest.body.obsResource;
-        activity.qrCode = validatedRequest.body.qrCode;
         activity.room = validatedRequest.body.roomId;
         activity.event = validatedRequest.body.eventId;
         activity.speaker = validatedRequest.body.speakerId;
@@ -46,21 +48,38 @@ class ActivityController {
           let courseToFind = await Course.findOne({ id: courseId });
           
           if (!courseToFind) {
-            return res.status(HttpStatus.NOT_FOUND).send('Course not found. Please double check it and try again!\nId of course not found is ' + courseId);
+            return res.sendStatus(HttpStatus.NOT_FOUND);
           }
           
           arrayOfCourses.push(courseToFind);
         }
 
         activity.targetAudience = arrayOfCourses;
+        await activity.save();
 
+        let partialPath = 'activities/' + activity.id + '.svg';
+        let completePath = path.join(__dirname, '../../storage/') + partialPath;
+                                    
+        let data = {
+          'id': activity.id
+        };
+        
+        await QRCode.toFile(
+          completePath, 
+          JSON.stringify(data),
+          { type: 'svg' }
+        );
+
+        activity.qrCode = partialPath;
         await activity.save();
         await activity.reload();
 
         return res.status(HttpStatus.CREATED).json(activity);
       }
       
-      return res.status(HttpStatus.NOT_ACCEPTABLE).send('Activity date must be between Event date. \n' + event.initialDate + ' to ' + event.finalDate);
+      return res.status(HttpStatus.NOT_ACCEPTABLE).send({
+        "message": "Activity date must be between Event date: " + event.initialDate + " to " + event.finalDate
+      });
     }
 
     return res.sendStatus(HttpStatus.NOT_FOUND);
@@ -83,7 +102,10 @@ class ActivityController {
     let activity = await Activity.findOne({ id: validatedRequest.params.id });
 
     if (activity) {
+      let completePath = path.join(__dirname, '../../storage/') + activity.qrCode;
+      fs.unlink(completePath, () => console.log('Deleted file: ' + completePath));
       await activity.remove();
+
       return res.sendStatus(HttpStatus.NO_CONTENT);
     }
 
@@ -110,7 +132,6 @@ class ActivityController {
           activity.finalDate = validatedRequest.body.finalDate;
           activity.obsActivity = validatedRequest.body.obsActivity;
           activity.obsResource = validatedRequest.body.obsResource;
-          activity.qrCode = validatedRequest.body.qrCode;
           activity.room = validatedRequest.body.roomId;
           activity.event = validatedRequest.body.eventId;
           activity.speaker = validatedRequest.body.speakerId;
@@ -129,10 +150,12 @@ class ActivityController {
           await activity.save();
           await activity.reload();
 
-          return res.status(HttpStatus.OK).json(await Activity.findOne({ where: { id: activity.id }, relations: ['room', 'event', 'speaker', 'targetAudience'] }));
+          return res.status(HttpStatus.OK).json(activity);
         }
 
-        return res.status(HttpStatus.NOT_ACCEPTABLE).send('Activity date must be between Event date. \n' + event.initialDate + ' to ' + event.finalDate);
+        return res.status(HttpStatus.NOT_ACCEPTABLE).send({
+          "message": "Activity date must be between Event date: " + event.initialDate + " to " + event.finalDate
+        });
       }
     }
     
@@ -161,7 +184,9 @@ class ActivityController {
       return res.sendStatus(HttpStatus.NOT_FOUND);
     }
 
-    return res.status(HttpStatus.BAD_REQUEST).send("O evento vai começar em menos de 10 minutos");
+    return res.status(HttpStatus.BAD_REQUEST).send({
+      "message": "O evento vai começar em menos de 10 minutos"
+    });
   }
   
   public async attendee(req: Request, res: Response): Promise<Response> 

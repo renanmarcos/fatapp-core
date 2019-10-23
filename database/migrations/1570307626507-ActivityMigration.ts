@@ -43,7 +43,8 @@ export class ActivityMigration1570307626507 implements MigrationInterface {
                 },
                 {
                     name: "qrCode",
-                    type: "varchar"
+                    type: "varchar",
+                    isNullable: true
                 },
                 {
                     name: "roomId",

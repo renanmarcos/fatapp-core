@@ -22,6 +22,9 @@ export class Speaker extends BaseEntity {
     @Column()
     curriculum: string
 
+    @Column()
+    profilePicture!: string
+
     @OneToMany(type => Activity, activity => activity.room)
     activity!: Activity[];
 

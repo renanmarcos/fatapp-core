@@ -8,15 +8,14 @@ import multer from 'multer';
 const routes = Router();
 const validator = createValidator();
 const storage = multer.diskStorage({
-    destination: function(req, file, cb) {
-      cb(null, "uploads/");
+    destination: function(req, file, callback) {
+        callback(null, "storage/");
     },
-    filename: function(req, file, cb) {
-      cb(null, file.originalname);
+    filename: function(req, file, callback) {
+        callback(null, "events/" + file.originalname);
     }
-  });
-  
-  const uploads = multer({ storage: storage });
+});
+const uploads = multer({ storage: storage });
 
 const paramsSchema = Joi.object().keys({
     id: Joi.string().required()
@@ -52,6 +51,6 @@ routes.get('/', EventController.list);
 routes.get('/:id', validator.params(paramsSchema), EventController.get);
 routes.post('/', uploads.single('banner'), validator.body(bodyStoreSchema), EventController.store);
 routes.delete('/:id', validator.params(paramsSchema), EventController.delete);
-routes.put('/:id', validator.params(paramsSchema), validator.body(bodyUpdateSchema), EventController.update);
+routes.put('/:id', uploads.single('banner'), validator.params(paramsSchema), validator.body(bodyUpdateSchema), EventController.update);
 
 export default routes;

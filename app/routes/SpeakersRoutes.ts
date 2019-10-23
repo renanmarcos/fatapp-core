@@ -3,9 +3,19 @@ import SpeakerController from '../controllers/SpeakerController';
 import * as Joi from '@hapi/joi';
 import { ValidatedRequestSchema, createValidator, ContainerTypes } from 'express-joi-validation';
 import 'joi-extract-type';
+import multer from 'multer';
 
 const routes = Router();
 const validator = createValidator();
+const storage = multer.diskStorage({
+    destination: function(req, file, callback) {
+        callback(null, "storage/");
+    },
+    filename: function(req, file, callback) {
+        callback(null, "speakers/" + file.originalname);
+    }
+});
+const uploads = multer({ storage: storage });
 
 const paramsSchema = Joi.object().keys({
     id: Joi.string().required()
@@ -36,7 +46,7 @@ export interface SpeakerManageSchema extends ValidatedRequestSchema {
 }
 
 routes.get('/', SpeakerController.index);
-routes.post('/', validator.body(bodyManageSchema), SpeakerController.manageSpeaker);
+routes.post('/', uploads.single('profilePicture'), validator.body(bodyManageSchema), SpeakerController.manageSpeaker);
 routes.delete('/:id', validator.params(paramsSchema), SpeakerController.delete);
 
 export default routes;
