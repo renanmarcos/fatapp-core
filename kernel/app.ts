@@ -52,6 +52,7 @@ export class App {
         this.app.use('/speakers', SpeakersRoutes);
         this.app.use('/courses', CoursesRoutes);
         this.app.use('/images', ImagesRoutes);
+        // this.app.use('/certificates', CertificateRoutes);
     }
 
     async listen(): Promise<void> {

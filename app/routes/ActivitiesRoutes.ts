@@ -70,4 +70,15 @@ routes.put('/:id/unsubscribe', validator.params(paramsSchema), validator.body(bo
 routes.put('/:id/attendee', validator.params(paramsSchema), validator.body(bodyManageUserSchema), ActivityController.attendee);
 routes.get('/:id/subscriptions', validator.params(paramsSchema), ActivityController.getSubscriptions);
 
+const bodyRateSchema = Joi.object({
+    userId: Joi.number().required(),
+    numberOfStars: Joi.number().required().min(1).max(5)
+});
+  
+export interface RateSchema extends ValidatedRequestSchema {
+    [ContainerTypes.Query]: Joi.extractType<typeof bodyRateSchema>;
+}
+
+routes.post('/:id/rate', validator.params(paramsSchema), validator.body(bodyRateSchema), ActivityController.rate);
+
 export default routes;

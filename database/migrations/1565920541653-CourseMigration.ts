@@ -32,22 +32,22 @@ export class CourseMigration1565920541653 implements MigrationInterface {
         let course = new Course();
         course.name = "Análise e Desenvolvimento de Sistemas";
         course.acronym = "ADS";
-        await course.save();
+        course.save();
     
         course = new Course();
         course.name = "Jogos Digitais";
         course.acronym = "JOG";
-        await course.save();
+        course.save();
     
         course = new Course();
         course.name = "Segurança da Informação";
         course.acronym = "SEG";
-        await course.save();
+        course.save();
     
         course = new Course();
         course.name = "Gestão Empresarial";
         course.acronym = "GES";
-        await course.save();
+        course.save();
     }
 
     public async down(queryRunner: QueryRunner): Promise<any> {
