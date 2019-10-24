@@ -66,19 +66,19 @@ class RoomController {
 
   public async manageResource(req: Request, res: Response): Promise<Response> {
     let validatedRequest = req as ValidatedRequest<ManageResourceSchema>;
-    let resource = await RoomResource.findOne({ 
+    let roomResource = await RoomResource.findOne({ 
       where: { 
         room: validatedRequest.params.id, 
         resource: validatedRequest.body.resourceId 
       } 
     });
     
-    if (resource) {
-      resource.amount = validatedRequest.body.resource_amount;
-      await resource.save();
-      await resource.reload();
+    if (roomResource) {
+      roomResource.amount = validatedRequest.body.amount;
+      await roomResource.save();
+      await roomResource.reload();
     
-      return res.status(HttpStatus.OK).send(resource);
+      return res.status(HttpStatus.OK).send(roomResource);
     } 
     
     let room = await Room.findOne({ id: validatedRequest.params.id });
@@ -88,10 +88,10 @@ class RoomController {
       let roomResource = new RoomResource();
       roomResource.resource = newResource;
       roomResource.room = room;
-      roomResource.amount = validatedRequest.body.resourceAmount;
+      roomResource.amount = validatedRequest.body.amount;
       await roomResource.save();
 
-      return res.status(HttpStatus.OK).send({});
+      return res.status(HttpStatus.OK).send(roomResource);
     }
 
     return res.sendStatus(HttpStatus.NOT_FOUND);
@@ -110,15 +110,15 @@ class RoomController {
 
   public async removeResource(req: Request, res: Response): Promise<Response> {
     let validatedRequest = req as ValidatedRequest<RemoveResourceSchema>;
-    let resource = await RoomResource.findOne({ 
+    let roomResource = await RoomResource.findOne({ 
       where: { 
         resource: validatedRequest.params.resourceId,
         room: validatedRequest.params.id
       } 
     });
 
-    if (resource) {
-      await resource.remove();
+    if (roomResource) {
+      await roomResource.remove();
 
       return res.sendStatus(HttpStatus.OK);
     }

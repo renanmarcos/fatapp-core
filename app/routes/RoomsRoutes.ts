@@ -42,8 +42,8 @@ routes.delete('/:id', validator.params(paramsSchema), RoomController.delete);
 routes.put('/:id', validator.params(paramsSchema), validator.body(bodyUpdateSchema), RoomController.update);
 
 const bodyManageResourceSchema = Joi.object({
-  resourceId: Joi.string().required(),
-  amount: Joi.string().required()
+  resourceId: Joi.number().required(),
+  amount: Joi.number().required()
 });
 
 export interface ManageResourceSchema extends ValidatedRequestSchema {
