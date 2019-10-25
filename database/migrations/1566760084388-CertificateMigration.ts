@@ -1,7 +1,7 @@
 import {MigrationInterface, QueryRunner, Table} from "typeorm";
 import { Certificate } from '../../app/models/Certificate';
 
-export class SubscriptionsMigration1570708032200 implements MigrationInterface {
+export class CertificateMigration1566760085488 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<any> {
 
@@ -28,6 +28,10 @@ export class SubscriptionsMigration1570708032200 implements MigrationInterface {
     private async createDefaultCertificates()
     {
         let certificate = new Certificate();
+        certificate.path = "certificates/security-day.docx";
+        certificate.save();
+
+        certificate = new Certificate();
         certificate.path = "certificates/fatecnologia.docx";
         certificate.save();
     }

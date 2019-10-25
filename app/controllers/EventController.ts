@@ -5,6 +5,7 @@ import { ValidatedRequest } from 'express-joi-validation';
 import * as HttpStatus from 'http-status-codes';
 import path from 'path';
 import fs from 'fs';
+import { Certificate } from '../models/Certificate';
 
 class EventController {
 
@@ -28,17 +29,22 @@ class EventController {
   public async store(req: Request, res: Response): Promise<Response>
   {
     let validatedRequest = req as ValidatedRequest<EventStoreSchema>;
-    let event = new Event();
+    let certificate = await Certificate.findOne({ id: validatedRequest.body.certificateId });
 
-    event.title = validatedRequest.body.title;
-    event.edition = validatedRequest.body.edition;
-    event.initialDate = validatedRequest.body.initialDate;
-    event.finalDate = validatedRequest.body.finalDate;
-    event.banner = validatedRequest.file.filename;
+    if (certificate) {
+      let event = new Event();
+      event.title = validatedRequest.body.title;
+      event.edition = validatedRequest.body.edition;
+      event.initialDate = validatedRequest.body.initialDate;
+      event.finalDate = validatedRequest.body.finalDate;
+      event.banner = validatedRequest.file.filename;
+      event.certificate = certificate;
+      await event.save();
 
-    await event.save();
-    
-    return res.status(HttpStatus.CREATED).json(event);
+      return res.status(HttpStatus.CREATED).json(event);
+    }
+
+    return res.sendStatus(HttpStatus.NOT_FOUND);
   }
 
   public async delete(req: Request, res: Response): Promise<Response> 
@@ -60,12 +66,14 @@ class EventController {
   {
     let validatedRequest = req as ValidatedRequest<EventUpdateSchema>;
     let event = await Event.findOne({ id: validatedRequest.params.id });
+    let certificate = await Certificate.findOne({ id: validatedRequest.body.certificateId });
 
-    if (event) {
+    if (event && certificate) {
       event.title = validatedRequest.body.title;
       event.edition = validatedRequest.body.edition;
       event.initialDate = validatedRequest.body.initialDate;
       event.finalDate = validatedRequest.body.finalDate;
+      event.certificate = certificate;
 
       if (validatedRequest.file) {
         let completePath = path.join(__dirname, '../../storage/') + event.banner;

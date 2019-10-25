@@ -29,7 +29,8 @@ const bodyStoreSchema = Joi.object({
     title: Joi.string().required(),
     edition: Joi.string().required(),
     initialDate: Joi.date().required(),
-    finalDate: Joi.date().required()
+    finalDate: Joi.date().required(),
+    certificateId: Joi.number().required()
 });
   
 export interface EventStoreSchema extends ValidatedRequestSchema {
@@ -40,7 +41,8 @@ const bodyUpdateSchema = Joi.object({
     title: Joi.string(),
     edition: Joi.string(),
     initialDate: Joi.date(),
-    finalDate: Joi.date()
+    finalDate: Joi.date(),
+    certificateId: Joi.number()
 });
   
 export interface EventUpdateSchema extends ValidatedRequestSchema {

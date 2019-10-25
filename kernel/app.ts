@@ -12,6 +12,7 @@ import AuthRoutes from '../app/routes/AuthRoutes';
 import ActivitiesRoutes from '../app/routes/ActivitiesRoutes';
 import CoursesRoutes from '../app/routes/CoursesRoutes';
 import ImagesRoutes from '../app/routes/ImagesRoutes';
+import CertificatesRoutes from '../app/routes/CertificatesRoutes';
 
 export class App {
     app: Application;
@@ -52,7 +53,7 @@ export class App {
         this.app.use('/speakers', SpeakersRoutes);
         this.app.use('/courses', CoursesRoutes);
         this.app.use('/images', ImagesRoutes);
-        // this.app.use('/certificates', CertificateRoutes);
+        this.app.use('/certificates', CertificatesRoutes);
     }
 
     async listen(): Promise<void> {
