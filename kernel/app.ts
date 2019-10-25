@@ -34,7 +34,9 @@ export class App {
             path: [
                 { url: '/auth/token', methods: ['POST'] },
                 { url: '/users', methods: ['POST'] },
-                { url: '/students', methods: ['POST'] }
+                { url: '/students', methods: ['POST'] },
+                { url: '/activities/3/report?email=1', methods: ['GET']},
+                { url: '/activities/3/report', methods: ['GET']}
             ]
         }));
     }
