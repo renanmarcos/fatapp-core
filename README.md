@@ -8,6 +8,7 @@ npm ci
 cp .env.example .env
 docker-compose up
 docker-compose exec node bash
+npm run typeorm schema:drop
 npm run db:migrate
 ```
 

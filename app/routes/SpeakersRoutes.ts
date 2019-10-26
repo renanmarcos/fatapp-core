@@ -26,7 +26,7 @@ export interface SpeakerQuerySchema extends ValidatedRequestSchema {
 }
 
 const getSchema = Joi.object({
-    email: Joi.string().email()
+    speakerEmail: Joi.string().email()
 });
 
 export interface SpeakerGetSchema extends ValidatedRequestSchema {
@@ -34,11 +34,11 @@ export interface SpeakerGetSchema extends ValidatedRequestSchema {
 }
 
 const bodyManageSchema = Joi.object({
-    name: Joi.string().required(),
-    email: Joi.string().required().email(),
-    phone: Joi.string().required(),
-    secondPhone: Joi.string(),
-    curriculum: Joi.string().required(),
+    speakerName: Joi.string().required(),
+    speakerEmail: Joi.string().required().email(),
+    speakerPhone: Joi.string().required(),
+    speakerPhone2: Joi.string(),
+    speakerCurriculum: Joi.string().required(),
 });
 
 export interface SpeakerManageSchema extends ValidatedRequestSchema {
@@ -46,7 +46,7 @@ export interface SpeakerManageSchema extends ValidatedRequestSchema {
 }
 
 routes.get('/', SpeakerController.index);
-routes.post('/', uploads.single('profilePicture'), validator.body(bodyManageSchema), SpeakerController.manageSpeaker);
+routes.post('/', uploads.single('speakerPicture'), validator.body(bodyManageSchema), SpeakerController.manageSpeaker);
 routes.delete('/:id', validator.params(paramsSchema), SpeakerController.delete);
 
 export default routes;

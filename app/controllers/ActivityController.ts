@@ -1,17 +1,19 @@
 import { Request, Response } from 'express';
 import { Activity } from '../models/Activity';
 import { ValidatedRequest } from 'express-joi-validation';
-import { ActivityStoreSchema, ActivityParamsSchema, ActivityUpdateSchema, ManageUserSchema } from '../routes/ActivitiesRoutes';
+import { ActivityStoreSchema, ActivityParamsSchema, ActivityUpdateSchema, ManageUserSchema, RateSchema } from '../routes/ActivitiesRoutes';
 import { Room } from '../models/Room';
 import * as HttpStatus from 'http-status-codes';
 import { Event } from '../models/Event';
 import { Speaker } from '../models/Speaker';
 import { Course } from '../models/Course';
 import { Subscription } from '../models/Subscription';
+import { Rating } from '../models/Rating';
 import { User } from '../models/User';
 import QRCode from 'qrcode';
 import path from 'path';
 import fs from 'fs';
+import { CertificateGenerator } from '../services/CertificateGenerator';
 
 class ActivityController {
 
@@ -185,7 +187,7 @@ class ActivityController {
     }
 
     return res.status(HttpStatus.BAD_REQUEST).send({
-      "message": "O evento vai começar em menos de 10 minutos"
+      "message": "A atividade começará dentro de 1 hora"
     });
   }
   
@@ -200,9 +202,13 @@ class ActivityController {
     });
 
     if (subscription) {
+      // TODO: Generate Certificate in second thread and send email
       subscription.attended = true;
       await subscription.save();
       await subscription.reload();
+
+      let generator = new CertificateGenerator(subscription);
+      generator.sendCertificate();
 
       return res.status(HttpStatus.OK).send(subscription);
     }
@@ -212,15 +218,15 @@ class ActivityController {
 
   public async unsubscribe(req: Request, res: Response): Promise<Response> {
     let validatedRequest = req as ValidatedRequest<ManageUserSchema>;
-    let user = await User.findOne({ 
+    let subscription = await Subscription.findOne({ 
       where: { 
         activity: validatedRequest.params.id, 
         user: validatedRequest.body.userId 
       } 
     });
 
-    if (user) {
-      await user.remove();
+    if (subscription) {
+      await subscription.remove();
       return res.sendStatus(HttpStatus.NO_CONTENT);
     }
 
@@ -235,6 +241,24 @@ class ActivityController {
 
     if (subscriptions) {
       return res.status(HttpStatus.OK).send(subscriptions);
+    }
+
+    return res.sendStatus(HttpStatus.NOT_FOUND);
+  }
+
+  public async rate(req: Request, res: Response): Promise<Response> {
+    let validatedRequest = req as ValidatedRequest<RateSchema>;
+    let activity = await Activity.findOne({ id: validatedRequest.params.id });
+    let user = await User.findOne({ id: validatedRequest.body.userId });
+
+    if (activity && user) {
+      let rating = new Rating();
+      rating.user = user;
+      rating.activity = activity;
+      rating.numberOfStars = validatedRequest.body.numberOfStars;
+      await rating.save();
+
+      return res.status(HttpStatus.OK).send(rating);
     }
 
     return res.sendStatus(HttpStatus.NOT_FOUND);
