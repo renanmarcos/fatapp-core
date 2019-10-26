@@ -13,6 +13,7 @@ import { User } from '../models/User';
 import QRCode from 'qrcode';
 import path from 'path';
 import fs from 'fs';
+import { CertificateGenerator } from '../services/CertificateGenerator';
 
 class ActivityController {
 
@@ -205,6 +206,9 @@ class ActivityController {
       subscription.attended = true;
       await subscription.save();
       await subscription.reload();
+
+      let generator = new CertificateGenerator(subscription);
+      generator.sendCertificate();
 
       return res.status(HttpStatus.OK).send(subscription);
     }

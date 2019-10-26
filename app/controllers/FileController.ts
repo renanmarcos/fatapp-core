@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import path from 'path';
 
-class ImageController {
+class FileController {
 
   public async renderPath(req: Request, res: Response): Promise<void> 
   {
@@ -17,4 +17,4 @@ class ImageController {
   }
 }
 
-export default new ImageController();
+export default new FileController();

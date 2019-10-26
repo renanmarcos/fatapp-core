@@ -32,7 +32,7 @@ export interface CertificateStoreSchema extends ValidatedRequestSchema {
 }
 
 routes.get('/', CertificateController.index);
-routes.post('/:id', validator.params(paramsSchema), uploads.single('certificate'), CertificateController.store);
+routes.post('/', validator.body(bodyStoreSchema), uploads.single('certificate'), CertificateController.store);
 routes.delete('/:id', validator.params(paramsSchema), CertificateController.delete);
 
 export default routes;
