@@ -140,7 +140,7 @@ class ReportController {
       worksheetLGP.getCell('E1').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '993535' } };
       worksheetLGP.getCell('E1').font = font;
 
-      let fileName = event[0].title + '_' + event[0].edition + '.xlsx';
+      let fileName = event[0].title + ' ' + event[0].edition + '.xlsx';
       let email = req.query.email;
 
       if (email) {
