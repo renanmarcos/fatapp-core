@@ -1,10 +1,15 @@
 import * as Nodemailer from 'nodemailer';
 import { Response, Request } from 'express';
+import { Attachment } from 'nodemailer/lib/mailer';
 
 export class SendMail {
 
-    public async sendMail(params: Request, attachment: any, attachmentName: string): Promise<Response> {
-
+    public to: Array<string>;
+    public subject: string;
+    public text: string;
+    public attachment: Attachment;
+    
+    public async send(): Promise<void> {
         let transporter = Nodemailer.createTransport({
             service: process.env.EMAIL_SERVICE,
             auth: {
@@ -13,25 +18,12 @@ export class SendMail {
             }
         });
 
-        let to = params.query.email;
-        let subject = params.body.subject;
-        let text = params.body.text;
-        let html = params.body.html;
-
-        await transporter.sendMail({
-            from: process.env.EMAIL_USER, // sender address
-            to: to, // list of receivers
-            subject: subject, // Subject line
-            text: text, // plain text body
-            html: html, // html body
-            attachments:[
-                {
-                    "filename": attachmentName,
-                    "content": attachment
-                }
-            ]
+        transporter.sendMail({
+            from: process.env.EMAIL_USER,
+            to: this.to,
+            subject: this.subject,
+            text: this.text,
+            attachments: [this.attachment]
         });
-
-        return
     }
 }

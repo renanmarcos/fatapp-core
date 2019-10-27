@@ -1,6 +1,6 @@
 import { Request, Response } from "express-serve-static-core";
 import { ValidatedRequest } from "express-joi-validation";
-import { ActivityParamsSchema } from "../routes/ActivitiesRoutes";
+import { ActivityReportSchema } from "../routes/ActivitiesRoutes";
 import { EventQuerySchema } from "../routes/EventsRoutes";
 import { Subscription } from "../models/Subscription";
 import { Event } from "../models/Event";
@@ -11,7 +11,7 @@ import { SendMail } from "../services/mail/SendEmail";
 class ReportController {
 
   public async generateActivityReport(req: Request, res: Response): Promise<Response> {
-    let validatedRequest = req as ValidatedRequest<ActivityParamsSchema>;
+    let validatedRequest = req as ValidatedRequest<ActivityReportSchema>;
     let subscriptions = await Subscription.find({
       relations: ['user', 'user.student', 'user.student.course', 'activity', 'activity.event'],
       where: { activity: validatedRequest.params.id }
@@ -57,14 +57,20 @@ class ReportController {
       let event = subscriptions[0].activity.event;
       let activity = subscriptions[0].activity;
       let fileName = event.title + ' ' + event.edition + ' - ' + activity.title + '.xlsx';
-      let email = req.query.email;
+      let emails = req.body.emails;
 
-      if (email) {
+      if (emails) {
         let helper = new SendMail();
-        let mailParams = req;
-        workbook.xlsx.writeBuffer()
-          .catch((error) => console.log(error))
-          .then((buffer) => helper.sendMail(mailParams, buffer, fileName));
+        helper.to = emails;
+        helper.text =  "Segue relatório em anexo";
+        helper.subject = "Relatório " + fileName;
+        
+        workbook.xlsx.writeBuffer().then(function (buffer: any) {
+          helper.attachment = {
+            content: buffer
+          };
+          helper.send();
+        }).catch((error) => console.log(error));
 
         return res.status(HttpStatus.OK).send({
           message: "O relatório está sendo gerado e será enviado por email em breve"
