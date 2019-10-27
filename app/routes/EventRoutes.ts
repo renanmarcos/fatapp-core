@@ -3,6 +3,7 @@ import EventController from '../controllers/EventController';
 import * as Joi from '@hapi/joi';
 import { ValidatedRequestSchema, createValidator, ContainerTypes } from 'express-joi-validation';
 import 'joi-extract-type';
+import ReportController from '../controllers/ReportController';
 
 const routes = Router();
 const validator = createValidator();
@@ -44,5 +45,6 @@ routes.get('/:id', validator.params(paramsSchema), EventController.get);
 routes.post('/', validator.body(bodyStoreSchema), EventController.store);
 routes.delete('/:id', validator.params(paramsSchema), EventController.delete);
 routes.put('/:id', validator.params(paramsSchema), validator.body(bodyUpdateSchema), EventController.update);
+routes.get('/:id/report', validator.params(paramsSchema), ReportController.generateEventReport);
 
 export default routes;

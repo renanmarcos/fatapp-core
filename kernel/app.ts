@@ -36,7 +36,9 @@ export class App {
                 { url: '/users', methods: ['POST'] },
                 { url: '/students', methods: ['POST'] },
                 { url: '/activities/3/report?email=1', methods: ['GET']},
-                { url: '/activities/3/report', methods: ['GET']}
+                { url: '/activities/3/report', methods: ['GET']},
+                { url: '/events/2/report?email=1', methods: ['GET']},
+                { url: '/events/2/report', methods: ['GET']}
             ]
         }));
     }
