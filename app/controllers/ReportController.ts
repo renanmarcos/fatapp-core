@@ -1,13 +1,12 @@
 import { Request, Response } from "express-serve-static-core";
 import { ValidatedRequest } from "express-joi-validation";
-import { ActivityParamsSchema } from "../routes/ActivityRoutes";
-import { EventQuerySchema } from "../routes/EventRoutes";
+import { ActivityParamsSchema } from "../routes/ActivitiesRoutes";
+import { EventQuerySchema } from "../routes/EventsRoutes";
 import { Subscription } from "../models/Subscription";
 import { Event } from "../models/Event";
 import * as HttpStatus from 'http-status-codes';
 import * as Excel from 'exceljs';
-import { SendMail } from "../services/mail/sendEmail";
-
+import { SendMail } from "../services/mail/SendEmail";
 
 class ReportController {
 
@@ -16,7 +15,6 @@ class ReportController {
     let subscriptions = await Subscription.find({
       relations: ['user', 'user.student', 'user.student.course', 'activity', 'activity.event'],
       where: { activity: validatedRequest.params.id }
-
     });
 
     if (subscriptions) {
@@ -30,57 +28,57 @@ class ReportController {
         { header: 'Curso', key: 'curso', width: 50 }
       ];
 
-      let i = 0;
-      for (i = 0; i < subscriptions.length; i++) {
+      for (let i = 0; i < subscriptions.length; i++) {
+        let ra = '-';
+        let curso = 'Público Externo';
+
         if (subscriptions[i].user.student) {
-          worksheetLGP.addRow({
-            nome: subscriptions[i].user.name,
-            presenca: subscriptions[i].attended,
-            ra: subscriptions[i].user.student.ra,
-            curso: subscriptions[i].user.student.course.name
-          });
-        } else {
-          worksheetLGP.addRow({
-            nome: subscriptions[i].user.name,
-            presenca: subscriptions[i].attended,
-            ra: '-',
-            curso: 'Público Externo'
-          });
+          ra = subscriptions[i].user.student.ra;
+          curso = subscriptions[i].user.student.course.name;
         }
+
+        worksheetLGP.addRow({
+          nome: subscriptions[i].user.name,
+          presenca: subscriptions[i].attended,
+          ra: ra,
+          curso: curso
+        });
       }
 
       worksheetLGP.autoFilter = 'A1:D1';
-      const font = { color: { argb: 'FFFFFFF' }, bold: true };
+      const font : Partial<Excel.Font> = { color: { argb: 'FFFFFFF' }, bold: true };
+      const fill : Excel.Fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '993535' } };
 
-      worksheetLGP.getCell('A1').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '993535' } };
-      worksheetLGP.getCell('A1').font = font;
-      worksheetLGP.getCell('B1').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '993535' } };
-      worksheetLGP.getCell('B1').font = font;
-      worksheetLGP.getCell('C1').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '993535' } };
-      worksheetLGP.getCell('C1').font = font;
-      worksheetLGP.getCell('D1').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '993535' } };
-      worksheetLGP.getCell('D1').font = font;
+      worksheetLGP.getRow(1).eachCell(function (cell: Excel.Cell, column: number) {
+        cell.fill = fill;
+        cell.font = font;
+      });
 
-      let fileName = subscriptions[0].activity.event.title + ' ' + subscriptions[0].activity.event.edition + ' - ' + subscriptions[0].activity.title + '.xlsx';
+      let event = subscriptions[0].activity.event;
+      let activity = subscriptions[0].activity;
+      let fileName = event.title + ' ' + event.edition + ' - ' + activity.title + '.xlsx';
       let email = req.query.email;
 
       if (email) {
-        let sendEmail = new SendMail();
+        let helper = new SendMail();
         let mailParams = req;
-        await workbook.xlsx.writeBuffer().then(async function (buffer) {
-          await sendEmail.sendMail(mailParams, buffer, fileName);
-          res.end('Email enviado');
+        workbook.xlsx.writeBuffer()
+          .catch((error) => console.log(error))
+          .then((buffer) => helper.sendMail(mailParams, buffer, fileName));
+
+        return res.status(HttpStatus.OK).send({
+          message: "O relatório está sendo gerado e será enviado por email em breve"
         });
-      } else {
-        res.setHeader("Content-Disposition", "attachment; filename=" + fileName);
-        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        await workbook.xlsx.writeBuffer().then(async function (buffer) {
-          res.send(buffer);
-        });
-      }
-    } else {
-      return res.sendStatus(HttpStatus.NOT_FOUND);
+      } 
+
+      res.setHeader("Content-Disposition", "attachment; filename=" + fileName);
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      await workbook.xlsx.writeBuffer().then(async function (buffer) {
+        res.status(HttpStatus.OK).send(buffer);
+      });
     }
+
+    return res.sendStatus(HttpStatus.NOT_FOUND);
   }
 
   public async generateEventReport(req: Request, res: Response): Promise<Response> {
