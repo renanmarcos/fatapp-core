@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { User } from '../models/User';
-import { UserStoreSchema, UserUpdateSchema, UserQuerySchema }  from '../routes/UserRoutes';
+import { UserStoreSchema, UserUpdateSchema, UserQuerySchema }  from '../routes/UsersRoutes';
 import { ValidatedRequest } from 'express-joi-validation';
 import * as HttpStatus from 'http-status-codes';
 import { Subscription } from '../models/Subscription';

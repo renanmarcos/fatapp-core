@@ -1,11 +1,11 @@
 import {MigrationInterface, QueryRunner, Table, TableForeignKey, TableIndex} from "typeorm";
 
-export class SubscriptionsMigration1570308026507 implements MigrationInterface {
+export class SubscriptionsMigration1570708032103 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<any> {
 
         await queryRunner.createTable(new Table({
-            name: "subscription",
+            name: "rating",
             columns: [
                 {
                     name: "id",
@@ -23,8 +23,8 @@ export class SubscriptionsMigration1570308026507 implements MigrationInterface {
                     type: "int",
                 },
                 {
-                    name: "attended",
-                    type: "bool"
+                    name: "numberOfStars",
+                    type: "int"
                 }
             ]
         }), true)
@@ -42,15 +42,15 @@ export class SubscriptionsMigration1570308026507 implements MigrationInterface {
             onDelete: "CASCADE"
         });
 
-        const SubscriptionIndex = new TableIndex({
+        const RatingIndex = new TableIndex({
             columnNames: ["activityId", "userId"],
-            name: "SubscriptionIndex",
+            name: "RatingIndex",
             isUnique: true
         });
 
-        await queryRunner.createForeignKey("subscription", fkActivity);
-        await queryRunner.createForeignKey("subscription", fkStudent);
-        await queryRunner.createIndex("subscription", SubscriptionIndex);
+        await queryRunner.createForeignKey("rating", fkActivity);
+        await queryRunner.createForeignKey("rating", fkStudent);
+        await queryRunner.createIndex("rating", RatingIndex);
     }
 
     public async down(queryRunner: QueryRunner): Promise<any> {

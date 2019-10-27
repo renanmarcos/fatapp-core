@@ -1,4 +1,4 @@
-import {MigrationInterface, QueryRunner, Table} from "typeorm";
+import { MigrationInterface, QueryRunner, Table, TableForeignKey } from 'typeorm';
 
 export class EventMigration1566760085488 implements MigrationInterface {
 
@@ -33,10 +33,22 @@ export class EventMigration1566760085488 implements MigrationInterface {
                 {
                     name: "banner",
                     type: "varchar"
+                },
+                {
+                    name: "certificateId",
+                    type: "int"
                 }
             ]
-        }), true)
-        
+        }), true);
+
+        const fkCertificate = new TableForeignKey({
+            columnNames: ["certificateId"],
+            referencedColumnNames: ["id"],
+            referencedTableName: "certificate",
+            onDelete: "CASCADE"
+        });
+
+        await queryRunner.createForeignKey("event", fkCertificate);
     }
 
     public async down(queryRunner: QueryRunner): Promise<any> {

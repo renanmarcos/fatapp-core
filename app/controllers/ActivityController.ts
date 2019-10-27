@@ -1,14 +1,19 @@
 import { Request, Response } from 'express';
 import { Activity } from '../models/Activity';
 import { ValidatedRequest } from 'express-joi-validation';
-import { ActivityStoreSchema, ActivityParamsSchema, ActivityUpdateSchema, ManageUserSchema } from '../routes/ActivityRoutes';
+import { ActivityStoreSchema, ActivityParamsSchema, ActivityUpdateSchema, ManageUserSchema, RateSchema } from '../routes/ActivitiesRoutes';
 import { Room } from '../models/Room';
 import * as HttpStatus from 'http-status-codes';
 import { Event } from '../models/Event';
 import { Speaker } from '../models/Speaker';
 import { Course } from '../models/Course';
 import { Subscription } from '../models/Subscription';
+import { Rating } from '../models/Rating';
 import { User } from '../models/User';
+import QRCode from 'qrcode';
+import path from 'path';
+import fs from 'fs';
+import { CertificateGenerator } from '../services/CertificateGenerator';
 
 class ActivityController {
 
@@ -22,50 +27,64 @@ class ActivityController {
     let event = await Event.findOne({ id: validatedRequest.body.eventId });
     let speaker = await Speaker.findOne({ id: validatedRequest.body.speakerId });
 
-    if (room) {
-      if (event) {
-        if (speaker) {
-          if (event.initialDate < validatedRequest.body.initialDate && event.finalDate > validatedRequest.body.finalDate) {
-            let activity = new Activity();
+    if (room && event && speaker) {
+      if (event.initialDate < validatedRequest.body.initialDate && event.finalDate > validatedRequest.body.finalDate) {
+        let activity = new Activity();
 
-            activity.title = validatedRequest.body.title;
-            activity.type = validatedRequest.body.type;
-            activity.description = validatedRequest.body.description;
-            activity.initialDate = validatedRequest.body.initialDate;
-            activity.finalDate = validatedRequest.body.finalDate;
-            activity.obsActivity = validatedRequest.body.obsActivity;
-            activity.obsResource = validatedRequest.body.obsResource;
-            activity.qrCode = "teste";
-            activity.room = validatedRequest.body.roomId;
-            activity.event = validatedRequest.body.eventId;
-            activity.speaker = validatedRequest.body.speakerId;
+        activity.title = validatedRequest.body.title;
+        activity.type = validatedRequest.body.type;
+        activity.description = validatedRequest.body.description;
+        activity.initialDate = validatedRequest.body.initialDate;
+        activity.finalDate = validatedRequest.body.finalDate;
+        activity.obsActivity = validatedRequest.body.obsActivity;
+        activity.obsResource = validatedRequest.body.obsResource;
+        activity.room = validatedRequest.body.roomId;
+        activity.event = validatedRequest.body.eventId;
+        activity.speaker = validatedRequest.body.speakerId;
 
-            let courses = Array.from(validatedRequest.body.targetAudience);
-            let arrayOfCourses = [];
+        let courses = Array.from(validatedRequest.body.targetAudience);
+        let arrayOfCourses = [];
 
-            for (let i = 0; i < courses.length; i++) {
-              let courseId: any = courses[i];
-              let courseToFind = await Course.findOne({ id: courseId });
-              if (!courseToFind){
-                return res.status(HttpStatus.NOT_FOUND).send('Course not found. Please double check it and try again!\nId of course not found is ' + courseId);
-              }
-              arrayOfCourses.push(courseToFind);
-            }
-
-            activity.targetAudience = arrayOfCourses;
-
-            await activity.save();
-            await activity.reload();
-
-            return res.status(HttpStatus.CREATED).json(await Activity.findOne({ where: { id: activity.id }, relations: ['room', 'event', 'speaker', 'targetAudience'] }));
+        for (let i = 0; i < courses.length; i++) {
+          let courseId: any = courses[i];
+          let courseToFind = await Course.findOne({ id: courseId });
+          
+          if (!courseToFind) {
+            return res.sendStatus(HttpStatus.NOT_FOUND);
           }
-          return res.status(HttpStatus.NOT_ACCEPTABLE).send('Activity date must be between Event date. \n' + event.initialDate + ' to ' + event.finalDate);
+          
+          arrayOfCourses.push(courseToFind);
         }
-        return res.status(HttpStatus.NOT_FOUND).send('Speaker not found');
+
+        activity.targetAudience = arrayOfCourses;
+        await activity.save();
+
+        let partialPath = 'activities/' + activity.id + '.svg';
+        let completePath = path.join(__dirname, '../../storage/') + partialPath;
+                                    
+        let data = {
+          'id': activity.id
+        };
+        
+        await QRCode.toFile(
+          completePath, 
+          JSON.stringify(data),
+          { type: 'svg' }
+        );
+
+        activity.qrCode = partialPath;
+        await activity.save();
+        await activity.reload();
+
+        return res.status(HttpStatus.CREATED).json(activity);
       }
-      return res.status(HttpStatus.NOT_FOUND).send('Event not found');
+      
+      return res.status(HttpStatus.NOT_ACCEPTABLE).send({
+        "message": "Activity date must be between Event date: " + event.initialDate + " to " + event.finalDate
+      });
     }
-    return res.status(HttpStatus.NOT_FOUND).send('Room not found');
+
+    return res.sendStatus(HttpStatus.NOT_FOUND);
   }
 
   public async get(req: Request, res: Response): Promise<Response> {
@@ -85,7 +104,10 @@ class ActivityController {
     let activity = await Activity.findOne({ id: validatedRequest.params.id });
 
     if (activity) {
-      await activity .remove();
+      let completePath = path.join(__dirname, '../../storage/') + activity.qrCode;
+      fs.unlink(completePath, () => console.log('Deleted file: ' + completePath));
+      await activity.remove();
+
       return res.sendStatus(HttpStatus.NO_CONTENT);
     }
 
@@ -102,46 +124,41 @@ class ActivityController {
       let event = await Event.findOne({ id: validatedRequest.body.eventId });
       let speaker = await Speaker.findOne({ id: validatedRequest.body.speakerId });
 
-      if (room) {
-        if (event) {
-          if (speaker) {
-            if (event.initialDate < validatedRequest.body.initialDate && event.finalDate > validatedRequest.body.finalDate) {
+      if (room && event && speaker) {
+        if (event.initialDate < validatedRequest.body.initialDate && event.finalDate > validatedRequest.body.finalDate) {
 
-              activity.title = validatedRequest.body.title;
-              activity.type = validatedRequest.body.type;
-              activity.description = validatedRequest.body.description;
-              activity.initialDate = validatedRequest.body.initialDate;
-              activity.finalDate = validatedRequest.body.finalDate;
-              activity.obsActivity = validatedRequest.body.obsActivity;
-              activity.obsResource = validatedRequest.body.obsResource;
-              activity.qrCode = "teste";
-              activity.room = validatedRequest.body.roomId;
-              activity.event = validatedRequest.body.eventId;
-              activity.speaker = validatedRequest.body.speakerId;
+          activity.title = validatedRequest.body.title;
+          activity.type = validatedRequest.body.type;
+          activity.description = validatedRequest.body.description;
+          activity.initialDate = validatedRequest.body.initialDate;
+          activity.finalDate = validatedRequest.body.finalDate;
+          activity.obsActivity = validatedRequest.body.obsActivity;
+          activity.obsResource = validatedRequest.body.obsResource;
+          activity.room = validatedRequest.body.roomId;
+          activity.event = validatedRequest.body.eventId;
+          activity.speaker = validatedRequest.body.speakerId;
 
-              let courses = Array.from(validatedRequest.body.targetAudience);
-              let arrayOfCourses = [];
+          let courses = Array.from(validatedRequest.body.targetAudience);
+          let arrayOfCourses = [];
 
-              for (let i = 0; i < courses.length; i++) {
-                let courseId: any = courses[i];
-                let courseToFind = await Course.findOne({ id: courseId });
-                arrayOfCourses.push(courseToFind);
-              }
-
-              activity.targetAudience = arrayOfCourses;
-
-              await activity.save();
-              await activity.reload();
-
-              return res.status(HttpStatus.OK).json(await Activity.findOne({ where: { id: activity.id }, relations: ['room', 'event', 'speaker', 'targetAudience'] }));
-            }
-            return res.status(HttpStatus.NOT_ACCEPTABLE).send('Activity date must be between Event date. \n' + event.initialDate + ' to ' + event.finalDate);
+          for (let i = 0; i < courses.length; i++) {
+            let courseId: any = courses[i];
+            let courseToFind = await Course.findOne({ id: courseId });
+            arrayOfCourses.push(courseToFind);
           }
-          return res.status(HttpStatus.NOT_FOUND).send('Speaker not found');
+
+          activity.targetAudience = arrayOfCourses;
+
+          await activity.save();
+          await activity.reload();
+
+          return res.status(HttpStatus.OK).json(activity);
         }
-        return res.status(HttpStatus.NOT_FOUND).send('Event not found');
+
+        return res.status(HttpStatus.NOT_ACCEPTABLE).send({
+          "message": "Activity date must be between Event date: " + event.initialDate + " to " + event.finalDate
+        });
       }
-      return res.status(HttpStatus.NOT_FOUND).send('Room not found');
     }
     
     return res.sendStatus(HttpStatus.NOT_FOUND);
@@ -169,7 +186,9 @@ class ActivityController {
       return res.sendStatus(HttpStatus.NOT_FOUND);
     }
 
-    return res.status(HttpStatus.BAD_REQUEST).send("O evento vai começar em menos de 10 minutos");
+    return res.status(HttpStatus.BAD_REQUEST).send({
+      "message": "A atividade começará dentro de 1 hora"
+    });
   }
   
   public async attendee(req: Request, res: Response): Promise<Response> 
@@ -183,9 +202,14 @@ class ActivityController {
     });
 
     if (subscription) {
+      // TODO: Generate Certificate in second thread and send email
       subscription.attended = true;
       await subscription.save();
       await subscription.reload();
+
+      let generator = new CertificateGenerator(subscription);
+      generator.sendCertificate();
+
       return res.status(HttpStatus.OK).send(subscription);
     }
 
@@ -194,15 +218,15 @@ class ActivityController {
 
   public async unsubscribe(req: Request, res: Response): Promise<Response> {
     let validatedRequest = req as ValidatedRequest<ManageUserSchema>;
-    let user = await User.findOne({ 
+    let subscription = await Subscription.findOne({ 
       where: { 
         activity: validatedRequest.params.id, 
         user: validatedRequest.body.userId 
       } 
     });
 
-    if (user) {
-      await user.remove();
+    if (subscription) {
+      await subscription.remove();
       return res.sendStatus(HttpStatus.NO_CONTENT);
     }
 
@@ -218,6 +242,24 @@ class ActivityController {
 
     if (subscriptions) {
       return res.status(HttpStatus.OK).send(subscriptions);
+    }
+
+    return res.sendStatus(HttpStatus.NOT_FOUND);
+  }
+
+  public async rate(req: Request, res: Response): Promise<Response> {
+    let validatedRequest = req as ValidatedRequest<RateSchema>;
+    let activity = await Activity.findOne({ id: validatedRequest.params.id });
+    let user = await User.findOne({ id: validatedRequest.body.userId });
+
+    if (activity && user) {
+      let rating = new Rating();
+      rating.user = user;
+      rating.activity = activity;
+      rating.numberOfStars = validatedRequest.body.numberOfStars;
+      await rating.save();
+
+      return res.status(HttpStatus.OK).send(rating);
     }
 
     return res.sendStatus(HttpStatus.NOT_FOUND);

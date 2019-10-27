@@ -8,19 +8,22 @@ export class Speaker extends BaseEntity {
     id: number;
 
     @Column()
-    name: string
+    speakerName: string
 
     @Column()
-    email: string
+    speakerEmail: string
 
     @Column()
-    phone: string
+    speakerPhone: string
 
     @Column()
-    secondPhone: string
+    speakerPhone2: string
 
     @Column()
-    curriculum: string
+    speakerCurriculum: string
+
+    @Column()
+    speakerPicture!: string
 
     @OneToMany(type => Activity, activity => activity.room)
     activity!: Activity[];

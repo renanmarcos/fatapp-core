@@ -1,8 +1,11 @@
 import { Request, Response } from 'express';
 import { Event } from '../models/Event';
-import { EventStoreSchema, EventUpdateSchema, EventQuerySchema }  from '../routes/EventRoutes';
+import { EventStoreSchema, EventUpdateSchema, EventQuerySchema } from '../routes/EventsRoutes';
 import { ValidatedRequest } from 'express-joi-validation';
 import * as HttpStatus from 'http-status-codes';
+import path from 'path';
+import fs from 'fs';
+import { Certificate } from '../models/Certificate';
 
 class EventController {
 
@@ -26,17 +29,22 @@ class EventController {
   public async store(req: Request, res: Response): Promise<Response>
   {
     let validatedRequest = req as ValidatedRequest<EventStoreSchema>;
-    let event = new Event();
+    let certificate = await Certificate.findOne({ id: validatedRequest.body.certificateId });
 
-    event.title = validatedRequest.body.title;
-    event.edition = validatedRequest.body.edition;
-    event.initialDate = validatedRequest.body.initialDate;
-    event.finalDate = validatedRequest.body.finalDate;
-    event.banner = validatedRequest.body.banner;
+    if (certificate) {
+      let event = new Event();
+      event.title = validatedRequest.body.title;
+      event.edition = validatedRequest.body.edition;
+      event.initialDate = validatedRequest.body.initialDate;
+      event.finalDate = validatedRequest.body.finalDate;
+      event.banner = validatedRequest.file.filename;
+      event.certificate = certificate;
+      await event.save();
 
-    await event.save();
-    
-    return res.status(HttpStatus.CREATED).json(event);
+      return res.status(HttpStatus.CREATED).json(event);
+    }
+
+    return res.sendStatus(HttpStatus.NOT_FOUND);
   }
 
   public async delete(req: Request, res: Response): Promise<Response> 
@@ -45,6 +53,8 @@ class EventController {
     let event = await Event.findOne({ id: validatedRequest.params.id });
 
     if (event) {
+      let completePath = path.join(__dirname, '../../storage/') + event.banner;
+      fs.unlink(completePath, () => console.log('Deleted file: ' + completePath));
       await event.remove();
       return res.sendStatus(HttpStatus.NO_CONTENT);
     }
@@ -56,13 +66,20 @@ class EventController {
   {
     let validatedRequest = req as ValidatedRequest<EventUpdateSchema>;
     let event = await Event.findOne({ id: validatedRequest.params.id });
+    let certificate = await Certificate.findOne({ id: validatedRequest.body.certificateId });
 
-    if (event) {
+    if (event && certificate) {
       event.title = validatedRequest.body.title;
       event.edition = validatedRequest.body.edition;
       event.initialDate = validatedRequest.body.initialDate;
       event.finalDate = validatedRequest.body.finalDate;
-      event.banner = validatedRequest.body.banner;
+      event.certificate = certificate;
+
+      if (validatedRequest.file) {
+        let completePath = path.join(__dirname, '../../storage/') + event.banner;
+        fs.unlink(completePath, () => console.log('Deleted file: ' + completePath));
+        event.banner = validatedRequest.file.filename;
+      }
       
       await event.save();
       await event.reload();

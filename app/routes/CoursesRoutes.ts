@@ -16,7 +16,8 @@ export interface CourseQuerySchema extends ValidatedRequestSchema {
 }
 
 const bodyStoreSchema = Joi.object({
-  name: Joi.string().required()
+  name: Joi.string().required(),
+  acronym: Joi.string().required()
 });
 
 export interface CourseStoreSchema extends ValidatedRequestSchema {
@@ -24,7 +25,8 @@ export interface CourseStoreSchema extends ValidatedRequestSchema {
 }
 
 const bodyUpdateSchema = Joi.object({
-  name: Joi.string()
+  name: Joi.string(),
+  acronym: Joi.string()
 });
 
 export interface CourseUpdateSchema extends ValidatedRequestSchema {

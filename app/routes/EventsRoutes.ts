@@ -4,9 +4,19 @@ import * as Joi from '@hapi/joi';
 import { ValidatedRequestSchema, createValidator, ContainerTypes } from 'express-joi-validation';
 import 'joi-extract-type';
 import ReportController from '../controllers/ReportController';
+import multer from 'multer';
 
 const routes = Router();
 const validator = createValidator();
+const storage = multer.diskStorage({
+    destination: function(req, file, callback) {
+        callback(null, "storage/");
+    },
+    filename: function(req, file, callback) {
+        callback(null, "events/" + file.originalname);
+    }
+});
+const uploads = multer({ storage: storage });
 
 const paramsSchema = Joi.object().keys({
     id: Joi.string().required()
@@ -19,9 +29,9 @@ export interface EventQuerySchema extends ValidatedRequestSchema {
 const bodyStoreSchema = Joi.object({
     title: Joi.string().required(),
     edition: Joi.string().required(),
-    initialDate: Joi.string().required(),
-    finalDate: Joi.string().required(),
-    banner: Joi.string().allow('')
+    initialDate: Joi.date().required(),
+    finalDate: Joi.date().required(),
+    certificateId: Joi.number().required()
 });
   
 export interface EventStoreSchema extends ValidatedRequestSchema {
@@ -31,9 +41,9 @@ export interface EventStoreSchema extends ValidatedRequestSchema {
 const bodyUpdateSchema = Joi.object({
     title: Joi.string(),
     edition: Joi.string(),
-    initialDate: Joi.string(),
-    finalDate: Joi.string(),
-    banner: Joi.string()
+    initialDate: Joi.date(),
+    finalDate: Joi.date(),
+    certificateId: Joi.number()
 });
   
 export interface EventUpdateSchema extends ValidatedRequestSchema {
@@ -42,9 +52,9 @@ export interface EventUpdateSchema extends ValidatedRequestSchema {
 
 routes.get('/', EventController.list);
 routes.get('/:id', validator.params(paramsSchema), EventController.get);
-routes.post('/', validator.body(bodyStoreSchema), EventController.store);
+routes.post('/', uploads.single('banner'), validator.body(bodyStoreSchema), EventController.store);
 routes.delete('/:id', validator.params(paramsSchema), EventController.delete);
-routes.put('/:id', validator.params(paramsSchema), validator.body(bodyUpdateSchema), EventController.update);
+routes.put('/:id', uploads.single('banner'), validator.params(paramsSchema), validator.body(bodyUpdateSchema), EventController.update);
 routes.get('/:id/report', validator.params(paramsSchema), ReportController.generateEventReport);
 
 export default routes;

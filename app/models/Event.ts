@@ -1,5 +1,6 @@
-import {Entity, PrimaryGeneratedColumn, Column, BaseEntity, OneToMany} from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, BaseEntity, OneToMany, OneToOne, JoinColumn } from 'typeorm';
 import { Activity } from "./Activity";
+import { Certificate } from './Certificate';
 
 @Entity()
 export class Event extends BaseEntity {
@@ -24,5 +25,9 @@ export class Event extends BaseEntity {
 
     @OneToMany(type => Activity, activity => activity.event)
     activity!: Activity[];
+
+    @OneToOne(type => Certificate)
+    @JoinColumn()
+    certificate: Certificate;
 
 }
