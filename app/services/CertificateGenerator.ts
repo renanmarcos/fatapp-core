@@ -33,7 +33,7 @@ export class CertificateGenerator {
       edicao: event.edition,
       evento: event.title,
       dataAtividade: moment(activity.initialDate).format("L"),
-      cargaHoraria: frequentedHours + "h",
+      cargaHoraria: frequentedHours,
       dataAtual: moment().format("LL")
     };
     
