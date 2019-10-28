@@ -3,10 +3,13 @@ import EventController from '../controllers/EventController';
 import * as Joi from '@hapi/joi';
 import { ValidatedRequestSchema, createValidator, ContainerTypes } from 'express-joi-validation';
 import 'joi-extract-type';
+import ReportController from '../controllers/ReportController';
 import multer from 'multer';
+import path from 'path';
 
 const routes = Router();
 const validator = createValidator();
+const allowedExtensions = ['.png', '.jpg', '.jpeg'];
 const storage = multer.diskStorage({
     destination: function(req, file, callback) {
         callback(null, "storage/");
@@ -15,7 +18,19 @@ const storage = multer.diskStorage({
         callback(null, "events/" + file.originalname);
     }
 });
-const uploads = multer({ storage: storage });
+const uploads = multer({ 
+    storage: storage, 
+    fileFilter: function (req, file, callback) {
+        var extension = path.extname(file.originalname);
+        if(!allowedExtensions.includes(extension)) 
+            return callback(
+                new Error('Só é permitido o envio de arquivos nos formatos: ' + allowedExtensions), 
+                false
+            );
+
+        callback(null, true);
+    }
+});
 
 const paramsSchema = Joi.object().keys({
     id: Joi.string().required()

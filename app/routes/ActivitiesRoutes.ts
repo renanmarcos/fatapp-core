@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import ActivityController from '../controllers/ActivityController';
+import ReportController from '../controllers/ReportController';
 import * as Joi from '@hapi/joi';
 import { ValidatedRequestSchema, createValidator, ContainerTypes } from 'express-joi-validation';
 import 'joi-extract-type';
@@ -56,6 +57,16 @@ routes.get('/:id', validator.params(paramsSchema), ActivityController.get);
 routes.post('/', validator.body(bodyStoreSchema), ActivityController.store);
 routes.delete('/:id', validator.params(paramsSchema), ActivityController.destroy);
 routes.put('/:id', validator.params(paramsSchema), validator.body(bodyUpdateSchema), ActivityController.update);
+
+const bodyReportSchema = Joi.object({
+    emails: Joi.array().required()
+});
+
+export interface ActivityReportSchema extends ValidatedRequestSchema {
+    [ContainerTypes.Query]: Joi.extractType<typeof bodyReportSchema>;
+}
+
+routes.post('/:id/report', validator.params(paramsSchema), validator.body(bodyReportSchema), ReportController.generateActivityReport);
 
 const bodyManageUserSchema = Joi.object({
     userId: Joi.number().required()

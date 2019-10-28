@@ -18,6 +18,10 @@ export class CertificateMigration1566760085488 implements MigrationInterface {
                 {
                     name: "path",
                     type: "varchar",
+                },
+                {
+                    name: "name",
+                    type: "varchar"
                 }
             ]
         }), true);
@@ -28,10 +32,12 @@ export class CertificateMigration1566760085488 implements MigrationInterface {
     private async createDefaultCertificates()
     {
         let certificate = new Certificate();
+        certificate.name = "Modelo do evento Security Day";
         certificate.path = "certificates/security-day.docx";
         certificate.save();
 
         certificate = new Certificate();
+        certificate.name = "Modelo do evento Fatecnologia";
         certificate.path = "certificates/fatecnologia.docx";
         certificate.save();
     }

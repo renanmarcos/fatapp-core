@@ -9,6 +9,10 @@ RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSI
 
 WORKDIR /user/fatapp-core
 
+ENV TIMEZONE America/Sao_Paulo
+RUN ln -snf /usr/share/zoneinfo/$TIMEZONE /etc/localtime \ 
+    && echo $TIMEZONE > /etc/timezone
+
 COPY package*.json ./
 RUN npm ci
 

@@ -168,17 +168,25 @@ class ActivityController {
     let validatedRequest = req as ValidatedRequest<ManageUserSchema>;
     let activity = await Activity.findOne({ id: validatedRequest.params.id });
     let user = await User.findOne({ id: validatedRequest.body.userId });
-    
-    var diffDate = activity.initialDate.getDate() - new Date().getDate();
-    var diffHours = activity.initialDate.getHours() - new Date().getHours();
 
-    if(diffDate > 0 || diffHours >= 1) {
+    let allowedSubscribeTime = activity.initialDate;
+    allowedSubscribeTime.setHours(allowedSubscribeTime.getHours() - 1);
+    let now = new Date();
+
+    if(now <= allowedSubscribeTime) {
       if (activity && user) {
         let subscription = new Subscription();
         subscription.activity = activity;
         subscription.user = user;
         subscription.attended = false;
-        await subscription.save();
+
+        try {
+          await subscription.save();
+        } catch(ex) {
+          return res.status(HttpStatus.UNPROCESSABLE_ENTITY).send({
+            message: "Já está inscrito nessa atividade"
+          });
+        }
 
         return res.status(HttpStatus.OK).send(subscription);
       }
@@ -197,12 +205,12 @@ class ActivityController {
     let subscription = await Subscription.findOne({ 
       where: { 
         activity: validatedRequest.params.id, 
-        user: validatedRequest.body.userId 
-      } 
+        user: validatedRequest.body.userId,
+      },
+      relations: ['user', 'activity', 'activity.speaker', 'activity.event', 'activity.event.certificate']
     });
 
     if (subscription) {
-      // TODO: Generate Certificate in second thread and send email
       subscription.attended = true;
       await subscription.save();
       await subscription.reload();
@@ -236,7 +244,8 @@ class ActivityController {
   public async getSubscriptions(req: Request, res: Response): Promise<Response> {
     let validatedRequest = req as ValidatedRequest<ActivityParamsSchema>;
     let subscriptions = await Subscription.find({ 
-      where: { activity: validatedRequest.params.id } 
+      where: { activity: validatedRequest.params.id }, 
+      relations: ['user', 'user.student', 'user.student.course'] 
     });
 
     if (subscriptions) {

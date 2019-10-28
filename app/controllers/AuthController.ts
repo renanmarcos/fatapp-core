@@ -10,7 +10,10 @@ class AuthController {
   public async token(req: Request, res: Response): Promise<Response> 
   {
     let validatedRequest = req as ValidatedRequest<UserTokenSchema>;
-    let user = await User.findOne({email: validatedRequest.body.email});
+    let user = await User.findOne({
+      where: { email: validatedRequest.body.email },
+      relations: ['student']
+    });
     
     if (!user) {
       return res.sendStatus(HttpStatus.NOT_FOUND);
@@ -26,8 +29,8 @@ class AuthController {
     );
 
     return res.send({
-      'id': user.id,
-      'token': token
+      'token': token,
+      'user': user
     });
   }
 
