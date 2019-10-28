@@ -20,6 +20,7 @@ class CertificateController {
 
     if (certificateFile) {
       let certificate = new Certificate();
+      certificate.name = validatedRequest.body.name;
       certificate.path = certificateFile.filename;
       await certificate.save();
 

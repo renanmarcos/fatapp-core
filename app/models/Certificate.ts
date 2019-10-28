@@ -9,4 +9,6 @@ export class Certificate extends BaseEntity {
     @Column()
     path: string;
 
+    @Column()
+    name: string;
 }
