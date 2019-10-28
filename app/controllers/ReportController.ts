@@ -3,12 +3,10 @@ import { ValidatedRequest } from "express-joi-validation";
 import { ActivityReportSchema } from "../routes/ActivitiesRoutes";
 import { EventQuerySchema } from "../routes/EventsRoutes";
 import { Subscription } from "../models/Subscription";
-import { Event } from "../models/Event";
 import * as HttpStatus from 'http-status-codes';
 import * as Excel from 'exceljs';
 import { SendMail } from "../services/mail/SendEmail";
-import { Activity } from "app/models/Activity";
-import { getRepository, getConnection } from "typeorm";
+import { getConnection } from "typeorm";
 
 class ReportController {
 
@@ -18,7 +16,6 @@ class ReportController {
       relations: ['user', 'user.student', 'user.student.course', 'activity', 'activity.event'],
       where: { activity: validatedRequest.params.id }
     });
-
     
     if (subscriptions.length > 0) {
       let workbook = new Excel.Workbook();
@@ -86,7 +83,8 @@ class ReportController {
       let buffer = await workbook.xlsx.writeBuffer();
       return res.send(buffer);
     }
-      return res.sendStatus(HttpStatus.NOT_FOUND);
+    
+    return res.sendStatus(HttpStatus.NOT_FOUND);
   }
 
   public async generateEventReport(req: Request, res: Response): Promise<Response> {

@@ -24,7 +24,7 @@ export class User extends BaseEntity {
     @OneToMany(type => Subscription, subscription => subscription.user)
     subscriptions!: Subscription[];
 
-    @OneToOne(type => Student, student => student.user) // specify inverse side as a second parameter
+    @OneToOne(type => Student, student => student.user)
     student: Student;
 
     hashPassword() {
