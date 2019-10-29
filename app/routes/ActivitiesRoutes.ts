@@ -66,7 +66,8 @@ export interface ActivityReportSchema extends ValidatedRequestSchema {
     [ContainerTypes.Query]: Joi.extractType<typeof bodyReportSchema>;
 }
 
-routes.post('/:id/report', validator.params(paramsSchema), validator.body(bodyReportSchema), ReportController.generateActivityReport);
+routes.post('/:id/excel', validator.params(paramsSchema), validator.body(bodyReportSchema), ReportController.generateActivityExcel);
+routes.get('/:id/report', validator.params(paramsSchema), ReportController.generateActivityChart);
 
 const bodyManageUserSchema = Joi.object({
     userId: Joi.number().required()

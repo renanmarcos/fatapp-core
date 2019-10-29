@@ -69,6 +69,5 @@ routes.get('/:id', validator.params(paramsSchema), EventController.get);
 routes.post('/', uploads.single('banner'), validator.body(bodyStoreSchema), EventController.store);
 routes.delete('/:id', validator.params(paramsSchema), EventController.delete);
 routes.put('/:id', uploads.single('banner'), validator.params(paramsSchema), validator.body(bodyUpdateSchema), EventController.update);
-routes.get('/:id/report', validator.params(paramsSchema), ReportController.generateEventReport);
 
 export default routes;
