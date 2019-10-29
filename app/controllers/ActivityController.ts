@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { Activity } from '../models/Activity';
 import { ValidatedRequest } from 'express-joi-validation';
-import { ActivityStoreSchema, ActivityParamsSchema, ActivityUpdateSchema, ManageUserSchema, RateSchema } from '../routes/ActivitiesRoutes';
+import { ActivityStoreSchema, ActivityParamsSchema, ActivityUpdateSchema, ManageUserSchema, RateSchema, ActivityQuerySchema } from '../routes/ActivitiesRoutes';
 import { Room } from '../models/Room';
 import * as HttpStatus from 'http-status-codes';
 import { Event } from '../models/Event';
@@ -16,11 +16,54 @@ import fs from 'fs';
 import { CertificateGenerator } from '../services/CertificateGenerator';
 import moment from 'moment';
 import 'moment/locale/pt-br';
+import Mustache from 'mustache';
+import address from 'address';
 
 class ActivityController {
 
   public async index(req: Request, res: Response): Promise<Response> {
     return res.json(await Activity.find({ relations: ['room', 'event', 'speaker', 'targetAudience'] }));
+  }
+
+  public async validator(req: Request, res: Response): Promise<Response> {
+    let validatedRequest = req as ValidatedRequest<ActivityQuerySchema>;
+    let subscription = await Subscription.findOne({
+      where: {
+        activity: validatedRequest.query.activityId,
+        user: validatedRequest.query.userId
+      },
+      relations: ['user', 'activity', 'activity.speaker']
+    });
+
+    if (subscription && subscription.attended === true) {
+      moment().locale('pt-BR');
+
+      let activity = subscription.activity;
+      let user = subscription.user;
+
+      let view = {
+        nome: user.name,
+        atividade: activity.title,
+        palestrante: activity.speaker.speakerName,
+        dataInicialAtividade: moment(activity.initialDate).format("L"),
+        dataFinalAtividade: moment(activity.finalDate).format("L"),
+        horaInicialAtividade: moment(activity.initialDate).format("HH:mm"),
+        horaFinalAtividade: moment(activity.finalDate).format("HH:mm"),
+        cargaHoraria: moment(activity.finalDate).diff(activity.initialDate, 'hours'),
+        linkValidador: "http://" + address.ip() + ":" + (process.env.CORE_PORT || 3000) 
+                        + "/activities/validator?userId=" + user.id + "&activityId=" + activity.id,
+        dataAtual: moment().format("LL")
+      };
+
+      let completePath = path.join(__dirname, '../../public/validator/index.html');
+      let template = fs.readFileSync(completePath, 'utf-8');
+
+      return res.type('html').send(
+        Mustache.render(template, view)
+      );
+    }
+
+    return res.type('html').send("<b>Esse certificado é inválido.</b>");
   }
 
   public async store(req: Request, res: Response): Promise<Response> {

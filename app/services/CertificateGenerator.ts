@@ -5,13 +5,17 @@ import { TemplateHandler } from 'easy-template-x';
 import { SendMail } from './mail/SendEmail';
 import moment from 'moment';
 import 'moment/locale/pt-br';
+import address from 'address';
+const TinyURL = require('tinyurl');
 
 export class CertificateGenerator {
   
-  private subscription : Subscription;
+  private subscription: Subscription;
+  private serverAddress: string;
 
   constructor(subscription: Subscription) {
     this.subscription = subscription;
+    this.serverAddress = "http://" + address.ip() + ":" + (process.env.CORE_PORT || 3000);
     moment.locale('pt-BR');
   }
 
@@ -25,6 +29,13 @@ export class CertificateGenerator {
     const templateFile = fs.readFileSync(completePath);
 
     let frequentedHours = moment(activity.finalDate).diff(activity.initialDate, 'hours');
+    var validatorUrl;
+    
+    await TinyURL.shorten(
+      this.serverAddress + "/activities/validator?userId=" + user.id + "&activityId=" + activity.id, 
+    ).then(function (res: any) {
+      validatorUrl = res;
+    });
 
     const data = {
       nome: user.name,
@@ -34,7 +45,11 @@ export class CertificateGenerator {
       evento: event.title,
       dataAtividade: moment(activity.initialDate).format("L"),
       cargaHoraria: frequentedHours,
-      dataAtual: moment().format("LL")
+      dataAtual: moment().format("LL"),
+      linkValidador: {
+        _type: 'link',
+        target: validatorUrl
+      }
     };
     
     const handler = new TemplateHandler();
@@ -44,7 +59,6 @@ export class CertificateGenerator {
     helper.text = "Olá " + user.name  + ".\nAgradecemos a sua participação na atividade " + 
                   activity.title + "! Seu certificado está em anexo.\n\n" +
                   "Esse e-mail é automático, por favor não responda.";
-
 
     handler.process(templateFile, data).then(function (generatedDocument: Buffer) {
       helper.attachment = {
