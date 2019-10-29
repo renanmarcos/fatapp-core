@@ -14,6 +14,8 @@ import QRCode from 'qrcode';
 import path from 'path';
 import fs from 'fs';
 import { CertificateGenerator } from '../services/CertificateGenerator';
+import moment from 'moment';
+import 'moment/locale/pt-br';
 
 class ActivityController {
 
@@ -78,9 +80,11 @@ class ActivityController {
 
         return res.status(HttpStatus.CREATED).json(activity);
       }
-      
+
+      moment.locale('pt-BR');
       return res.status(HttpStatus.NOT_ACCEPTABLE).send({
-        "message": "Activity date must be between Event date: " + event.initialDate + " to " + event.finalDate
+        "message": "A atividade precisa estar dentro do tempo do evento, entre " + 
+                    moment(event.initialDate).format("LLL") + " até " + moment(event.finalDate).format("LLL")
       });
     }
 
@@ -89,7 +93,10 @@ class ActivityController {
 
   public async get(req: Request, res: Response): Promise<Response> {
     let validatedRequest = req as ValidatedRequest<ActivityParamsSchema>;
-    let activity = await Activity.findOne({ where: { id: validatedRequest.params.id }, relations: ['room', 'event', 'speaker', 'targetAudience'] });
+    let activity = await Activity.findOne({ 
+      where: { id: validatedRequest.params.id }, 
+      relations: ['room', 'event', 'speaker', 'targetAudience'] 
+    });
 
     if (!activity) {
       res.sendStatus(HttpStatus.NOT_FOUND);
@@ -155,8 +162,10 @@ class ActivityController {
           return res.status(HttpStatus.OK).json(activity);
         }
 
+        moment.locale('pt-BR');
         return res.status(HttpStatus.NOT_ACCEPTABLE).send({
-          "message": "Activity date must be between Event date: " + event.initialDate + " to " + event.finalDate
+          "message": "A atividade precisa estar dentro do tempo do evento, entre " + 
+                      moment(event.initialDate).format("LLL") + " até " + moment(event.finalDate).format("LLL")
         });
       }
     }
@@ -168,12 +177,11 @@ class ActivityController {
     let validatedRequest = req as ValidatedRequest<ManageUserSchema>;
     let activity = await Activity.findOne({ id: validatedRequest.params.id });
     let user = await User.findOne({ id: validatedRequest.body.userId });
+    moment.locale('pt-BR');
 
-    let allowedSubscribeTime = activity.initialDate;
-    allowedSubscribeTime.setHours(allowedSubscribeTime.getHours() - 1);
-    let now = new Date();
+    let allowedSubscribeTime = moment(activity.initialDate).subtract(1, 'hour');
 
-    if(now <= allowedSubscribeTime) {
+    if(moment().isSameOrBefore(allowedSubscribeTime)) {
       if (activity && user) {
         let subscription = new Subscription();
         subscription.activity = activity;
@@ -249,7 +257,10 @@ class ActivityController {
     });
 
     if (subscriptions) {
-      return res.status(HttpStatus.OK).send(subscriptions);
+      return res.status(HttpStatus.OK).send({
+        subscriptions: subscriptions,
+        total: subscriptions.length
+      });
     }
 
     return res.sendStatus(HttpStatus.NOT_FOUND);
