@@ -38,6 +38,7 @@ export class App {
                 { url: '/users', methods: ['POST'] },
                 { url: '/students', methods: ['POST'] },
                 { url: '/courses', methods: ['GET'] },
+                { url: '/activities/validator', methods: ['GET'] },
                 // TODO: Remove these routes below
                 { url: '/activities/3/report?email=1', methods: ['GET']},
                 { url: '/activities/3/report', methods: ['GET']},
