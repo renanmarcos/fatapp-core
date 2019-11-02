@@ -12,7 +12,7 @@ class AuthController {
     let validatedRequest = req as ValidatedRequest<UserTokenSchema>;
     let user = await User.findOne({
       where: { email: validatedRequest.body.email },
-      relations: ['student']
+      relations: ['student', 'student.course']
     });
     
     if (!user) {

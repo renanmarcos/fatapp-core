@@ -36,6 +36,10 @@ export class ResourceMigration1566750306877 implements MigrationInterface {
         resource = new Resource();
         resource.name = "Caixas de Som";
         await resource.save();
+
+        resource = new Resource();
+        resource.name = "Marcador de quadro";
+        await resource.save();
     }
 
     public async down(queryRunner: QueryRunner): Promise<any> {
