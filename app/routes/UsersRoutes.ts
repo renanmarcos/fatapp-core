@@ -28,7 +28,9 @@ export interface UserStoreSchema extends ValidatedRequestSchema {
 
 const bodyUpdateSchema = Joi.object({
   name: Joi.string(),
-  email: Joi.string().email()
+  email: Joi.string().email(),
+  courseId: Joi.number(),
+  ra: Joi.string().length(13)
 });
 
 export interface UserUpdateSchema extends ValidatedRequestSchema {

@@ -125,7 +125,7 @@ class ActivityController {
       }
 
       moment.locale('pt-BR');
-      return res.status(HttpStatus.NOT_ACCEPTABLE).send({
+      return res.status(HttpStatus.UNPROCESSABLE_ENTITY).send({
         "message": "A atividade precisa estar dentro do tempo do evento, entre " + 
                     moment(event.initialDate).format("LLL") + " até " + moment(event.finalDate).format("LLL")
       });
@@ -206,7 +206,7 @@ class ActivityController {
         }
 
         moment.locale('pt-BR');
-        return res.status(HttpStatus.NOT_ACCEPTABLE).send({
+        return res.status(HttpStatus.UNPROCESSABLE_ENTITY).send({
           "message": "A atividade precisa estar dentro do tempo do evento, entre " + 
                       moment(event.initialDate).format("LLL") + " até " + moment(event.finalDate).format("LLL")
         });
@@ -245,7 +245,7 @@ class ActivityController {
       return res.sendStatus(HttpStatus.NOT_FOUND);
     }
 
-    return res.status(HttpStatus.BAD_REQUEST).send({
+    return res.status(HttpStatus.UNPROCESSABLE_ENTITY).send({
       "message": "A atividade começará dentro de 1 hora"
     });
   }

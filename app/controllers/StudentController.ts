@@ -10,34 +10,17 @@ import jwt from 'jsonwebtoken';
 class StudentController {
 
   public async list(req: Request, res: Response): Promise<Response> 
-  {
-    if (req.query.toString() == null) {
-      var label = Object.keys(req.query)[0];
-      var value = Object.values(req.query)[0];
-      var order = '';
-      
-      if (req.query.order) {
-        order = ' ORDER BY ' + req.query.order;
-      }
-      
-      if (req.query.approach == 'lk') {
-        var formatQuery = " LIKE '%" + value + "%'";
-      } else {
-        var formatQuery = ' = ' + value;
-      }
-      
-      let students = await Student.query('SELECT * from student WHERE ' + label + formatQuery + order);
-      
-      return res.json(students);
-    }
-    
-    return res.json(await Student.find());
+  {    
+    return res.json(await Student.find({relations: ['course', 'user']}));
   }
 
   public async get(req: Request, res: Response): Promise<Response> 
   {
     let validatedRequest = req as ValidatedRequest<StudentQuerySchema>;
-    let student = await Student.findOne({ id: validatedRequest.params.id });
+    let student = await Student.findOne({ 
+      where: { id: validatedRequest.params.id },
+      relations: ['course', 'user']
+    });
 
     if (!student) {
       res.sendStatus(HttpStatus.NOT_FOUND);
@@ -50,11 +33,16 @@ class StudentController {
   {
     let validatedRequest = req as ValidatedRequest<StudentStoreSchema>;
     let course = await Course.findOne(validatedRequest.body.courseId);
-    let user = await User.findOne({ where: { cpf: validatedRequest.body.cpf }});
+    let user = await User.findOne({ 
+      where: [
+        { cpf: validatedRequest.body.cpf },
+        { email: validatedRequest.body.email }
+      ] 
+    });
     
     if (user) {
-      return res.status(HttpStatus.BAD_REQUEST).send({
-        error: 'CPF já existe'
+      return res.status(HttpStatus.UNPROCESSABLE_ENTITY).send({
+        message: 'CPF ou Email já existente'
       });
     }
 
@@ -106,14 +94,28 @@ class StudentController {
     let validatedRequest = req as ValidatedRequest<StudentUpdateSchema>;
     let student = await Student.findOne({
       where: { id: validatedRequest.params.id },
-      relations: ['user']
+      relations: ['user', 'course']
     });
 
     if (student) {
-      let user: any = student.user;
-      user.name = validatedRequest.body.ra;
-      user.email = validatedRequest.body.course;
+      let user = student.user;
+      let newEmail = validatedRequest.body.email;
+      let anotherUser = await User.find({ where: { email: newEmail } });
+      
+      if (newEmail !== user.email && anotherUser.length > 1) {
+        return res.status(HttpStatus.UNPROCESSABLE_ENTITY).send({
+          message: 'Email já existente'
+        }); 
+      }
+
+      user.name = validatedRequest.body.name;
+      user.email = validatedRequest.body.email;
       await user.save();
+
+      let course = await Course.findOne({ id: validatedRequest.body.courseId } );
+      student.course = course;
+      student.ra = validatedRequest.body.ra;
+      await student.save();
       await student.reload();
 
       return res.status(HttpStatus.OK).send(student);

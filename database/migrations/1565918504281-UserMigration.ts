@@ -19,11 +19,13 @@ export class UserMigration1565918504281 implements MigrationInterface {
                 },
                 {
                     name: "email",
-                    type: "varchar"
+                    type: "varchar",
+                    isUnique: true
                 },
                 {
                     name: "cpf",
-                    type: "varchar"
+                    type: "varchar",
+                    isUnique: true
                 },
                 {
                     name: "password",
