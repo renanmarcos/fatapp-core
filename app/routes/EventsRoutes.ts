@@ -3,7 +3,6 @@ import EventController from '../controllers/EventController';
 import * as Joi from '@hapi/joi';
 import { ValidatedRequestSchema, createValidator, ContainerTypes } from 'express-joi-validation';
 import 'joi-extract-type';
-import ReportController from '../controllers/ReportController';
 import multer from 'multer';
 import path from 'path';
 
@@ -64,10 +63,12 @@ export interface EventUpdateSchema extends ValidatedRequestSchema {
     [ContainerTypes.Query]: Joi.extractType<typeof bodyUpdateSchema>;
 }
 
-routes.get('/', EventController.list);
+routes.get('/', EventController.index);
 routes.get('/:id', validator.params(paramsSchema), EventController.get);
 routes.post('/', uploads.single('banner'), validator.body(bodyStoreSchema), EventController.store);
 routes.delete('/:id', validator.params(paramsSchema), EventController.delete);
 routes.put('/:id', uploads.single('banner'), validator.params(paramsSchema), validator.body(bodyUpdateSchema), EventController.update);
+
+routes.get('/:id/activities', validator.params(paramsSchema), EventController.getActivities);
 
 export default routes;

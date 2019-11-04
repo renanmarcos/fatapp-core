@@ -17,7 +17,6 @@ import { CertificateGenerator } from '../services/CertificateGenerator';
 import moment from 'moment';
 import 'moment/locale/pt-br';
 import Mustache from 'mustache';
-import address from 'address';
 
 class ActivityController {
 
@@ -50,8 +49,8 @@ class ActivityController {
         horaInicialAtividade: moment(activity.initialDate).format("HH:mm"),
         horaFinalAtividade: moment(activity.finalDate).format("HH:mm"),
         cargaHoraria: moment(activity.finalDate).diff(activity.initialDate, 'hours'),
-        linkValidador: "http://" + address.ip() + ":" + (process.env.CORE_PORT || 3000) 
-                        + "/activities/validator?userId=" + user.id + "&activityId=" + activity.id,
+        linkValidador: process.env.CORE_DOMAIN + 
+                        "/activities/validator?userId=" + user.id + "&activityId=" + activity.id,
         dataAtual: moment().format("LL")
       };
 
