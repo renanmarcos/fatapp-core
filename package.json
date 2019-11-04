@@ -34,10 +34,9 @@
   "homepage": "https://github.com/renanmarcos/fatapp-core#readme",
   "dependencies": {
     "@hapi/joi": "^15.1.1",
-    "address": "^1.1.2",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
-    "easy-template-x": "^0.8.0",
+    "easy-template-x": "^0.8.1",
     "exceljs": "^3.2.0",
     "express": "^4.17.1",
     "express-joi-validation": "^2.0.1",

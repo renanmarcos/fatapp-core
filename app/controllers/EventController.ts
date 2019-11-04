@@ -6,12 +6,28 @@ import * as HttpStatus from 'http-status-codes';
 import path from 'path';
 import fs from 'fs';
 import { Certificate } from '../models/Certificate';
+import { Activity } from '../models/Activity';
 
 class EventController {
 
-  public async list(req: Request, res: Response): Promise<Response> 
+  public async index(req: Request, res: Response): Promise<Response> 
   {
     return res.json(await Event.find());
+  }
+
+  public async getActivities(req: Request, res: Response): Promise<Response> 
+  {
+    let validatedRequest = req as ValidatedRequest<EventQuerySchema>;
+    let event = await Event.findOne({ id: validatedRequest.params.id });
+
+    if (event) {
+      return res.json(await Activity.find({ 
+        where: { event: event },
+        relations: ['room', 'speaker', 'targetAudience']
+      }));
+    }
+    
+    return res.sendStatus(HttpStatus.NOT_FOUND);
   }
 
   public async get(req: Request, res: Response): Promise<Response> 

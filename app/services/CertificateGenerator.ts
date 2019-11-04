@@ -5,7 +5,6 @@ import { TemplateHandler } from 'easy-template-x';
 import { SendMail } from './mail/SendEmail';
 import moment from 'moment';
 import 'moment/locale/pt-br';
-import address from 'address';
 const TinyURL = require('tinyurl');
 
 export class CertificateGenerator {
@@ -15,7 +14,7 @@ export class CertificateGenerator {
 
   constructor(subscription: Subscription) {
     this.subscription = subscription;
-    this.serverAddress = "http://" + address.ip() + ":" + (process.env.CORE_PORT || 3000);
+    this.serverAddress = process.env.CORE_DOMAIN;
     moment.locale('pt-BR');
   }
 
