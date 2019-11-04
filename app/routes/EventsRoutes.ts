@@ -5,6 +5,7 @@ import { ValidatedRequestSchema, createValidator, ContainerTypes } from 'express
 import 'joi-extract-type';
 import multer from 'multer';
 import path from 'path';
+import { JoinAttribute } from 'typeorm/query-builder/JoinAttribute';
 
 const routes = Router();
 const validator = createValidator();
@@ -42,6 +43,7 @@ export interface EventQuerySchema extends ValidatedRequestSchema {
 const bodyStoreSchema = Joi.object({
     title: Joi.string().required(),
     edition: Joi.string().required(),
+    description: Joi.string().required(),
     initialDate: Joi.date().required(),
     finalDate: Joi.date().required(),
     certificateId: Joi.number().required()
@@ -54,6 +56,7 @@ export interface EventStoreSchema extends ValidatedRequestSchema {
 const bodyUpdateSchema = Joi.object({
     title: Joi.string(),
     edition: Joi.string(),
+    description: Joi.string(),
     initialDate: Joi.date(),
     finalDate: Joi.date(),
     certificateId: Joi.number()

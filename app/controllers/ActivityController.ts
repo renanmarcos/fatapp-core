@@ -54,7 +54,7 @@ class ActivityController {
         dataAtual: moment().format("LL")
       };
 
-      let completePath = path.join(__dirname, '../../public/validator/index.html');
+      let completePath = path.join(__dirname, '../../public/validator/valid.html');
       let template = fs.readFileSync(completePath, 'utf-8');
 
       return res.type('html').send(
@@ -62,7 +62,8 @@ class ActivityController {
       );
     }
 
-    return res.type('html').send("<b>Esse certificado é inválido.</b>");
+    let completePath = path.join(__dirname, '../../public/validator/not_valid.html');
+    return res.type('html').send(completePath);
   }
 
   public async store(req: Request, res: Response): Promise<Response> {

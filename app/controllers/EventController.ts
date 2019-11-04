@@ -51,6 +51,7 @@ class EventController {
       let event = new Event();
       event.title = validatedRequest.body.title;
       event.edition = validatedRequest.body.edition;
+      event.description = validatedRequest.body.description;
       event.initialDate = validatedRequest.body.initialDate;
       event.finalDate = validatedRequest.body.finalDate;
       event.banner = validatedRequest.file.filename;
@@ -87,6 +88,7 @@ class EventController {
     if (event && certificate) {
       event.title = validatedRequest.body.title;
       event.edition = validatedRequest.body.edition;
+      event.description = validatedRequest.body.description;
       event.initialDate = validatedRequest.body.initialDate;
       event.finalDate = validatedRequest.body.finalDate;
       event.certificate = certificate;
