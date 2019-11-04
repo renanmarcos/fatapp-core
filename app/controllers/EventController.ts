@@ -91,7 +91,7 @@ class EventController {
       event.finalDate = validatedRequest.body.finalDate;
       event.certificate = certificate;
 
-      if (validatedRequest.file) {
+      if (validatedRequest.file && event.banner !== validatedRequest.file.filename) {
         let completePath = path.join(__dirname, '../../storage/') + event.banner;
         fs.unlink(completePath, () => console.log('Deleted file: ' + completePath));
         event.banner = validatedRequest.file.filename;

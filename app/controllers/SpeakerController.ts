@@ -30,7 +30,10 @@ class SpeakerController {
             speaker.speakerPhone2 = validatedRequest.body.speakerPhone2;
             speaker.speakerCurriculum = validatedRequest.body.speakerCurriculum;
 
-            if (validatedRequest.file) {
+            if (validatedRequest.file 
+                && speaker.speakerPicture !== validatedRequest.file.filename) {
+                let completePath = path.join(__dirname, '../../storage/') + speaker.speakerPicture;
+                fs.unlink(completePath, () => console.log('Deleted file: ' + completePath));
                 speaker.speakerPicture = validatedRequest.file.filename;
             }
 
