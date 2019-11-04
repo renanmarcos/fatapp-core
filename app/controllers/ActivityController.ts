@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { Activity } from '../models/Activity';
 import { ValidatedRequest } from 'express-joi-validation';
-import { ActivityStoreSchema, ActivityParamsSchema, ActivityUpdateSchema, ManageUserSchema, RateSchema } from '../routes/ActivitiesRoutes';
+import { ActivityStoreSchema, ActivityParamsSchema, ActivityUpdateSchema, ManageUserSchema, RateSchema, ActivityQuerySchema } from '../routes/ActivitiesRoutes';
 import { Room } from '../models/Room';
 import * as HttpStatus from 'http-status-codes';
 import { Event } from '../models/Event';
@@ -14,11 +14,56 @@ import QRCode from 'qrcode';
 import path from 'path';
 import fs from 'fs';
 import { CertificateGenerator } from '../services/CertificateGenerator';
+import moment from 'moment';
+import 'moment/locale/pt-br';
+import Mustache from 'mustache';
+import address from 'address';
 
 class ActivityController {
 
   public async index(req: Request, res: Response): Promise<Response> {
     return res.json(await Activity.find({ relations: ['room', 'event', 'speaker', 'targetAudience'] }));
+  }
+
+  public async validator(req: Request, res: Response): Promise<Response> {
+    let validatedRequest = req as ValidatedRequest<ActivityQuerySchema>;
+    let subscription = await Subscription.findOne({
+      where: {
+        activity: validatedRequest.query.activityId,
+        user: validatedRequest.query.userId
+      },
+      relations: ['user', 'activity', 'activity.speaker']
+    });
+
+    if (subscription && subscription.attended === true) {
+      moment().locale('pt-BR');
+
+      let activity = subscription.activity;
+      let user = subscription.user;
+
+      let view = {
+        nome: user.name,
+        atividade: activity.title,
+        palestrante: activity.speaker.speakerName,
+        dataInicialAtividade: moment(activity.initialDate).format("L"),
+        dataFinalAtividade: moment(activity.finalDate).format("L"),
+        horaInicialAtividade: moment(activity.initialDate).format("HH:mm"),
+        horaFinalAtividade: moment(activity.finalDate).format("HH:mm"),
+        cargaHoraria: moment(activity.finalDate).diff(activity.initialDate, 'hours'),
+        linkValidador: "http://" + address.ip() + ":" + (process.env.CORE_PORT || 3000) 
+                        + "/activities/validator?userId=" + user.id + "&activityId=" + activity.id,
+        dataAtual: moment().format("LL")
+      };
+
+      let completePath = path.join(__dirname, '../../public/validator/index.html');
+      let template = fs.readFileSync(completePath, 'utf-8');
+
+      return res.type('html').send(
+        Mustache.render(template, view)
+      );
+    }
+
+    return res.type('html').send("<b>Esse certificado é inválido.</b>");
   }
 
   public async store(req: Request, res: Response): Promise<Response> {
@@ -78,9 +123,11 @@ class ActivityController {
 
         return res.status(HttpStatus.CREATED).json(activity);
       }
-      
+
+      moment.locale('pt-BR');
       return res.status(HttpStatus.NOT_ACCEPTABLE).send({
-        "message": "Activity date must be between Event date: " + event.initialDate + " to " + event.finalDate
+        "message": "A atividade precisa estar dentro do tempo do evento, entre " + 
+                    moment(event.initialDate).format("LLL") + " até " + moment(event.finalDate).format("LLL")
       });
     }
 
@@ -89,7 +136,10 @@ class ActivityController {
 
   public async get(req: Request, res: Response): Promise<Response> {
     let validatedRequest = req as ValidatedRequest<ActivityParamsSchema>;
-    let activity = await Activity.findOne({ where: { id: validatedRequest.params.id }, relations: ['room', 'event', 'speaker', 'targetAudience'] });
+    let activity = await Activity.findOne({ 
+      where: { id: validatedRequest.params.id }, 
+      relations: ['room', 'event', 'speaker', 'targetAudience'] 
+    });
 
     if (!activity) {
       res.sendStatus(HttpStatus.NOT_FOUND);
@@ -155,8 +205,10 @@ class ActivityController {
           return res.status(HttpStatus.OK).json(activity);
         }
 
+        moment.locale('pt-BR');
         return res.status(HttpStatus.NOT_ACCEPTABLE).send({
-          "message": "Activity date must be between Event date: " + event.initialDate + " to " + event.finalDate
+          "message": "A atividade precisa estar dentro do tempo do evento, entre " + 
+                      moment(event.initialDate).format("LLL") + " até " + moment(event.finalDate).format("LLL")
         });
       }
     }
@@ -168,12 +220,11 @@ class ActivityController {
     let validatedRequest = req as ValidatedRequest<ManageUserSchema>;
     let activity = await Activity.findOne({ id: validatedRequest.params.id });
     let user = await User.findOne({ id: validatedRequest.body.userId });
+    moment.locale('pt-BR');
 
-    let allowedSubscribeTime = activity.initialDate;
-    allowedSubscribeTime.setHours(allowedSubscribeTime.getHours() - 1);
-    let now = new Date();
+    let allowedSubscribeTime = moment(activity.initialDate).subtract(1, 'hour');
 
-    if(now <= allowedSubscribeTime) {
+    if(moment().isSameOrBefore(allowedSubscribeTime)) {
       if (activity && user) {
         let subscription = new Subscription();
         subscription.activity = activity;
@@ -249,7 +300,10 @@ class ActivityController {
     });
 
     if (subscriptions) {
-      return res.status(HttpStatus.OK).send(subscriptions);
+      return res.status(HttpStatus.OK).send({
+        subscriptions: subscriptions,
+        total: subscriptions.length
+      });
     }
 
     return res.sendStatus(HttpStatus.NOT_FOUND);

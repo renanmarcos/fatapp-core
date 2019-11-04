@@ -8,6 +8,15 @@ import 'joi-extract-type';
 const routes = Router();
 const validator = createValidator();
 
+const querySchema = Joi.object().keys({
+    userId: Joi.string().required(),
+    activityId: Joi.string().required()
+});
+
+export interface ActivityQuerySchema extends ValidatedRequestSchema {
+    [ContainerTypes.Query]: Joi.extractType<typeof querySchema>;
+}
+
 const paramsSchema = Joi.object().keys({
     id: Joi.string().required(),
 });
@@ -53,6 +62,7 @@ export interface ActivityUpdateSchema extends ValidatedRequestSchema {
 }
 
 routes.get('/', ActivityController.index);
+routes.get('/validator', validator.query(querySchema), ActivityController.validator);
 routes.get('/:id', validator.params(paramsSchema), ActivityController.get);
 routes.post('/', validator.body(bodyStoreSchema), ActivityController.store);
 routes.delete('/:id', validator.params(paramsSchema), ActivityController.destroy);
