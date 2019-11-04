@@ -38,22 +38,22 @@ export class RoomMigration1566752447857 implements MigrationInterface {
         for (let i = 1; i <= 12; i++) {
             let room = new Room();
             room.capacity = 40;
-            room.name = "Sala " + i;
-            room.type = "Sala de aula";
+            room.name = i.toString();
+            room.type = "Sala";
             room.save();
         }
 
         for (let i = 1; i <= 3; i++) {
             let room = new Room();
             room.capacity = 40;
-            room.name = "Laboratório " + i;
-            room.type = "Laboratório de informática";
+            room.name = i.toString();
+            room.type = "Laboratório";
             room.save();
         }
 
         let room = new Room();
         room.capacity = 200;
-        room.name = "Auditório";
+        room.name = "1";
         room.type = "Auditório";
         room.save();
     }
