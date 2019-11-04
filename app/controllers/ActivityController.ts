@@ -63,7 +63,7 @@ class ActivityController {
     }
 
     let completePath = path.join(__dirname, '../../public/validator/not_valid.html');
-    return res.type('html').send(completePath);
+    res.sendFile(completePath);
   }
 
   public async store(req: Request, res: Response): Promise<Response> {
