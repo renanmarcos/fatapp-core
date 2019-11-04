@@ -40,6 +40,7 @@ export class RoomMigration1566752447857 implements MigrationInterface {
             room.capacity = 40;
             room.name = "Sala " + i;
             room.type = "Sala de aula";
+            room.save();
         }
 
         for (let i = 1; i <= 3; i++) {
@@ -47,12 +48,14 @@ export class RoomMigration1566752447857 implements MigrationInterface {
             room.capacity = 40;
             room.name = "Laboratório " + i;
             room.type = "Laboratório de informática";
+            room.save();
         }
 
         let room = new Room();
         room.capacity = 200;
         room.name = "Auditório";
         room.type = "Auditório";
+        room.save();
     }
 
     public async down(queryRunner: QueryRunner): Promise<any> {
