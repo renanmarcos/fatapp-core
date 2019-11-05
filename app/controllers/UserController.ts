@@ -133,7 +133,7 @@ class UserController {
     let validatedRequest = req as ValidatedRequest<UserQuerySchema>;
     let subscriptions = await Subscription.find({ 
       where: { user: validatedRequest.params.id }, 
-      relations: ['activity'] 
+      relations: ['activity', 'activity.speaker', 'activity.room']
     });
 
     if (subscriptions) {
