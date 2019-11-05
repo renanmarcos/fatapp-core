@@ -79,6 +79,7 @@ export interface ActivityReportSchema extends ValidatedRequestSchema {
 routes.post('/:id/excel', validator.params(paramsSchema), validator.body(bodyReportSchema), ReportController.generateActivityExcel);
 routes.get('/:id/reportAttended', validator.params(paramsSchema), ReportController.generateActivityChartAttended);
 routes.get('/:id/reportNoAttended', validator.params(paramsSchema), ReportController.generateActivityChartNoAttended);
+routes.get('/:id/reportAll', validator.params(paramsSchema), ReportController.generateActivityChartAll);
 
 const bodyManageUserSchema = Joi.object({
     userId: Joi.number().required()

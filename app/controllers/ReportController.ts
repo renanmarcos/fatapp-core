@@ -103,6 +103,15 @@ class ReportController {
     }
     return res.sendStatus(HttpStatus.NOT_FOUND);
   }
+
+  public async generateActivityChartAll(req: Request, res: Response): Promise<Response> {
+    let validatedRequest = req as ValidatedRequest<ActivityParamsSchema>;
+    let report = await getConnection().query('select acronym, count(*) as qtde from activity left join subscription on activity.id = subscription.activityId   left join user on subscription.userId = user.id   left join student on user.id = student.userId left join course on student.courseId = course.id where activity.id = ' + validatedRequest.params.id + ' group by acronym');
+    if (report.length > 0) {
+      return res.status(HttpStatus.OK).send(report);
+    }
+    return res.sendStatus(HttpStatus.NOT_FOUND);
+  }
 }
 
 export default new ReportController();
