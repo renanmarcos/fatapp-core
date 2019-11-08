@@ -1,6 +1,6 @@
 import { Request, Response } from "express-serve-static-core";
 import { ValidatedRequest } from "express-joi-validation";
-import { ActivityReportSchema, ActivityParamsSchema } from "../routes/ActivitiesRoutes";
+import { ActivityBodyReportSchema, ActivityQueryReportSchema } from "../routes/ActivitiesRoutes";
 import { Subscription } from "../models/Subscription";
 import * as HttpStatus from 'http-status-codes';
 import * as Excel from 'exceljs';
@@ -10,7 +10,7 @@ import { getConnection } from "typeorm";
 class ReportController {
 
   public async generateActivityExcel(req: Request, res: Response): Promise<Response> {
-    let validatedRequest = req as ValidatedRequest<ActivityReportSchema>;
+    let validatedRequest = req as ValidatedRequest<ActivityBodyReportSchema>;
     let subscriptions = await Subscription.find({
       relations: ['user', 'user.student', 'user.student.course', 'activity', 'activity.event'],
       where: { activity: validatedRequest.params.id }
@@ -86,27 +86,33 @@ class ReportController {
     return res.sendStatus(HttpStatus.NOT_FOUND);
   }
 
-  public async generateActivityChartAttended(req: Request, res: Response): Promise<Response> {
-    let validatedRequest = req as ValidatedRequest<ActivityParamsSchema>;
-    let report = await getConnection().query('select acronym, count(*) as qtde from activity left join subscription on activity.id = subscription.activityId   left join user on subscription.userId = user.id   left join student on user.id = student.userId left join course on student.courseId = course.id where activity.id = ' + validatedRequest.params.id + ' and attended = true group by acronym');
-    if (report.length > 0) {
-      return res.status(HttpStatus.OK).send(report);
-    }
-    return res.sendStatus(HttpStatus.NOT_FOUND);
-  }
+  public async generateActivityChart(req: Request, res: Response): Promise<Response> {
+    let validatedRequest = req as ValidatedRequest<ActivityQueryReportSchema>;
+    let type = validatedRequest.query.type.toString();
+    let partialQuery = 'select case when acronym = null then "Público Externo" else acronym end, count(*) as qtde from activity '
+    + 'left join subscription on activity.id = subscription.activityId '
+    + 'left join user on subscription.userId = user.id '
+    + 'left join student on user.id = student.userId '
+    + 'left join course on student.courseId = course.id '
+    + 'where activity.id = ' + validatedRequest.params.id;
 
-  public async generateActivityChartNoAttended(req: Request, res: Response): Promise<Response> {
-    let validatedRequest = req as ValidatedRequest<ActivityParamsSchema>;
-    let report = await getConnection().query('select acronym, count(*) as qtde from activity left join subscription on activity.id = subscription.activityId   left join user on subscription.userId = user.id   left join student on user.id = student.userId left join course on student.courseId = course.id where activity.id = ' + validatedRequest.params.id + ' and attended = false group by acronym');
-    if (report.length > 0) {
-      return res.status(HttpStatus.OK).send(report);
+    if(type == 'all'){
+      let report = await getConnection().query(partialQuery + ' group by acronym');
+      if (report.length > 0) {
+        return res.status(HttpStatus.OK).send(report);
+      }
+      return res.sendStatus(HttpStatus.NOT_FOUND);
     }
-    return res.sendStatus(HttpStatus.NOT_FOUND);
-  }
 
-  public async generateActivityChartAll(req: Request, res: Response): Promise<Response> {
-    let validatedRequest = req as ValidatedRequest<ActivityParamsSchema>;
-    let report = await getConnection().query('select acronym, count(*) as qtde from activity left join subscription on activity.id = subscription.activityId   left join user on subscription.userId = user.id   left join student on user.id = student.userId left join course on student.courseId = course.id where activity.id = ' + validatedRequest.params.id + ' group by acronym');
+    if(type == 'attended'){
+      let report = await getConnection().query(partialQuery + ' and attended = true group by acronym');
+      if (report.length > 0) {
+        return res.status(HttpStatus.OK).send(report);
+      }
+      return res.sendStatus(HttpStatus.NOT_FOUND);
+    }
+
+    let report = await getConnection().query(partialQuery + ' and attended = false group by acronym');
     if (report.length > 0) {
       return res.status(HttpStatus.OK).send(report);
     }
