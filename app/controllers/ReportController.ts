@@ -1,23 +1,22 @@
 import { Request, Response } from "express-serve-static-core";
 import { ValidatedRequest } from "express-joi-validation";
-import { ActivityReportSchema } from "../routes/ActivitiesRoutes";
-import { EventQuerySchema } from "../routes/EventsRoutes";
+import { ActivityBodyReportSchema, ActivityQueryReportSchema } from "../routes/ActivitiesRoutes";
 import { Subscription } from "../models/Subscription";
-import { Event } from "../models/Event";
 import * as HttpStatus from 'http-status-codes';
 import * as Excel from 'exceljs';
 import { SendMail } from "../services/mail/SendEmail";
+import { getConnection } from "typeorm";
 
 class ReportController {
 
-  public async generateActivityReport(req: Request, res: Response): Promise<Response> {
-    let validatedRequest = req as ValidatedRequest<ActivityReportSchema>;
+  public async generateActivityExcel(req: Request, res: Response): Promise<Response> {
+    let validatedRequest = req as ValidatedRequest<ActivityBodyReportSchema>;
     let subscriptions = await Subscription.find({
       relations: ['user', 'user.student', 'user.student.course', 'activity', 'activity.event'],
       where: { activity: validatedRequest.params.id }
     });
 
-    if (subscriptions) {
+    if (subscriptions.length > 0) {
       let workbook = new Excel.Workbook();
       let worksheetLGP = workbook.addWorksheet("Lista Geral de Presença");
 
@@ -46,8 +45,8 @@ class ReportController {
       }
 
       worksheetLGP.autoFilter = 'A1:D1';
-      const font : Partial<Excel.Font> = { color: { argb: 'FFFFFFF' }, bold: true };
-      const fill : Excel.Fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '993535' } };
+      const font: Partial<Excel.Font> = { color: { argb: 'FFFFFFF' }, bold: true };
+      const fill: Excel.Fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '993535' } };
 
       worksheetLGP.getRow(1).eachCell(function (cell: Excel.Cell, column: number) {
         cell.fill = fill;
@@ -59,15 +58,16 @@ class ReportController {
       let fileName = event.title + ' ' + event.edition + ' - ' + activity.title + '.xlsx';
       let emails = req.body.emails;
 
-      if (emails) {
+      if (emails.length > 0) {
         let helper = new SendMail();
         helper.to = emails;
-        helper.text =  "Segue relatório em anexo";
+        helper.text = "Segue relatório em anexo";
         helper.subject = "Relatório " + fileName;
-        
+
         workbook.xlsx.writeBuffer().then(function (buffer: any) {
           helper.attachment = {
-            content: buffer
+            content: buffer,
+            filename: fileName
           };
           helper.send();
         }).catch((error) => console.log(error));
@@ -75,97 +75,49 @@ class ReportController {
         return res.status(HttpStatus.OK).send({
           message: "O relatório está sendo gerado e será enviado por email em breve"
         });
-      } 
+      }
 
       res.setHeader("Content-Disposition", "attachment; filename=" + fileName);
       res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-      await workbook.xlsx.writeBuffer().then(async function (buffer) {
-        res.status(HttpStatus.OK).send(buffer);
-      });
+      let buffer = await workbook.xlsx.writeBuffer();
+      return res.send(buffer);
     }
 
     return res.sendStatus(HttpStatus.NOT_FOUND);
   }
 
-  //TODO: Review this report
-  // public async generateEventReport(req: Request, res: Response): Promise<Response> {
-  //   let validatedRequest = req as ValidatedRequest<EventQuerySchema>;
+  public async generateActivityChart(req: Request, res: Response): Promise<Response> {
+    let validatedRequest = req as ValidatedRequest<ActivityQueryReportSchema>;
+    let type = validatedRequest.query.type.toString();
+    let partialQuery = 'select case when acronym = null then "Público Externo" else acronym end, count(*) as qtde from activity '
+    + 'left join subscription on activity.id = subscription.activityId '
+    + 'left join user on subscription.userId = user.id '
+    + 'left join student on user.id = student.userId '
+    + 'left join course on student.courseId = course.id '
+    + 'where activity.id = ' + validatedRequest.params.id;
 
-  //   let event = await Event.find({
-  //     relations: ['activity', 'activity.subscriptions', 'activity.subscriptions.user', 'activity.subscriptions.user.student', 'activity.subscriptions.user.student.course'],
-  //     where: { id: validatedRequest.params.id }
-  //   });
+    if(type == 'all'){
+      let report = await getConnection().query(partialQuery + ' group by acronym');
+      if (report.length > 0) {
+        return res.status(HttpStatus.OK).send(report);
+      }
+      return res.sendStatus(HttpStatus.NOT_FOUND);
+    }
 
-  //   if (event) {
-  //     let workbook = new Excel.Workbook();
-  //     let worksheetLGP = workbook.addWorksheet("Lista Geral de Presença");
+    if(type == 'attended'){
+      let report = await getConnection().query(partialQuery + ' and attended = true group by acronym');
+      if (report.length > 0) {
+        return res.status(HttpStatus.OK).send(report);
+      }
+      return res.sendStatus(HttpStatus.NOT_FOUND);
+    }
 
-  //     worksheetLGP.columns = [
-  //       { header: 'Atividade', key: 'atividade', width: 30 },
-  //       { header: 'Nome', key: 'nome', width: 30 },
-  //       { header: 'Presença', key: 'presenca', width: 15 },
-  //       { header: 'RA', key: 'ra', width: 30 },
-  //       { header: 'Curso', key: 'curso', width: 50 }
-  //     ];
-  //     for (let i = 0; i < event.length; i++) {
-  //       for (let j = 0; j < event[i].activity.length; j++) {
-  //         for (let k = 0; k < event[i].activity[j].subscriptions.length; k++) {
-  //           if (event[i].activity[j].subscriptions[k].user.student) {
-  //             worksheetLGP.addRow({
-  //               atividade: event[i].activity[j].title,
-  //               nome: event[i].activity[j].subscriptions[k].user.name,
-  //               presenca: event[i].activity[j].subscriptions[k].attended,
-  //               ra: event[i].activity[j].subscriptions[k].user.student.ra,
-  //               curso: event[i].activity[j].subscriptions[k].user.student.course.name
-  //             });
-  //           } else {
-  //             worksheetLGP.addRow({
-  //               atividade: event[i].activity[j].title,
-  //               nome: event[i].activity[j].subscriptions[k].user.name,
-  //               presenca: event[i].activity[j].subscriptions[k].attended,
-  //               ra: '-',
-  //               curso: 'Público Externo'
-  //             });
-  //           }
-  //         }
-  //       }
-  //     }
-
-  //     worksheetLGP.autoFilter = 'A1:E1';
-  //     const font = { color: { argb: 'FFFFFFF' }, bold: true };
-
-  //     worksheetLGP.getCell('A1').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '993535' } };
-  //     worksheetLGP.getCell('A1').font = font;
-  //     worksheetLGP.getCell('B1').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '993535' } };
-  //     worksheetLGP.getCell('B1').font = font;
-  //     worksheetLGP.getCell('C1').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '993535' } };
-  //     worksheetLGP.getCell('C1').font = font;
-  //     worksheetLGP.getCell('D1').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '993535' } };
-  //     worksheetLGP.getCell('D1').font = font;
-  //     worksheetLGP.getCell('E1').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '993535' } };
-  //     worksheetLGP.getCell('E1').font = font;
-
-  //     let fileName = event[0].title + ' ' + event[0].edition + '.xlsx';
-  //     let email = req.query.email;
-
-  //     if (email) {
-  //       let sendEmail = new SendMail();
-  //       let mailParams = req;
-  //       await workbook.xlsx.writeBuffer().then(async function (buffer) {
-  //         await sendEmail.sendMail(mailParams, buffer, fileName);
-  //         res.end('Email enviado');
-  //       });
-  //     } else {
-  //       res.setHeader("Content-Disposition", "attachment; filename=" + fileName);
-  //       res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-  //       await workbook.xlsx.writeBuffer().then(async function (buffer) {
-  //         res.send(buffer);
-  //       });
-  //     }
-  //   }else{
-  //     return res.sendStatus(HttpStatus.NOT_FOUND);
-  //   }
-  // }
+    let report = await getConnection().query(partialQuery + ' and attended = false group by acronym');
+    if (report.length > 0) {
+      return res.status(HttpStatus.OK).send(report);
+    }
+    return res.sendStatus(HttpStatus.NOT_FOUND);
+  }
 }
 
 export default new ReportController();
