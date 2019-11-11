@@ -18,7 +18,7 @@ export interface ActivityQuerySchema extends ValidatedRequestSchema {
 }
 
 const paramsSchema = Joi.object().keys({
-    id: Joi.string().required(),
+    id: Joi.string().required()
 });
 
 export interface ActivityParamsSchema extends ValidatedRequestSchema {
@@ -72,11 +72,20 @@ const bodyReportSchema = Joi.object({
     emails: Joi.array().required()
 });
 
-export interface ActivityReportSchema extends ValidatedRequestSchema {
+export interface ActivityBodyReportSchema extends ValidatedRequestSchema {
     [ContainerTypes.Query]: Joi.extractType<typeof bodyReportSchema>;
 }
 
-routes.post('/:id/report', validator.params(paramsSchema), validator.body(bodyReportSchema), ReportController.generateActivityReport);
+const reportSchema = Joi.object().keys({
+    type: Joi.array().items(Joi.string().valid('all', 'attended', 'noattended')).single(),
+});
+
+export interface ActivityQueryReportSchema extends ValidatedRequestSchema {
+    [ContainerTypes.Query]: Joi.extractType<typeof reportSchema>;
+}
+
+routes.post('/:id/excel', validator.params(paramsSchema), validator.body(bodyReportSchema), ReportController.generateActivityExcel);
+routes.get('/:id/report', validator.params(paramsSchema), validator.query(reportSchema), ReportController.generateActivityChart);
 
 const bodyManageUserSchema = Joi.object({
     userId: Joi.number().required()
