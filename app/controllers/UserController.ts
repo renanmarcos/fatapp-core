@@ -5,18 +5,23 @@ import { ValidatedRequest } from 'express-joi-validation';
 import * as HttpStatus from 'http-status-codes';
 import { Subscription } from '../models/Subscription';
 import jwt from 'jsonwebtoken';
+import { Course } from '../models/Course';
+import { Student } from '../models/Student';
 
 class UserController {
 
   public async list(req: Request, res: Response): Promise<Response> 
   {
-    return res.json(await User.find());
+  return res.json(await User.find({relations: ['student']}));
   }
 
   public async get(req: Request, res: Response): Promise<Response> 
   {
     let validatedRequest = req as ValidatedRequest<UserQuerySchema>;
-    let user = await User.findOne({ id: validatedRequest.params.id });
+    let user = await User.findOne({ 
+      where: { id: validatedRequest.params.id },
+      relations: ['student']
+    });
 
     if (!user) {
       res.sendStatus(HttpStatus.NOT_FOUND);
@@ -28,11 +33,16 @@ class UserController {
   public async store(req: Request, res: Response): Promise<Response> 
   {
     let validatedRequest = req as ValidatedRequest<UserStoreSchema>;
-    let user = await User.findOne({where: {cpf: validatedRequest.body.cpf}});
+    let user = await User.findOne({
+      where: [
+        { cpf: validatedRequest.body.cpf },
+        { email: validatedRequest.body.email }
+      ]
+    });
     
     if (user) {
-      return res.status(HttpStatus.BAD_REQUEST).send({
-        error: 'CPF já existe'
+      return res.status(HttpStatus.UNPROCESSABLE_ENTITY).send({
+        message: 'CPF ou Email já existente'
       });
     }
 
@@ -72,8 +82,42 @@ class UserController {
   {
     let validatedRequest = req as ValidatedRequest<UserUpdateSchema>;
     let user = await User.findOne({ id: validatedRequest.params.id });
+    let course = await Course.findOne({ id: validatedRequest.body.courseId });
+
+    if (user && course) {
+      let newEmail = validatedRequest.body.email;
+      let anotherUser = await User.find({ where: { email: newEmail } });
+      
+      if (newEmail !== user.email && anotherUser.length > 1) {
+        return res.status(HttpStatus.UNPROCESSABLE_ENTITY).send({
+          message: 'Email já existente'
+        }); 
+      }
+
+      let student = new Student();
+      student.ra = validatedRequest.body.ra;
+      student.course = course;
+      student.user = user;
+      await student.save();
+
+      user.name = validatedRequest.body.name;
+      user.email = validatedRequest.body.email;
+      await user.save();
+      await user.reload();
+
+      return res.status(HttpStatus.OK).send(user); 
+    }
 
     if (user) {
+      let newEmail = validatedRequest.body.email;
+      let anotherUser = await User.find({ where: { email: newEmail } });
+      
+      if (newEmail !== user.email && anotherUser.length > 1) {
+        return res.status(HttpStatus.UNPROCESSABLE_ENTITY).send({
+          message: 'Email já existente'
+        }); 
+      }
+
       user.name = validatedRequest.body.name;
       user.email = validatedRequest.body.email;
       await user.save();
@@ -89,7 +133,7 @@ class UserController {
     let validatedRequest = req as ValidatedRequest<UserQuerySchema>;
     let subscriptions = await Subscription.find({ 
       where: { user: validatedRequest.params.id }, 
-      relations: ['activity'] 
+      relations: ['activity', 'activity.speaker', 'activity.room']
     });
 
     if (subscriptions) {

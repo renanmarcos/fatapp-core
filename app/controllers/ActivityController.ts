@@ -17,7 +17,6 @@ import { CertificateGenerator } from '../services/CertificateGenerator';
 import moment from 'moment';
 import 'moment/locale/pt-br';
 import Mustache from 'mustache';
-import address from 'address';
 
 class ActivityController {
 
@@ -50,12 +49,12 @@ class ActivityController {
         horaInicialAtividade: moment(activity.initialDate).format("HH:mm"),
         horaFinalAtividade: moment(activity.finalDate).format("HH:mm"),
         cargaHoraria: moment(activity.finalDate).diff(activity.initialDate, 'hours'),
-        linkValidador: "http://" + address.ip() + ":" + (process.env.CORE_PORT || 3000) 
-                        + "/activities/validator?userId=" + user.id + "&activityId=" + activity.id,
+        linkValidador: process.env.CORE_DOMAIN + 
+                        "/activities/validator?userId=" + user.id + "&activityId=" + activity.id,
         dataAtual: moment().format("LL")
       };
 
-      let completePath = path.join(__dirname, '../../public/validator/index.html');
+      let completePath = path.join(__dirname, '../../public/validator/valid.html');
       let template = fs.readFileSync(completePath, 'utf-8');
 
       return res.type('html').send(
@@ -63,7 +62,8 @@ class ActivityController {
       );
     }
 
-    return res.type('html').send("<b>Esse certificado é inválido.</b>");
+    let completePath = path.join(__dirname, '../../public/validator/not_valid.html');
+    res.sendFile(completePath);
   }
 
   public async store(req: Request, res: Response): Promise<Response> {
@@ -125,7 +125,7 @@ class ActivityController {
       }
 
       moment.locale('pt-BR');
-      return res.status(HttpStatus.NOT_ACCEPTABLE).send({
+      return res.status(HttpStatus.UNPROCESSABLE_ENTITY).send({
         "message": "A atividade precisa estar dentro do tempo do evento, entre " + 
                     moment(event.initialDate).format("LLL") + " até " + moment(event.finalDate).format("LLL")
       });
@@ -206,7 +206,7 @@ class ActivityController {
         }
 
         moment.locale('pt-BR');
-        return res.status(HttpStatus.NOT_ACCEPTABLE).send({
+        return res.status(HttpStatus.UNPROCESSABLE_ENTITY).send({
           "message": "A atividade precisa estar dentro do tempo do evento, entre " + 
                       moment(event.initialDate).format("LLL") + " até " + moment(event.finalDate).format("LLL")
         });
@@ -245,7 +245,7 @@ class ActivityController {
       return res.sendStatus(HttpStatus.NOT_FOUND);
     }
 
-    return res.status(HttpStatus.BAD_REQUEST).send({
+    return res.status(HttpStatus.UNPROCESSABLE_ENTITY).send({
       "message": "A atividade começará dentro de 1 hora"
     });
   }
