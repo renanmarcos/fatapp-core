@@ -12,7 +12,7 @@ class EventController {
 
   public async index(req: Request, res: Response): Promise<Response> 
   {
-    return res.json(await Event.find());
+    return res.json(await Event.find({ relations: ['certificate'] }));
   }
 
   public async getActivities(req: Request, res: Response): Promise<Response> 
@@ -33,7 +33,10 @@ class EventController {
   public async get(req: Request, res: Response): Promise<Response> 
   {
     let validatedRequest = req as ValidatedRequest<EventQuerySchema>;
-    let event = await Event.findOne({ id: validatedRequest.params.id });
+    let event = await Event.findOne({ 
+      where: { id: validatedRequest.params.id }, 
+      relations: ['certificate'] 
+    });
 
     if (!event) {
       res.sendStatus(HttpStatus.NOT_FOUND);
