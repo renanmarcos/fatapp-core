@@ -8,7 +8,7 @@ class CourseController {
 
   public async list(req: Request, res: Response): Promise<Response> 
   {
-    return res.json(await Course.find({ }));
+    return res.json(await Course.find());
   }
 
   public async store(req: Request, res: Response) {

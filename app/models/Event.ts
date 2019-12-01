@@ -15,6 +15,9 @@ export class Event extends BaseEntity {
     edition: string;
 
     @Column()
+    description: string;
+
+    @Column()
     initialDate: Date;
 
     @Column()

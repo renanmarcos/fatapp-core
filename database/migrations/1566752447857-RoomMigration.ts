@@ -1,4 +1,5 @@
 import {MigrationInterface, QueryRunner, Table, JoinColumn, TableForeignKey} from "typeorm";
+import { Room } from '../../app/models/Room';
 
 export class RoomMigration1566752447857 implements MigrationInterface {
 
@@ -27,7 +28,34 @@ export class RoomMigration1566752447857 implements MigrationInterface {
                     type: "int"
                 }
             ]
-        }), true)
+        }), true);
+
+        this.createRooms();
+    }
+
+    private async createRooms()
+    {
+        for (let i = 1; i <= 12; i++) {
+            let room = new Room();
+            room.capacity = 40;
+            room.name = i.toString();
+            room.type = "Sala";
+            room.save();
+        }
+
+        for (let i = 1; i <= 3; i++) {
+            let room = new Room();
+            room.capacity = 40;
+            room.name = i.toString();
+            room.type = "Laboratório";
+            room.save();
+        }
+
+        let room = new Room();
+        room.capacity = 200;
+        room.name = "1";
+        room.type = "Auditório";
+        room.save();
     }
 
     public async down(queryRunner: QueryRunner): Promise<any> {
