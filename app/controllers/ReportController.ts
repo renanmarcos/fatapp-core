@@ -89,7 +89,7 @@ class ReportController {
   public async generateActivityChart(req: Request, res: Response): Promise<Response> {
     let validatedRequest = req as ValidatedRequest<ActivityQueryReportSchema>;
     let type = validatedRequest.query.type.toString();
-    let partialQuery = 'select case when acronym = null then "Público Externo" else acronym end as acronym, count(*) as qtde from activity '
+    let partialQuery = 'select IF(acronym IS NULL,"Público Externo", acronym) as acronym, count(*) as qtde from activity '
     + 'left join subscription on activity.id = subscription.activityId '
     + 'left join user on subscription.userId = user.id '
     + 'left join student on user.id = student.userId '
