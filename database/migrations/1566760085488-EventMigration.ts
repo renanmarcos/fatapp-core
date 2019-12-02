@@ -24,7 +24,7 @@ export class EventMigration1566760085488 implements MigrationInterface {
                 },
                 {
                     name: "description",
-                    type: "varchar"
+                    type: "text"
                 },
                 {
                     name: "initialDate",

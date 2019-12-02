@@ -32,8 +32,8 @@ const bodyStoreSchema = Joi.object({
     description: Joi.string().required(),
     initialDate: Joi.date().required(),
     finalDate: Joi.date().required(),
-    obsActivity: Joi.string().required(),
-    obsResource: Joi.string().required(),
+    obsActivity: Joi.string(),
+    obsResource: Joi.string(),
     roomId: Joi.number().required(),
     eventId: Joi.number().required(),
     speakerId: Joi.number().required()
@@ -50,8 +50,8 @@ const bodyUpdateSchema = Joi.object({
     description: Joi.string().required(),
     initialDate: Joi.date().required(),
     finalDate: Joi.date().required(),
-    obsActivity: Joi.string().required(),
-    obsResource: Joi.string().required(),
+    obsActivity: Joi.string(),
+    obsResource: Joi.string(),
     roomId: Joi.number().required(),
     eventId: Joi.number().required(),
     speakerId: Joi.number().required()
