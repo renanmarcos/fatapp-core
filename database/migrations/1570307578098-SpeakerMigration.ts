@@ -27,11 +27,12 @@ export class SpeakerMigration1570307578098 implements MigrationInterface {
                 },
                 {
                     name: "speakerPhone2",
-                    type: "varchar"
+                    type: "varchar",
+                    isNullable: true
                 },
                 {
                     name: "speakerCurriculum",
-                    type: "varchar"
+                    type: "text"
                 },
                 {
                     name: "speakerPicture",

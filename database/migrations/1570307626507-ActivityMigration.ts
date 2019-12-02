@@ -23,7 +23,7 @@ export class ActivityMigration1570307626507 implements MigrationInterface {
                 },
                 {
                     name: "description",
-                    type: "varchar"
+                    type: "text"
                 },
                 {
                     name: "initialDate",
@@ -35,11 +35,13 @@ export class ActivityMigration1570307626507 implements MigrationInterface {
                 },
                 {
                     name: "obsActivity",
-                    type: "varchar"
+                    type: "varchar",
+                    isNullable: true
                 },
                 {
                     name: "obsResource",
-                    type: "varchar"
+                    type: "varchar",
+                    isNullable: true
                 },
                 {
                     name: "qrCode",
