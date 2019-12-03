@@ -73,7 +73,7 @@ class ActivityController {
     let speaker = await Speaker.findOne({ id: validatedRequest.body.speakerId });
 
     if (room && event && speaker) {
-      if (event.initialDate < validatedRequest.body.initialDate && event.finalDate > validatedRequest.body.finalDate) {
+      if (event.initialDate <= validatedRequest.body.initialDate && event.finalDate >= validatedRequest.body.finalDate) {
         let activity = new Activity();
 
         activity.title = validatedRequest.body.title;
@@ -175,7 +175,7 @@ class ActivityController {
       let speaker = await Speaker.findOne({ id: validatedRequest.body.speakerId });
 
       if (room && event && speaker) {
-        if (event.initialDate < validatedRequest.body.initialDate && event.finalDate > validatedRequest.body.finalDate) {
+        if (event.initialDate <= validatedRequest.body.initialDate && event.finalDate >= validatedRequest.body.finalDate) {
 
           activity.title = validatedRequest.body.title;
           activity.type = validatedRequest.body.type;
