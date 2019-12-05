@@ -23,7 +23,8 @@ class EventController {
     if (event) {
       return res.json(await Activity.find({ 
         where: { event: event },
-        relations: ['room', 'speaker', 'targetAudience']
+        relations: ['room', 'speaker', 'targetAudience'],
+        order: { initialDate: 'ASC' }
       }));
     }
     
