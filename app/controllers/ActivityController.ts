@@ -313,6 +313,14 @@ class ActivityController {
     let validatedRequest = req as ValidatedRequest<RateSchema>;
     let activity = await Activity.findOne({ id: validatedRequest.params.id });
     let user = await User.findOne({ id: validatedRequest.body.userId });
+    let rating = await Rating.findOne({ user: user, activity: activity });
+
+    if (rating) {
+      rating.numberOfStars = validatedRequest.body.numberOfStars;
+      await rating.save();
+
+      return res.status(HttpStatus.OK).send(rating);
+    }
 
     if (activity && user) {
       let rating = new Rating();
